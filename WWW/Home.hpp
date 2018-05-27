@@ -17,6 +17,7 @@ namespace WWW
     static const std::string PageServus                 = "servus";
     static const std::string PagePhoenix                = "phoenix";
     static const std::string PageActivator              = "activator";
+    static const std::string PageTherma                 = "therma";
 
     static const std::string Images                     = "img";
     static const std::string Download                   = "download";
@@ -31,6 +32,8 @@ namespace WWW
     static const std::string ActionPhoenixSave          = "phoenix_save";
     static const std::string ActionActivatorEdit        = "activator_edit";
     static const std::string ActionActivatorSave        = "activator_save";
+    static const std::string ActionThermaEdit           = "therma_edit";
+    static const std::string ActionThermaSave           = "therma_save";
 
     static const std::string Button                     = "button";
     static const std::string ButtonSubmit               = "submit";
@@ -45,6 +48,9 @@ namespace WWW
     static const std::string ActivatorId                = "activator_id";
     static const std::string ActivationCode             = "activation_code";
     static const std::string ActivatorDescription       = "activator_name";
+
+    static const std::string ThermaId                   = "therma_id";
+    static const std::string ThermaDescription          = "therma_name";
 
     class Site : public HTTP::Site
     {
@@ -114,7 +120,7 @@ namespace WWW
         pagePhoenixEditForm(HTTP::Connection&, HTML::Instance&);
 
         /**
-         * @brief   Generate HTML page for the 'Activators' tab.
+         * @brief   Generate HTML page for the 'Activator' tab.
          *
          * @param   connection      HTTP connection.
          * @param   instance        HTML instance.
@@ -130,6 +136,24 @@ namespace WWW
          */
         void
         pageActivatorEditForm(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Therma' tab.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageTherma(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Therma' edit form.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageThermaEditForm(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Check whether some HTML form has been submitted by user.
