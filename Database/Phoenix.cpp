@@ -30,21 +30,21 @@ Database::Phoenix::Phoenix(const unsigned long phoenixId)
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(7);
-        query.assertColumnOfType(0, PostgreSQL::INT8OID);
-        query.assertColumnOfType(1, PostgreSQL::TIMESTAMPOID);
+        query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
+        query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
         query.assertColumnOfType(3, PostgreSQL::VARCHAROID);
         query.assertColumnOfType(4, PostgreSQL::VARCHAROID);
         query.assertColumnOfType(5, PostgreSQL::VARCHAROID);
         query.assertColumnOfType(6, PostgreSQL::VARCHAROID);
 
-        this->phoenixId             = query.popBIGINT();
-        this->timestamp             = query.popTIMESTAMP();
-        this->phoenixToken          = query.popUUID();
-        this->deviceName            = query.popVARCHAR();
-        this->deviceModel           = query.popVARCHAR();
-        this->softwareVersion       = query.popVARCHAR();
-        this->phoenixDescription    = query.popVARCHAR();
+        this->timestamp         = query.popTIMESTAMP();
+        this->phoenixId         = query.popBIGINT();
+        this->token             = query.popUUID();
+        this->deviceName        = query.popVARCHAR();
+        this->deviceModel       = query.popVARCHAR();
+        this->softwareVersion   = query.popVARCHAR();
+        this->description       = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -104,7 +104,7 @@ Database::Phoenix::saveDeviceToken()
 }
 
 void
-Database::Phoenix::setDescription(const std::string& phoenixDescription)
+Database::Phoenix::setDescription(const std::string& description)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -118,14 +118,14 @@ Database::Phoenix::setDescription(const std::string& phoenixDescription)
             unsigned long phoenixIdQuery = htobe64(this->phoenixId);
 
             query.pushBIGINT(&phoenixIdQuery);
-            query.pushVARCHAR(&phoenixDescription);
+            query.pushVARCHAR(&description);
             query.execute(QueryUpdatePhoenixDescription);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
 
-            this->phoenixDescription = query.popVARCHAR();
+            this->description = query.popVARCHAR();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -190,7 +190,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
     const std::string&  deviceName,
     const std::string&  deviceModel,
     const std::string&  softwareVersion,
-    const std::string&  phoenixDescription)
+    const std::string&  description)
 {
     unsigned long phoenixId;
 
@@ -231,7 +231,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
                 query.pushVARCHAR(&deviceName);
                 query.pushVARCHAR(&deviceModel);
                 query.pushVARCHAR(&softwareVersion);
-                query.pushVARCHAR(&phoenixDescription);
+                query.pushVARCHAR(&description);
                 query.execute(QueryInsertPhoenix);
 
                 query.assertNumberOfRows(1);

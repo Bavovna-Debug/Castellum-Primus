@@ -353,7 +353,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
-                        response["Walker-Token"] = connection->phoenix->phoenixToken;
+                        response["Walker-Token"] = connection->phoenix->token;
                         response.generateResponse(RTSP::OK);
                     }
                 }

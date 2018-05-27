@@ -260,13 +260,13 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response.generateResponse(RTSP::Forbidden);
 
                     ReportInfo("[Dispatcher] Desabled servus tries to connect: %s",
-                            session->servus->servusToken.c_str());
+                            session->servus->token.c_str());
 
                     throw Dispatcher::RejectDatagram("Servus disabled");
                 }
 
                 ReportInfo("[Dispatcher] Authentificated servus \"%s\"",
-                        session->servus->servusDescription.c_str());
+                        session->servus->description.c_str());
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;

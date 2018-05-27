@@ -14,13 +14,13 @@ namespace Database
     class Servus
     {
     public:
-        unsigned long       servusId;
         Toolkit::Timestamp* timestamp;
-        std::string         servusToken;
+        unsigned long       servusId;
+        std::string         token;
         bool                enabled;
         bool                online;
         std::string         authenticator;
-        std::string         servusDescription;
+        std::string         description;
 
     public:
         Servus(const unsigned long servusId);
@@ -40,6 +40,6 @@ namespace Database
         setDescription(const std::string&);
 
         static unsigned long
-        DefineServus(const std::string& servusDescription);
+        DefineServus(const std::string& description);
     };
 };

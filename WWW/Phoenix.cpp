@@ -170,7 +170,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(phoenix.phoenixDescription);
+                        tableDataCell.plain(phoenix.description);
                     }
 
                     {
@@ -241,7 +241,7 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
     {
         Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
 
-        phoenixDescription = phoenix.phoenixDescription;
+        phoenixDescription = phoenix.description;
 
         delete &phoenix;
     }
@@ -254,7 +254,7 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
 
             if (phoenixId == 0)
             {
-                ReportError("[WWW] Missing phoenix id in edit form");
+                instance.alertMessage("Fehler in Browser!");
 
                 return;
             }
