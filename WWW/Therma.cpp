@@ -103,7 +103,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("GPIO Gerätename");
+                        tableDataCell.plain("GPIO Gerätenummer");
                     }
 
                     {
@@ -139,7 +139,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
 
-                        tableDataCell.plain(therma.gpioDeviceName);
+                        tableDataCell.plain(therma.gpioDeviceNumber);
                     }
 
                     {

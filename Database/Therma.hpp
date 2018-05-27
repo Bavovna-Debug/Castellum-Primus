@@ -17,7 +17,7 @@ namespace Database
         unsigned long       thermaId;
         std::string         token;
         unsigned long       servusId;
-        std::string         gpioDeviceName;
+        std::string         gpioDeviceNumber;
         std::string         description;
 
     public:

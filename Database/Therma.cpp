@@ -40,7 +40,7 @@ Database::Therma::Therma(const unsigned long thermaId)
         this->thermaId          = query.popBIGINT();
         this->token             = query.popUUID();
         this->servusId          = query.popBIGINT();
-        this->gpioDeviceName    = query.popCHAR();
+        this->gpioDeviceNumber  = query.popCHAR();
         this->description       = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
