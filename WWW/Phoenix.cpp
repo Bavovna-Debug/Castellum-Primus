@@ -8,7 +8,6 @@
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
-#include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 
 // Local definition files.

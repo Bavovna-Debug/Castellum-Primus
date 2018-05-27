@@ -10,7 +10,6 @@
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
 #include "HTTP/Site.hpp"
-#include "Toolkit/Report.h"
 
 // Local definition files.
 //
