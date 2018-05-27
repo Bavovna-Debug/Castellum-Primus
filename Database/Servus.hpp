@@ -27,6 +27,9 @@ namespace Database
 
         ~Servus();
 
+        std::string
+        configurationJSON();
+
         void
         setOnline();
 

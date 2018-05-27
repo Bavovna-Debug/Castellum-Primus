@@ -20,6 +20,9 @@ SELECT servus_stamp, servus_id, servus_token, enabled, online, authenticator, se
 FROM kernel.servuses \
 WHERE servus_id = $1"
 
+#define QueryServusConfiguration "\
+SELECT kernel.servus_configuration($1)"
+
 #define QueryInsertServus "\
 INSERT INTO kernel.servuses (servus_description) \
 VALUES ($1) \

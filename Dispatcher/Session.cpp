@@ -275,6 +275,33 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                         configuration.network.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::OK);
             }
+            else if (request.methodIs("SETUP") == true)
+            {
+                ReportInfo("[Dispatcher] Servus \"%s\" requested configuration",
+                        session->servus->description.c_str());
+
+                const std::string configurationJSON = session->servus->configurationJSON();
+
+                response.reset();
+                response["CSeq"] = expectedCSeq;
+                response["Agent"] = Primus::SoftwareVersion;
+                response["Neutrino-Interval"] =
+                        configuration.network.servus.intervalBetweenNeutrinos;
+                response.content = configurationJSON;
+                response.generateResponse(RTSP::OK);
+            }
+            else if (request.methodIs("PLAY") == true)
+            {
+                ReportInfo("[Dispatcher] Servus \"%s\" started measurement",
+                        session->servus->description.c_str());
+
+                response.reset();
+                response["CSeq"] = expectedCSeq;
+                response["Agent"] = Primus::SoftwareVersion;
+                response["Neutrino-Interval"] =
+                        configuration.network.servus.intervalBetweenNeutrinos;
+                response.generateResponse(RTSP::Continue);
+            }
             else if (request.methodIs("NEUTRINO") == true)
             {
                 ReportInfo("[Dispatcher] Received neutrino");

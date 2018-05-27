@@ -68,6 +68,47 @@ Database::Servus::~Servus()
     }
 }
 
+std::string
+Database::Servus::configurationJSON()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long servusIdQuery = htobe64(this->servusId);
+
+            query.pushBIGINT(&servusIdQuery);
+            query.execute(QueryServusConfiguration);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::JSONBOID);
+
+            const std::string configurationJSON = query.popJSONB();
+
+            return configurationJSON.substr(1);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Servus] Cannot update servus: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
 void
 Database::Servus::setOnline()
 {
