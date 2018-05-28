@@ -18,8 +18,8 @@ WHERE session_id = $1"
 
 #define QueryReportServusRTSP "\
 INSERT INTO debug.servus_rtsp \
-(session_id, header_complete, payload_complete, request_length, request_payload, response_length, response_payload) \
-VALUES ($1, $2, $3, $4, $5, $6, $7)"
+(session_id, header_complete, payload_complete, request_payload, response_payload) \
+VALUES ($1, $2, $3, $4, $5)"
 
 #define QueryBeginPhoenixSession "\
 INSERT INTO debug.phoenix_sessions \
@@ -39,5 +39,5 @@ WHERE session_id = $1"
 
 #define QueryReportPhoenixRTSP "\
 INSERT INTO debug.phoenix_rtsp \
-(session_id, header_complete, payload_complete, request_length, request_payload, response_length, response_payload, response_status) \
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+(session_id, header_complete, payload_complete, request_payload, response_payload, response_status) \
+VALUES ($1, $2, $3, $4, $5, $6)"

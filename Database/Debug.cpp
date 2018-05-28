@@ -206,15 +206,11 @@ Primus::Debug::ReportServusRTSP(
             PostgreSQL::Query query(*debug.connection);
 
             unsigned long sessionIdQuery = htobe64(sessionId);
-            unsigned int requestLength = htobe32(request.payloadLength);
-            unsigned int responseLength = htobe32(response.payloadLength);
 
             query.pushBIGINT(&sessionIdQuery);
             query.pushBOOLEAN(&request.headerComplete);
             query.pushBOOLEAN(&request.payloadComplete);
-            query.pushINTEGER(&requestLength);
             query.pushVARCHAR(request.payloadBuffer, request.payloadLength);
-            query.pushINTEGER(&responseLength);
             query.pushVARCHAR(response.payloadBuffer, response.payloadLength);
 
             query.execute(QueryReportServusRTSP);
@@ -371,16 +367,12 @@ Primus::Debug::ReportPhoenixRTSP(
             PostgreSQL::Query query(*debug.connection);
 
             unsigned long sessionIdQuery = htobe64(sessionId);
-            unsigned int requestLength = htobe32(request.payloadLength);
-            unsigned int responseLength = htobe32(response.payloadLength);
             unsigned int responseStatus = htobe32(response.statusCode);
 
             query.pushBIGINT(&sessionIdQuery);
             query.pushBOOLEAN(&request.headerComplete);
             query.pushBOOLEAN(&request.payloadComplete);
-            query.pushINTEGER(&requestLength);
             query.pushVARCHAR(request.payloadBuffer, request.payloadLength);
-            query.pushINTEGER(&responseLength);
             query.pushVARCHAR(response.payloadBuffer, response.payloadLength);
             query.pushINTEGER(&responseStatus);
 
