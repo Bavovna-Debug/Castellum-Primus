@@ -306,7 +306,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
             }
             else if (request.methodIs("NEUTRINO") == true)
             {
-                ReportInfo("[Dispatcher] Received neutrino");
+                ReportDebug("[Dispatcher] Received neutrino");
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -315,9 +315,9 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                         configuration.network.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::Continue);
             }
-            else if (request.methodIs("AVISO") == true)
+            else if (request.methodIs("FABULA") == true)
             {
-                ReportInfo("[Dispatcher] Received aviso");
+                ReportDebug("[Dispatcher] Received fabula");
 
                 try
                 {
