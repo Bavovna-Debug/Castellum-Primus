@@ -49,6 +49,9 @@ configurationFilePath(configurationFilePath)
 
     this->network.phoenix.waitForFirstDatagram      = Primus::DefaultPhoenixWaitForFirstDatagram;
     this->network.phoenix.waitForDatagramCompletion = Primus::DefaultPhoenixWaitForDatagramCompletion;
+    this->network.phoenix.delayResponseForActivate  = Primus::DefaultPhoenixDelayResponseForActivate;
+    this->network.phoenix.delayResponseForLogin     = Primus::DefaultPhoenixDelayResponseForLogin;
+    this->network.phoenix.delayResponseForRejected  = Primus::DefaultPhoenixDelayResponseForRejected;
     this->network.phoenix.keepAlive                 = Primus::DefaultPhoenixKeepAlive;
 
     this->apns.delayAfterWakeup      = Primus::DefaultDelayAfterWakeup;

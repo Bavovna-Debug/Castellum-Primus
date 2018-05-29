@@ -23,6 +23,9 @@ namespace Primus
 
     static const unsigned DefaultPhoenixWaitForFirstDatagram        = 5000;     /**< Milliseconds. */
     static const unsigned DefaultPhoenixWaitForDatagramCompletion   = 2000;     /**< Milliseconds. */
+    static const unsigned DefaultPhoenixDelayResponseForActivate    = 2000;     /**< Milliseconds. */
+    static const unsigned DefaultPhoenixDelayResponseForLogin       = 200;      /**< Milliseconds. */
+    static const unsigned DefaultPhoenixDelayResponseForRejected    = 1000;      /**< Milliseconds. */
     static const unsigned DefaultPhoenixKeepAlive                   = 300000;   /**< Milliseconds. */
 
     static const unsigned DefaultDelayAfterWakeup                   = 500;      /**< Milliseconds. */
@@ -40,18 +43,18 @@ namespace Primus
         struct
         {
             std::string*        hostName;
-            unsigned int        portNumber;
+            unsigned short      portNumber;
             std::string*        databaseName;
             std::string*        role;
             std::string*        password;
         }
         database;
 
-        unsigned int            httpPortNumber;
-        unsigned int            servusPortNumberIPv4;
-        unsigned int            servusPortNumberIPv6;
-        unsigned int            anticipatorPortNumberIPv4;
-        unsigned int            anticipatorPortNumberIPv6;
+        unsigned short          httpPortNumber;
+        unsigned short          servusPortNumberIPv4;
+        unsigned short          servusPortNumberIPv6;
+        unsigned short          anticipatorPortNumberIPv4;
+        unsigned short          anticipatorPortNumberIPv6;
 
         struct
         {
@@ -68,6 +71,9 @@ namespace Primus
             {
                 unsigned int    waitForFirstDatagram;
                 unsigned int    waitForDatagramCompletion;
+                unsigned int    delayResponseForActivate;
+                unsigned int    delayResponseForLogin;
+                unsigned int    delayResponseForRejected;
                 unsigned int    keepAlive;
             }
             phoenix;
@@ -86,10 +92,10 @@ namespace Primus
         apns;
 
     public:
-        static Configuration&
+        static Primus::Configuration&
         InitInstance(const std::string& configurationFilePath);
 
-        static Configuration&
+        static Primus::Configuration&
         SharedInstance();
 
     private:
