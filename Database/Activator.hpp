@@ -13,12 +13,12 @@ namespace Database
     class Activator
     {
     public:
-        unsigned long       activatorId;
         Toolkit::Timestamp* timestamp;
+        unsigned long       activatorId;
         std::string         activatorToken;
         unsigned long       phoenixId;
         std::string         activationCode;
-        std::string         activatorDescription;
+        std::string         description;
 
     public:
         Activator(const unsigned long activatorId);

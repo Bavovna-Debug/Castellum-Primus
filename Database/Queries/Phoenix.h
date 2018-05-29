@@ -16,7 +16,7 @@ FROM kernel.phoenixes \
 WHERE phoenix_token = $1"
 
 #define QuerySearchForPhoenixById "\
-SELECT phoenix_id, phoenix_stamp, phoenix_token, device_name, device_model, software_version, phoenix_description \
+SELECT phoenix_stamp, phoenix_id, phoenix_token, device_name, device_model, software_version, phoenix_description \
 FROM kernel.phoenixes \
 WHERE phoenix_id = $1"
 

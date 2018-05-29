@@ -14,15 +14,15 @@ namespace Database
     class Phoenix
     {
     public:
-        unsigned long       phoenixId;
         Toolkit::Timestamp* timestamp;
-        std::string         phoenixToken;
+        unsigned long       phoenixId;
+        std::string         token;
         char                deviceToken[APNS::DeviceTokenLength];
         std::string         vendorToken;
         std::string         deviceName;
         std::string         deviceModel;
         std::string         softwareVersion;
-        std::string         phoenixDescription;
+        std::string         description;
 
     public:
         Phoenix(const unsigned long phoenixId);
@@ -45,6 +45,6 @@ namespace Database
             const std::string&  deviceName,
             const std::string&  deviceModel,
             const std::string&  softwareVersion,
-            const std::string&  phoenixDescription);
+            const std::string&  description);
     };
 };

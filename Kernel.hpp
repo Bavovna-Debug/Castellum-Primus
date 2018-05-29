@@ -24,10 +24,10 @@ namespace Workspace
         HTTP::Service*          http;
 
     public:
-        static Kernel&
+        static Workspace::Kernel&
         InitInstance();
 
-        static Kernel&
+        static Workspace::Kernel&
         SharedInstance();
 
         Kernel();

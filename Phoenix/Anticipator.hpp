@@ -13,10 +13,10 @@ namespace Phoenix
         Phoenix::Listener* listenerIPv6;
 
     public:
-        static Anticipator&
+        static Phoenix::Anticipator&
         InitInstance();
 
-        static Anticipator&
+        static Phoenix::Anticipator&
         SharedInstance();
 
         Anticipator();

@@ -12,54 +12,54 @@
 
 // Local definition files.
 //
-#include "Primus/Database/Phoenix.hpp"
-#include "Primus/Database/Phoenixes.hpp"
+#include "Primus/Database/Therma.hpp"
+#include "Primus/Database/Thermas.hpp"
 #include "Primus/WWW/Home.hpp"
 
 /**
- * @brief   Generate HTML page for the 'Phoenix' tab.
+ * @brief   Generate HTML page for the 'Therma' tab.
  *
  * @param   connection      HTTP connection.
  * @param   instance        HTML instance.
  */
 void
-WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
+WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 {
     // Process forms.
     //
     {
-        if (connection.argumentPairExists(WWW::Action, WWW::ActionPhoenixEdit) == true)
+        if (connection.argumentPairExists(WWW::Action, WWW::ActionThermaEdit) == true)
         {
-            this->pagePhoenixEditForm(connection, instance);
+            this->pageThermaEditForm(connection, instance);
 
             return;
         }
 
         if (this->formSubmitted(connection) == true)
         {
-            if (connection.argumentPairExists(WWW::Action, WWW::ActionPhoenixSave) == true)
+            if (connection.argumentPairExists(WWW::Action, WWW::ActionThermaSave) == true)
             {
                 try
                 {
-                    const unsigned long phoenixId = connection[WWW::PhoenixId];
+                    const unsigned long thermaId = connection[WWW::ThermaId];
 
                     try
                     {
-                        const std::string phoenixDescription = connection[WWW::PhoenixDescription];
-                        if (phoenixDescription.empty() == true)
+                        const std::string thermaDescription = connection[WWW::ThermaDescription];
+                        if (thermaDescription.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
-                        Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
+                        Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
 
-                        phoenix.setDescription(phoenixDescription);
+                        therma.setDescription(thermaDescription);
 
-                        delete &phoenix;
+                        delete &therma;
                     }
                     catch (HTTP::ArgumentDoesNotExist&)
                     {
                         instance.errorMessage("Beschreibung fehlt!");
 
-                        this->pagePhoenixEditForm(connection, instance);
+                        this->pageThermaEditForm(connection, instance);
 
                         return;
                     }
@@ -82,7 +82,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
         { // HTML.HeadingText
             HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
 
-            headingText.plain("Phoenix");
+            headingText.plain("Therma");
         } // HTML.HeadingText
 
         {
@@ -103,19 +103,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Name");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("Model");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("App");
+                        tableDataCell.plain("GPIO Gerätenummer");
                     }
 
                     {
@@ -133,43 +121,31 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
             {
                 HTML::TableBody tableBody(instance);
 
-                unsigned long numberOfPhoenixes = Database::Phoenixes::TotalNumber();
-                for (unsigned int phoenixIndex = 0;
-                     phoenixIndex < numberOfPhoenixes;
-                     phoenixIndex++)
+                unsigned long numberOfThermas = Database::Thermas::TotalNumber();
+                for (unsigned int thermaIndex = 0;
+                     thermaIndex < numberOfThermas;
+                     thermaIndex++)
                 {
-                    Database::Phoenix& phoenix = Database::Phoenixes::PhoenixByIndex(phoenixIndex);
+                    Database::Therma& therma = Database::Thermas::ThermaByIndex(thermaIndex);
 
                     HTML::TableRow tableRow(instance);
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(phoenix.timestamp->YYYYMMDD());
+                        tableDataCell.plain(therma.timestamp->YYYYMMDD());
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
+
+                        tableDataCell.plain(therma.gpioDeviceNumber);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(phoenix.deviceName);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
-
-                        tableDataCell.plain(phoenix.deviceModel);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
-
-                        tableDataCell.plain(phoenix.softwareVersion);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
-
-                        tableDataCell.plain(phoenix.description);
+                        tableDataCell.plain(therma.description);
                     }
 
                     {
@@ -182,9 +158,9 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                                     "%s?%s=%s&%s=%s",
                                     connection.pageName().c_str(),
                                     WWW::Action.c_str(),
-                                    WWW::ActionPhoenixEdit.c_str(),
-                                    WWW::PhoenixId.c_str(),
-                                    std::to_string(phoenix.phoenixId).c_str());
+                                    WWW::ActionThermaEdit.c_str(),
+                                    WWW::ThermaId.c_str(),
+                                    std::to_string(therma.thermaId).c_str());
 
                             HTML::URL url(instance,
                                     urlString,
@@ -196,7 +172,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                         } // HTML.URL
                     }
 
-                    delete &phoenix;
+                    delete &therma;
                 }
             }
         }
@@ -204,23 +180,23 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
 }
 
 /**
- * @brief   Generate HTML page for the 'Phoenix' edit form.
+ * @brief   Generate HTML page for the 'Therma' edit form.
  *
  * @param   connection      HTTP connection.
  * @param   instance        HTML instance.
  */
 void
-WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& instance)
+WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    unsigned long phoenixId;
+    unsigned long thermaId;
 
     try
     {
-        phoenixId = connection[WWW::PhoenixId];
+        thermaId = connection[WWW::ThermaId];
     }
     catch (HTTP::ArgumentDoesNotExist&)
     {
-        phoenixId = 0;
+        thermaId = 0;
     }
 
     HTML::Form form(instance,
@@ -230,19 +206,19 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
             "observatorium",
             connection.pageName());
 
-    form.hidden(WWW::Action, WWW::ActionPhoenixSave);
+    form.hidden(WWW::Action, WWW::ActionThermaSave);
 
-    form.hidden(WWW::PhoenixId, phoenixId);
+    form.hidden(WWW::ThermaId, thermaId);
 
-    std::string phoenixDescription;
+    std::string thermaDescription;
 
-    if (phoenixId != 0)
+    if (thermaId != 0)
     {
-        Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
+        Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
 
-        phoenixDescription = phoenix.description;
+        thermaDescription = therma.description;
 
-        delete &phoenix;
+        delete &therma;
     }
 
     {
@@ -251,14 +227,14 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
         { // HTML.HeadingText
             HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
 
-            if (phoenixId == 0)
+            if (thermaId == 0)
             {
                 instance.alertMessage("Fehler in Browser!");
 
                 return;
             }
 
-            headingText.plain("Phoenix <b>%s</b> bearbeiten", phoenixDescription.c_str());
+            headingText.plain("Therma <b>%s</b> bearbeiten", thermaDescription.c_str());
         } // HTML.HeadingText
 
         {
@@ -278,8 +254,8 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::PhoenixDescription,
-                        phoenixDescription.c_str(),
+                        WWW::ThermaDescription,
+                        thermaDescription.c_str(),
                         100, 40);
             }
         }

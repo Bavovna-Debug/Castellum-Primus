@@ -29,6 +29,6 @@ namespace Dispatcher
 
     private:
         static void
-        ThreadHandler(Listener*);
+        ThreadHandler(Dispatcher::Listener*);
     };
 };

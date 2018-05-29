@@ -11,7 +11,7 @@ ORDER BY activator_id DESC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForActivatorById "\
-SELECT activator_id, activator_stamp, activator_token, phoenix_id, activation_code, activator_description \
+SELECT activator_stamp, activator_id, activator_token, phoenix_id, activation_code, activator_description \
 FROM kernel.activators \
 WHERE activator_id = $1"
 

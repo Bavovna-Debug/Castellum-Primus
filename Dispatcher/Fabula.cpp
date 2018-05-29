@@ -109,7 +109,7 @@ Dispatcher::Fabula::Enqueue(
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Fabula] Cannot update fabula: %s",
+        ReportError("[Fabula] Cannot create fabula: %s",
                 exception.what());
 
         throw exception;

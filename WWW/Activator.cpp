@@ -8,7 +8,6 @@
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
-#include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 
 // Local definition files.
@@ -21,7 +20,7 @@
 #include "Primus/WWW/Home.hpp"
 
 /**
- * @brief   Generate HTML page for the 'Activators' tab.
+ * @brief   Generate HTML page for the 'Activator' tab.
  *
  * @param   connection      HTTP connection.
  * @param   instance        HTML instance.
@@ -241,7 +240,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         tableDataCell.plain("Seit %s bei ",
                                 phoenix.timestamp->YYYYMMDDHHMM().c_str());
                         tableDataCell.setTextStyle(HTML::Bold);
-                        tableDataCell.plain(phoenix.phoenixDescription.c_str());
+                        tableDataCell.plain(phoenix.description.c_str());
                         tableDataCell.setTextStyle();
 
                         delete &phoenix;
@@ -256,7 +255,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(activator.activatorDescription);
+                        tableDataCell.plain(activator.description);
                     }
 
                     {
@@ -331,7 +330,7 @@ WWW::Site::pageActivatorEditForm(HTTP::Connection& connection, HTML::Instance& i
         Database::Activator& activator = Database::Activators::ActivatorById(activatorId);
 
         activationCode = activator.activationCode;
-        activatorDescription = activator.activatorDescription;
+        activatorDescription = activator.description;
 
         delete &activator;
     }

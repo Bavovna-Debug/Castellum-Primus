@@ -34,7 +34,7 @@ namespace Phoenix
 
     private:
         static void
-        ThreadHandler(Listener*);
+        ThreadHandler(Phoenix::Listener*);
     };
 
     class Connection : public TCP::Connection
@@ -53,7 +53,7 @@ namespace Phoenix
         ~Connection();
 
         static void
-        ThreadHandler(Connection*);
+        ThreadHandler(Phoenix::Connection*);
     };
 
     class RejectDatagram : public std::runtime_error

@@ -60,11 +60,17 @@ Primus::Configuration::load()
             }
         }
 
-        this->httpPortNumber             = primusSetting["HTTP_PortNumberIPv4"];
-        this->servusPortNumberIPv4       = primusSetting["Servus_PortNumberIPv4"];
-        this->servusPortNumberIPv6       = primusSetting["Servus_PortNumberIPv6"];
-        this->anticipatorPortNumberIPv4  = primusSetting["Anticipator_PortNumberIPv4"];
-        this->anticipatorPortNumberIPv6  = primusSetting["Anticipator_PortNumberIPv6"];
+        unsigned int httpPortNumber             = primusSetting["HTTP_PortNumberIPv4"];
+        unsigned int servusPortNumberIPv4       = primusSetting["Servus_PortNumberIPv4"];
+        unsigned int servusPortNumberIPv6       = primusSetting["Servus_PortNumberIPv6"];
+        unsigned int anticipatorPortNumberIPv4  = primusSetting["Anticipator_PortNumberIPv4"];
+        unsigned int anticipatorPortNumberIPv6  = primusSetting["Anticipator_PortNumberIPv6"];
+
+        this->httpPortNumber             = httpPortNumber;
+        this->servusPortNumberIPv4       = servusPortNumberIPv4;
+        this->servusPortNumberIPv6       = servusPortNumberIPv6;
+        this->anticipatorPortNumberIPv4  = anticipatorPortNumberIPv4;
+        this->anticipatorPortNumberIPv6  = anticipatorPortNumberIPv6;
 
         {
             Setting &networkSetting = primusSetting["Network"];
@@ -76,6 +82,9 @@ Primus::Configuration::load()
 
             this->network.phoenix.waitForFirstDatagram      = networkSetting["PhoenixWaitForFirstDatagram"];
             this->network.phoenix.waitForDatagramCompletion = networkSetting["PhoenixWaitForDatagramCompletion"];
+            this->network.phoenix.delayResponseForActivate  = networkSetting["PhoenixDelayResponseForActivate"];
+            this->network.phoenix.delayResponseForLogin     = networkSetting["PhoenixDelayResponseForLogin"];
+            this->network.phoenix.delayResponseForRejected  = networkSetting["PhoenixDelayResponseForRejected"];
             this->network.phoenix.keepAlive                 = networkSetting["PhoenixKeepAlive"];
         }
 
