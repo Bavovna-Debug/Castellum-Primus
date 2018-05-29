@@ -115,7 +115,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Software");
+                        tableDataCell.plain("App");
                     }
 
                     {
