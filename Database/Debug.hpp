@@ -21,10 +21,10 @@ namespace Primus
         PostgreSQL::Connection* connection;
 
     public:
-        static Debug&
+        static Primus::Debug&
         InitInstance();
 
-        static Debug&
+        static Primus::Debug&
         SharedInstance();
 
         Debug();

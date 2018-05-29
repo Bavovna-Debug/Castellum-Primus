@@ -23,10 +23,10 @@ namespace Primus
         PostgreSQL::Connection* connection;
 
     public:
-        static Database&
+        static Primus::Database&
         InitInstance(const Primus::Database::Instance);
 
-        static Database&
+        static Primus::Database&
         SharedInstance(const Primus::Database::Instance);
 
         Database();

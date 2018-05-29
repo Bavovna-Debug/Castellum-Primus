@@ -12,10 +12,10 @@ namespace Dispatcher
         unsigned long
         totalNumber();
 
-        Fabula&
+        Dispatcher::Fabula&
         fabulaByIndex(const unsigned long);
 
-        Fabula&
+        Dispatcher::Fabula&
         fabulaById(const unsigned long);
     };
 };
