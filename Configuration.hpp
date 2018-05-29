@@ -8,7 +8,7 @@
 
 namespace Primus
 {
-    static const std::string SoftwareVersion = "Primus 0.0 [180526]";
+    static const std::string SoftwareVersion = "Primus 0.1 [180529]";
 
     static const unsigned DefaultHTTPPortNumber                     = 15080;
     static const unsigned DefaultServusPortNumberIPv4               = 15024;
