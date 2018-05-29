@@ -2,6 +2,7 @@
 //
 #include <chrono>
 #include <cstdlib>
+#include <sstream>
 #include <thread>
 
 // Common definition files.
@@ -17,6 +18,7 @@
 #include "Primus/Database/Debug.hpp"
 #include "Primus/Database/Servus.hpp"
 #include "Primus/Database/Servuses.hpp"
+#include "Primus/Database/Thermas.hpp"
 #include "Primus/Dispatcher/Fabula.hpp"
 #include "Primus/Dispatcher/Listener.hpp"
 #include "Primus/Dispatcher/Notificator.hpp"
@@ -346,7 +348,47 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 }
                 catch (std::exception& exception)
                 {
-                    ReportError("[Fabula] Cannot process aviso: %s",
+                    ReportError("[Dispatcher] Cannot process aviso: %s",
+                            exception.what());
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Neutrino-Interval"] =
+                            configuration.network.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::NotAcceptable);
+                }
+            }
+            else if (request.methodIs("TEMPERATURE") == true)
+            {
+                ReportDebug("[Dispatcher] Received temperature");
+
+                try
+                {
+                    const unsigned int avisoId      = request["Aviso-Id"];
+                    const std::string originStamp   = request["Timestamp"];
+                    const std::string sensorToken   = request["Sensor-Token"];
+                    const float temperature         = request["Temperature"];
+
+                    Toolkit::Timestamp timestamp(originStamp);
+
+                    Database::NoticeTemperature(
+                            timestamp,
+                            sensorToken,
+                            std::stod(originStamp),
+                            temperature);
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Aviso-Id"] = avisoId;
+                    response["Neutrino-Interval"] =
+                            configuration.network.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::Created);
+                }
+                catch (std::exception& exception)
+                {
+                    ReportError("[Dispatcher] Cannot process temperature: %s",
                             exception.what());
 
                     response.reset();

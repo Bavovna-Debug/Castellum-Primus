@@ -20,3 +20,9 @@ UPDATE kernel.thermas \
 SET therma_description = $2 \
 WHERE therma_id = $1 \
 RETURNING therma_description"
+
+#define QueryInsertTemperature "\
+INSERT INTO journal.temperatures (temperature_stamp, therma_id, original_stamp, temperature) \
+SELECT $1, therma_id, $3, $4 \
+FROM kernel.thermas \
+WHERE therma_token = $2"

@@ -1,11 +1,13 @@
 // System definition files.
 //
 #include <endian.h>
+#include <cstring>
 
 // Common definition files.
 //
 #include "PostgreSQL/PostgreSQL.hpp"
 #include "Toolkit/Report.h"
+#include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
@@ -95,4 +97,60 @@ Database::Thermas::ThermaById(const unsigned long thermaId)
     Database::Therma* therma = new Database::Therma(thermaId);
 
     return *therma;
+}
+
+void
+Database::NoticeTemperature(
+    Toolkit::Timestamp& originTimestamp,
+    const std::string&  sensorToken,
+    const double        stampAsReal,
+    const float         temperature)
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            union
+            {
+                unsigned long   stampInteger;
+                double          stampReal;
+            };
+
+            memcpy(&stampInteger, &stampAsReal, sizeof(stampAsReal));
+            stampInteger = htobe64(stampInteger);
+
+            union
+            {
+                unsigned int    temperatureInteger;
+                float           temperatureReal;
+            };
+
+            memcpy(&temperatureInteger, &temperature, sizeof(temperature));
+            temperatureInteger = htobe32(temperatureInteger);
+
+            query.pushTIMESTAMP(originTimestamp);
+            query.pushUUID(&sensorToken);
+            query.pushDOUBLE(&stampReal);
+            query.pushREAL(&temperatureReal);
+            query.execute(QueryInsertTemperature);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Therma] Cannot store temperature: %s",
+                exception.what());
+
+        throw exception;
+    }
 }

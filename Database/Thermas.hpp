@@ -7,6 +7,7 @@
 // Common definition files.
 //
 #include "PostgreSQL/PostgreSQL.hpp"
+#include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
@@ -26,6 +27,13 @@ namespace Database
         static Database::Therma&
         ThermaById(const unsigned long);
     };
+
+    void
+    NoticeTemperature(
+        Toolkit::Timestamp& originTimestamp,
+        const std::string&  sensorToken,
+        const double        stampAsReal,
+        const float         temperature);
 
     class ThermaNotFound : public std::runtime_error
     {
