@@ -246,6 +246,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                 if (providedCSeq != expectedCSeq)
                 {
+                    std::this_thread::sleep_for(std::chrono::milliseconds
+                            { configuration.network.phoenix.delayResponseForRejected } );
+
                     response.reset();
                     response["CSeq"] = expectedCSeq;
                     response["Agent"] = Primus::SoftwareVersion;
@@ -257,6 +260,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             }
             catch (RTSP::StatementNotFound& exception)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds
+                        { configuration.network.phoenix.delayResponseForRejected } );
+
                 response.reset();
                 response["CSeq"] = expectedCSeq;
                 response["Agent"] = Primus::SoftwareVersion;
@@ -268,6 +274,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
             if (request.methodIs("ACTIVATE") == true)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds
+                        { configuration.network.phoenix.delayResponseForActivate } );
+
                 try
                 {
                     const std::string softwareVersion = request["Software-Version"];
@@ -278,6 +287,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                     if (softwareVersion.length() == 0)
                     {
+                        std::this_thread::sleep_for(std::chrono::milliseconds
+                                { configuration.network.phoenix.delayResponseForRejected } );
+
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
@@ -289,6 +301,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                     if (activationCode.length() != Primus::ActivationCodeLength)
                     {
+                        std::this_thread::sleep_for(std::chrono::milliseconds
+                                { configuration.network.phoenix.delayResponseForRejected } );
+
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
@@ -300,6 +315,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                     if (vendorToken.length() != PostgreSQL::UUIDPlainLength)
                     {
+                        std::this_thread::sleep_for(std::chrono::milliseconds
+                                { configuration.network.phoenix.delayResponseForRejected } );
+
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
@@ -311,6 +329,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                     if (deviceName.length() == 0)
                     {
+                        std::this_thread::sleep_for(std::chrono::milliseconds
+                                { configuration.network.phoenix.delayResponseForRejected } );
+
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
@@ -322,6 +343,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                     if (deviceModel.length() == 0)
                     {
+                        std::this_thread::sleep_for(std::chrono::milliseconds
+                                { configuration.network.phoenix.delayResponseForRejected } );
+
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
@@ -359,6 +383,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 }
                 catch (RTSP::StatementNotFound& exception)
                 {
+                    std::this_thread::sleep_for(std::chrono::milliseconds
+                            { configuration.network.phoenix.delayResponseForRejected } );
+
                     response.reset();
                     response["CSeq"] = expectedCSeq;
                     response["Agent"] = Primus::SoftwareVersion;
@@ -385,6 +412,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             }
             else if (request.methodIs("LOGIN") == true)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds
+                        { configuration.network.phoenix.delayResponseForLogin } );
+
                 try
                 {
                     const std::string phoenixToken = request["Walker-Token"];
@@ -434,6 +464,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 }
                 catch (RTSP::StatementNotFound& exception)
                 {
+                    std::this_thread::sleep_for(std::chrono::milliseconds
+                            { configuration.network.phoenix.delayResponseForRejected } );
+
                     response.reset();
                     response["CSeq"] = expectedCSeq;
                     response["Agent"] = Primus::SoftwareVersion;
@@ -445,6 +478,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             }
             else
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds
+                        { configuration.network.phoenix.delayResponseForRejected } );
+
                 response.reset();
                 response["CSeq"] = expectedCSeq;
                 response["Agent"] = Primus::SoftwareVersion;
@@ -478,7 +514,6 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             sessionOK = false;
         }
 
-std::this_thread::sleep_for(std::chrono::seconds { 1 } );
         try
         {
             Communicator::Send(
