@@ -10,7 +10,6 @@
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
 #include "HTTP/Site.hpp"
-#include "Toolkit/Report.h"
 
 // Local definition files.
 //
@@ -195,7 +194,7 @@ WWW::Site::pageNorth(HTTP::Connection& connection, HTML::Instance& instance)
                 } // HTML.URL
             } // HTML.ListItem
 
-            // 'Activators' tab.
+            // 'Activator' tab.
             //
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
@@ -217,6 +216,32 @@ WWW::Site::pageNorth(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::Span span(instance, HTML::Nothing, "subtitle");
 
                         span.plain("Aktivierungscodes");
+                    } // HTML.Span
+                } // HTML.URL
+            } // HTML.ListItem
+
+            // 'Therma' tab.
+            //
+            { // HTML.ListItem
+                HTML::ListItem listItem(instance,
+                        HTML::Nothing,
+                        (connection.pageName() == WWW::PageTherma)
+                                ? "tabs_item active"
+                                : "tabs_item");
+
+                { // HTML.URL
+                    HTML::URL url(instance, WWW::PageTherma);
+
+                    { // HTML.Span
+                        HTML::Span span(instance, HTML::Nothing, "title");
+
+                        span.plain("Therma");
+                    } // HTML.Span
+
+                    { // HTML.Span
+                        HTML::Span span(instance, HTML::Nothing, "subtitle");
+
+                        span.plain("Thermalzone");
                     } // HTML.Span
                 } // HTML.URL
             } // HTML.ListItem
@@ -252,6 +277,10 @@ WWW::Site::pageSouth(HTTP::Connection& connection, HTML::Instance& instance)
     else if (connection.pageName() == WWW::PageActivator)
     {
         this->pageActivator(connection, instance);
+    }
+    else if (connection.pageName() == WWW::PageTherma)
+    {
+        this->pageTherma(connection, instance);
     }
     else
     {

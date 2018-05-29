@@ -30,15 +30,15 @@ Database::Activator::Activator(const unsigned long activatorId)
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(6);
-        query.assertColumnOfType(0, PostgreSQL::INT8OID);
-        query.assertColumnOfType(1, PostgreSQL::TIMESTAMPOID);
+        query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
+        query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
         query.assertColumnOfType(3, PostgreSQL::INT8OID);
         query.assertColumnOfType(4, PostgreSQL::VARCHAROID);
         query.assertColumnOfType(5, PostgreSQL::VARCHAROID);
 
-        this->activatorId       = query.popBIGINT();
         this->timestamp         = query.popTIMESTAMP();
+        this->activatorId       = query.popBIGINT();
         this->activatorToken    = query.popUUID();
 
         if (query.cellIsNull() == true)
@@ -52,7 +52,7 @@ Database::Activator::Activator(const unsigned long activatorId)
         }
 
         this->activationCode = query.popVARCHAR();
-        this->activatorDescription = query.popVARCHAR();
+        this->description = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {

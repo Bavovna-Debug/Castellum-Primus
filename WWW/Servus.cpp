@@ -8,7 +8,6 @@
 #include "HTTP/Connection.hpp"
 #include "HTTP/HTML.hpp"
 #include "HTTP/HTTP.hpp"
-#include "Toolkit/Report.h"
 #include "Toolkit/Times.hpp"
 
 // Local definition files.
@@ -43,20 +42,22 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
                 {
                     instance.infoMessage("Servus <b>%s</b> wurde <u>aktiviert</u>. " \
                             "Logins von diesem Servus werden künftig akzeptiert.",
-                            servus.servusDescription.c_str());
+                            servus.description.c_str());
                 }
                 else
                 {
                     instance.infoMessage("Servus <b>%s</b> wurde <u>deaktiviert</u>. " \
                             "Logins von diesem Servus werden künftig abgelehnt.",
-                            servus.servusDescription.c_str());
+                            servus.description.c_str());
                 }
 
                 delete &servus;
             }
             catch (HTTP::ArgumentDoesNotExist&)
             {
-                ReportError("[WWW] Missing servus id for toggle enabled");
+                instance.alertMessage("Fehler in Browser!");
+
+                return;
             }
         }
 
@@ -269,7 +270,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(servus.servusDescription);
+                        tableDataCell.plain(servus.description);
                     }
 
                     {
@@ -388,7 +389,7 @@ WWW::Site::pageServusEditForm(HTTP::Connection& connection, HTML::Instance& inst
     {
         Database::Servus& servus = Database::Servuses::ServusById(servusId);
 
-        servusDescription = servus.servusDescription;
+        servusDescription = servus.description;
 
         delete &servus;
     }

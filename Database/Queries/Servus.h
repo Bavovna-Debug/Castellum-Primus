@@ -16,9 +16,12 @@ ORDER BY servus_id DESC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForServusById "\
-SELECT servus_id, servus_stamp, servus_token, enabled, online, authenticator, servus_description \
+SELECT servus_stamp, servus_id, servus_token, enabled, online, authenticator, servus_description \
 FROM kernel.servuses \
 WHERE servus_id = $1"
+
+#define QueryServusConfiguration "\
+SELECT kernel.servus_configuration($1)"
 
 #define QueryInsertServus "\
 INSERT INTO kernel.servuses (servus_description) \

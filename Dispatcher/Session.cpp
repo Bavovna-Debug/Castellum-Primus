@@ -2,6 +2,7 @@
 //
 #include <chrono>
 #include <cstdlib>
+#include <sstream>
 #include <thread>
 
 // Common definition files.
@@ -17,6 +18,7 @@
 #include "Primus/Database/Debug.hpp"
 #include "Primus/Database/Servus.hpp"
 #include "Primus/Database/Servuses.hpp"
+#include "Primus/Database/Thermas.hpp"
 #include "Primus/Dispatcher/Fabula.hpp"
 #include "Primus/Dispatcher/Listener.hpp"
 #include "Primus/Dispatcher/Notificator.hpp"
@@ -260,13 +262,13 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response.generateResponse(RTSP::Forbidden);
 
                     ReportInfo("[Dispatcher] Desabled servus tries to connect: %s",
-                            session->servus->servusToken.c_str());
+                            session->servus->token.c_str());
 
                     throw Dispatcher::RejectDatagram("Servus disabled");
                 }
 
                 ReportInfo("[Dispatcher] Authentificated servus \"%s\"",
-                        session->servus->servusDescription.c_str());
+                        session->servus->description.c_str());
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -275,9 +277,25 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                         configuration.network.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::OK);
             }
-            else if (request.methodIs("NEUTRINO") == true)
+            else if (request.methodIs("SETUP") == true)
             {
-                ReportInfo("[Dispatcher] Received neutrino");
+                ReportInfo("[Dispatcher] Servus \"%s\" requested configuration",
+                        session->servus->description.c_str());
+
+                const std::string configurationJSON = session->servus->configurationJSON();
+
+                response.reset();
+                response["CSeq"] = expectedCSeq;
+                response["Agent"] = Primus::SoftwareVersion;
+                response["Neutrino-Interval"] =
+                        configuration.network.servus.intervalBetweenNeutrinos;
+                response.content = configurationJSON;
+                response.generateResponse(RTSP::OK);
+            }
+            else if (request.methodIs("PLAY") == true)
+            {
+                ReportInfo("[Dispatcher] Servus \"%s\" started measurement",
+                        session->servus->description.c_str());
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -286,9 +304,20 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                         configuration.network.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::Continue);
             }
-            else if (request.methodIs("AVISO") == true)
+            else if (request.methodIs("NEUTRINO") == true)
             {
-                ReportInfo("[Dispatcher] Received aviso");
+                ReportDebug("[Dispatcher] Received neutrino");
+
+                response.reset();
+                response["CSeq"] = expectedCSeq;
+                response["Agent"] = Primus::SoftwareVersion;
+                response["Neutrino-Interval"] =
+                        configuration.network.servus.intervalBetweenNeutrinos;
+                response.generateResponse(RTSP::Continue);
+            }
+            else if (request.methodIs("FABULA") == true)
+            {
+                ReportDebug("[Dispatcher] Received fabula");
 
                 try
                 {
@@ -319,7 +348,47 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 }
                 catch (std::exception& exception)
                 {
-                    ReportError("[Fabula] Cannot process aviso: %s",
+                    ReportError("[Dispatcher] Cannot process aviso: %s",
+                            exception.what());
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Neutrino-Interval"] =
+                            configuration.network.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::NotAcceptable);
+                }
+            }
+            else if (request.methodIs("TEMPERATURE") == true)
+            {
+                ReportDebug("[Dispatcher] Received temperature");
+
+                try
+                {
+                    const unsigned int avisoId      = request["Aviso-Id"];
+                    const std::string originStamp   = request["Timestamp"];
+                    const std::string sensorToken   = request["Sensor-Token"];
+                    const float temperature         = request["Temperature"];
+
+                    Toolkit::Timestamp timestamp(originStamp);
+
+                    Database::NoticeTemperature(
+                            timestamp,
+                            sensorToken,
+                            std::stod(originStamp),
+                            temperature);
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Aviso-Id"] = avisoId;
+                    response["Neutrino-Interval"] =
+                            configuration.network.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::Created);
+                }
+                catch (std::exception& exception)
+                {
+                    ReportError("[Dispatcher] Cannot process temperature: %s",
                             exception.what());
 
                     response.reset();

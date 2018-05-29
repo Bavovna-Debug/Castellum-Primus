@@ -28,7 +28,7 @@ namespace Dispatcher
         ~Session();
 
         static void
-        ThreadHandler(Session*);
+        ThreadHandler(Dispatcher::Session*);
     };
 
     void transformToken(char*, char* const);
