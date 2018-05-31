@@ -99,6 +99,19 @@ Primus::Configuration::load()
         {
             Setting &anticipatorSetting = rootSetting["Anticipator"];
 
+            try
+            {
+                const std::string interfaceAddress = anticipatorSetting["InterfaceAddress"];
+
+                this->phoenix.interfaceAddress = interfaceAddress;
+            }
+            catch (SettingNotFoundException &exception)
+            {
+                ReportSoftAlert("[Workspace] Missing mandatory option in \"Anticipator\" section");
+
+                throw exception;
+            }
+
             unsigned int portNumberIPv4 = anticipatorSetting["PortNumberIPv4"];
             unsigned int portNumberIPv6 = anticipatorSetting["PortNumberIPv6"];
 

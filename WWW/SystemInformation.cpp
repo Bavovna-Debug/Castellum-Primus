@@ -9,6 +9,7 @@
 //
 #include "Primus/Configuration.hpp"
 #include "Primus/Kernel.hpp"
+#include "Helios/Anticipator/Service.hpp"
 #include "Primus/WWW/Home.hpp"
 
 /**
@@ -25,6 +26,58 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
     Primus::Configuration& configuration = Primus::Configuration::SharedInstance();
 
     HTML::Division division(instance, HTML::Nothing, "workspace");
+
+    { // HTML.Division
+        HTML::Division division(instance, "full", "slice");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("Server-Key");
+        } // HTML.HeadingText
+
+        {
+            HTML::Table table(instance);
+
+            {
+                HTML::TableBody tableBody(instance);
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Öffentlicher Customer-Key:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("<strong>%s</strong>", Anticipator::ServerKey().c_str());
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Verrechnungsbasis:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("%s:%u",
+                                configuration.phoenix.interfaceAddress.c_str(),
+                                configuration.phoenix.portNumberIPv4);
+                    }
+                }
+            }
+        }
+    }
 
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");

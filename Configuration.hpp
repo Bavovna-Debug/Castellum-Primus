@@ -73,6 +73,7 @@ namespace Primus
 
         struct
         {
+            std::string         interfaceAddress;
             unsigned short      portNumberIPv4;
             unsigned short      portNumberIPv6;
             unsigned int        waitForFirstDatagram;
