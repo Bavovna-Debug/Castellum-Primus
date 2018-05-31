@@ -97,13 +97,13 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("GPIO Pin");
+                        tableDataCell.plain("Bezeichnung");
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Beschreibung");
+                        tableDataCell.plain("GPIO Pin");
                     }
 
                     {
@@ -127,13 +127,13 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain("%u", relay.gpioPinNumber);
+                        tableDataCell.plain(relay.description);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(relay.description);
+                        tableDataCell.plain("%u", relay.gpioPinNumber);
                     }
 
                     {

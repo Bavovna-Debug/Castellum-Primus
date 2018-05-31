@@ -97,13 +97,13 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("GPIO Gerätenummer");
+                        tableDataCell.plain("Bezeichnung");
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Beschreibung");
+                        tableDataCell.plain("GPIO Id");
                     }
 
                     {
@@ -155,15 +155,15 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     HTML::TableRow tableRow(instance);
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
-
-                        tableDataCell.plain(therma.gpioDeviceNumber);
-                    }
-
-                    {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
                         tableDataCell.plain(therma.description);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
+
+                        tableDataCell.plain(therma.gpioDeviceNumber);
                     }
 
                     float current = therma.lastKnownTemperature();
