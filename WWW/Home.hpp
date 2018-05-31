@@ -59,9 +59,21 @@ namespace WWW
         generateDocument(HTTP::Connection&);
 
     private:
+        /**
+         * @brief   Generate the north (upper) part of main page.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         * @param[in]   instance    Pointer to HTML instance.
+         */
         void
         pageNorth(HTTP::Connection&, HTML::Instance&);
 
+        /**
+         * @brief   Generate the south (lower) part of main page.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         * @param[in]   instance    Pointer to HTML instance.
+         */
         void
         pageSouth(HTTP::Connection&, HTML::Instance&);
 

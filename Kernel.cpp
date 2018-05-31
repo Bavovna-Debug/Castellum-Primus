@@ -26,6 +26,7 @@
 #include "Primus/Dispatcher/Notificator.hpp"
 #include "Primus/Phoenix/Anticipator.hpp"
 #include "Primus/WWW/Home.hpp"
+#include "Quasar/WWW/SessionManager.hpp"
 
 static void
 OwnSignalHandler(int signalNumber);
@@ -78,6 +79,7 @@ Workspace::Kernel::kernelInit()
         Phoenix::Anticipator::InitInstance();
         Dispatcher::Notificator::InitInstance();
         APNS::Service::InitInstance();
+        WWW::SessionManager::InitInstance();
     }
     catch (std::exception& exception)
     {
