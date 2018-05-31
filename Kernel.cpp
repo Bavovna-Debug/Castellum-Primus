@@ -20,11 +20,11 @@
 //
 #include "Primus/Configuration.hpp"
 #include "Primus/Kernel.hpp"
+#include "Primus/Anticipator/Service.hpp"
 #include "Primus/Database/Database.hpp"
 #include "Primus/Database/Debug.hpp"
 #include "Primus/Dispatcher/Listener.hpp"
 #include "Primus/Dispatcher/Notificator.hpp"
-#include "Primus/Phoenix/Anticipator.hpp"
 #include "Primus/WWW/Home.hpp"
 #include "Primus/WWW/SessionManager.hpp"
 
@@ -76,7 +76,7 @@ Workspace::Kernel::kernelInit()
         Primus::Database::InitInstance(Primus::Database::Notificator);
         Primus::Database::InitInstance(Primus::Database::WWW);
         Primus::Debug::InitInstance();
-        Phoenix::Anticipator::InitInstance();
+        Anticipator::Service::InitInstance();
         Dispatcher::Notificator::InitInstance();
         APNS::Service::InitInstance();
         WWW::SessionManager::InitInstance();

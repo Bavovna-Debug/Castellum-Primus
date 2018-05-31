@@ -12,7 +12,7 @@ WHERE authenticator = $1"
 #define QuerySearchForServusByIndex "\
 SELECT servus_id \
 FROM kernel.servuses \
-ORDER BY servus_id DESC \
+ORDER BY list_order ASC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForServusById "\

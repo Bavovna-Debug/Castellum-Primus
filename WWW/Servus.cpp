@@ -219,6 +219,10 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     {
                         HTML::TableDataCell tableDataCell(instance);
                     }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+                    }
                 }
             }
 

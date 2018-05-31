@@ -3,7 +3,6 @@
 // System definition files.
 //
 #include <stdexcept>
-#include <thread>
 
 // Common definition files.
 //
@@ -13,31 +12,11 @@
 //
 #include "Primus/Database/Phoenix.hpp"
 
-namespace Phoenix
+namespace Anticipator
 {
     static const unsigned int BytesReceivePerStep = 2048;
 
-    class Listener : public TCP::Service
-    {
-        typedef TCP::Service Inherited;
-
-    private:
-        /**
-         * Thread handler of service thread.
-         */
-        std::thread thread;
-
-    public:
-        Listener(
-            const IP::Family        family,
-            const unsigned short    portNumber);
-
-    private:
-        static void
-        ThreadHandler(Phoenix::Listener*);
-    };
-
-    class Connection : public TCP::Connection
+    class Session : public TCP::Connection
     {
         typedef TCP::Connection Inherited;
 
@@ -48,12 +27,12 @@ namespace Phoenix
         Database::Phoenix* phoenix;
 
     public:
-        Connection(TCP::Service&);
+        Session(TCP::Service&);
 
-        ~Connection();
+        ~Session();
 
         static void
-        ThreadHandler(Phoenix::Connection*);
+        ThreadHandler(Anticipator::Session*);
     };
 
     class RejectDatagram : public std::runtime_error

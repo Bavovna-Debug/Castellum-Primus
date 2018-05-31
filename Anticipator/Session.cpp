@@ -18,102 +18,38 @@
 // Local definition files.
 //
 #include "Primus/Configuration.hpp"
+#include "Primus/Anticipator/Session.hpp"
 #include "Primus/Database/Debug.hpp"
 #include "Primus/Database/Phoenix.hpp"
 #include "Primus/Database/Phoenixes.hpp"
-#include "Primus/Phoenix/Listener.hpp"
 
-Phoenix::Listener::Listener(
-    const IP::Family        family,
-    const unsigned short    portNumber) :
-Inherited(family, "", portNumber)
-{
-    this->thread = std::thread(&Phoenix::Listener::ThreadHandler, this);
-}
-
-/**
- * @brief   Thread handler for service.
- */
-void
-Phoenix::Listener::ThreadHandler(Phoenix::Listener* listener)
-{
-    ReportNotice("[Phoenix] Service thread has been started");
-
-    // Endless loop. In case an error on socket layer occurs,
-    // the socket recovery will start automatically
-    // at the beginning of the loop.
-    //
-    for (;;)
-    {
-        try
-        {
-            listener->disconnect();
-            listener->connect();
-
-            for (;;)
-            {
-                Phoenix::Connection* connection = new Phoenix::Connection { *listener };
-
-                std::thread connectionThread
-                {
-                    &Phoenix::Connection::ThreadHandler,
-                    connection
-                };
-
-                connectionThread.detach();
-            }
-        }
-        catch (Communicator::SocketError& exception)
-        {
-            ReportError("[Phoenix] Exception: %s: errno=%d",
-                    exception.what(),
-                    exception.errorNumber);
-
-            continue;
-        }
-        catch (std::exception& exception)
-        {
-            ReportError("[Phoenix] Exception: %s",
-                    exception.what());
-
-            continue;
-        }
-    }
-
-    // Make sure the socket is closed.
-    //
-    listener->disconnect();
-
-    ReportWarning("[Phoenix] Service thread is going to quit");
-}
-
-Phoenix::Connection::Connection(TCP::Service& service) :
+Anticipator::Session::Session(TCP::Service& service) :
 Inherited(service)
 {
     // Allocate resources to be used for receive buffer.
     //
-    this->receiveBuffer = (char*) malloc(Phoenix::BytesReceivePerStep);
+    this->receiveBuffer = (char*) malloc(Anticipator::BytesReceivePerStep);
     if (this->receiveBuffer == NULL)
     {
-        ReportSoftAlert("[Phoenix] Out of memory");
+        ReportSoftAlert("[Anticipator] Out of memory");
 
-        throw std::runtime_error("[Phoenix] Out of memory");
+        throw std::runtime_error("[Anticipator] Out of memory");
     }
 }
 
-Phoenix::Connection::~Connection()
+Anticipator::Session::~Session()
 {
     free(this->receiveBuffer);
 }
 
 void
-Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
+Anticipator::Session::ThreadHandler(Anticipator::Session* session)
 {
-    ReportInfo("[Phoenix] Started thread to process connection");
+    ReportInfo("[Anticipator] Started thread to process session");
 
     Primus::Configuration& configuration = Primus::Configuration::SharedInstance();
 
-    unsigned long debugSessionId = Primus::Debug::BeginPhoenixSession(connection->remoteAddress);
+    unsigned long debugSessionId = Primus::Debug::BeginPhoenixSession(session->remoteAddress);
 
     bool sessionOK = true;
 
@@ -128,7 +64,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
     try
     {
         Communicator::Poll(
-                connection->socket(),
+                session->socket(),
                 configuration.phoenix.waitForFirstDatagram);
     }
     catch (Communicator::PollError&)
@@ -171,24 +107,24 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             try
             {
                 receivedBytes = Communicator::Receive(
-                        connection->socket(),
-                        connection->receiveBuffer,
-                        Phoenix::BytesReceivePerStep);
+                        session->socket(),
+                        session->receiveBuffer,
+                        Anticipator::BytesReceivePerStep);
             }
             catch (Communicator::TransmissionError& exception)
             {
-                ReportWarning("[Phoenix] Connection is broken: errno=%d",
+                ReportWarning("[Anticipator] Session is broken: errno=%d",
                         exception.errorNumber);
 
                 Primus::Debug::CommentPhoenixSession(
                         debugSessionId,
-                        "Connection is broken");
+                        "Session is broken");
 
                 goto out;
             }
             catch (Communicator::NothingReceived&)
             {
-                ReportDebug("[Phoenix] Disconnected");
+                ReportDebug("[Anticipator] Disconnected");
 
                 Primus::Debug::CommentPhoenixSession(
                         debugSessionId,
@@ -199,11 +135,11 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
             try
             {
-                request.push(connection->receiveBuffer, receivedBytes);
+                request.push(session->receiveBuffer, receivedBytes);
             }
             catch (std::exception& exception)
             {
-                ReportWarning("[Phoenix] Rejected: %s", exception.what());
+                ReportWarning("[Anticipator] Rejected: %s", exception.what());
 
                 goto out;
             }
@@ -217,7 +153,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             try
             {
                 Communicator::Poll(
-                        connection->socket(),
+                        session->socket(),
                         configuration.phoenix.waitForDatagramCompletion);
             }
             catch (Communicator::PollError&)
@@ -255,7 +191,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     response["Reason"] = "Unexpected CSeq";
                     response.generateResponse(RTSP::BadRequest);
 
-                    throw Phoenix::RejectDatagram("Unexpected CSeq");
+                    throw Anticipator::RejectDatagram("Unexpected CSeq");
                 }
             }
             catch (RTSP::StatementNotFound& exception)
@@ -269,7 +205,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 response["Reason"] = "Missing CSeq";
                 response.generateResponse(RTSP::BadRequest);
 
-                throw Phoenix::RejectDatagram("Missing CSeq");
+                throw Anticipator::RejectDatagram("Missing CSeq");
             }
 
             if (request.methodIs("ACTIVATE") == true)
@@ -296,7 +232,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Missing software version";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Missing software version");
+                        throw Anticipator::RejectDatagram("Missing software version");
                     }
 
                     if (activationCode.length() != Primus::ActivationCodeLength)
@@ -310,7 +246,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Activation code in wrong format";
                         response.generateResponse(RTSP::NotAcceptable);
 
-                        throw Phoenix::RejectDatagram("Activation code in wrong format");
+                        throw Anticipator::RejectDatagram("Activation code in wrong format");
                     }
 
                     if (vendorToken.length() != PostgreSQL::UUIDPlainLength)
@@ -324,7 +260,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Bad ventor token";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Bad ventor token");
+                        throw Anticipator::RejectDatagram("Bad ventor token");
                     }
 
                     if (deviceName.length() == 0)
@@ -338,7 +274,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Missing device name";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Missing device name");
+                        throw Anticipator::RejectDatagram("Missing device name");
                     }
 
                     if (deviceModel.length() == 0)
@@ -352,7 +288,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Missing device model";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Missing device model");
+                        throw Anticipator::RejectDatagram("Missing device model");
                     }
 
                     unsigned long phoenixId = Database::Phoenix::RegisterPhoenixWithActivationCode(
@@ -372,12 +308,12 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     }
                     else
                     {
-                        connection->phoenix = &Database::Phoenixes::PhoenixById(phoenixId);
+                        session->phoenix = &Database::Phoenixes::PhoenixById(phoenixId);
 
                         response.reset();
                         response["CSeq"] = expectedCSeq;
                         response["Agent"] = Primus::SoftwareVersion;
-                        response["Walker-Token"] = connection->phoenix->token;
+                        response["Walker-Token"] = session->phoenix->token;
                         response.generateResponse(RTSP::OK);
                     }
                 }
@@ -392,7 +328,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     response["Reason"] = "Missing mandatory statements";
                     response.generateResponse(RTSP::BadRequest);
 
-                    throw Phoenix::RejectDatagram("Missing statements");
+                    throw Anticipator::RejectDatagram("Missing statements");
                 }
             }
             else if (request.methodIs("APNS") == true)
@@ -401,9 +337,9 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 
                 char t[72];
                 APNS::DeviceTokenFromString(t, deviceToken.c_str());
-                APNS::DeviceTokenSymbolToBin(connection->phoenix->deviceToken, t);
+                APNS::DeviceTokenSymbolToBin(session->phoenix->deviceToken, t);
 
-                connection->phoenix->saveDeviceToken();
+                session->phoenix->saveDeviceToken();
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -428,7 +364,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Bad phoenix token";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Bad phoenix token");
+                        throw Anticipator::RejectDatagram("Bad phoenix token");
                     }
 
                     if (phoenixToken.length() != PostgreSQL::UUIDPlainLength)
@@ -439,7 +375,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Walker token in wrong format";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Walker token in wrong format");
+                        throw Anticipator::RejectDatagram("Walker token in wrong format");
                     }
 
                     if (softwareVersion.length() == 0)
@@ -450,12 +386,12 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                         response["Reason"] = "Missing software version";
                         response.generateResponse(RTSP::BadRequest);
 
-                        throw Phoenix::RejectDatagram("Missing software version");
+                        throw Anticipator::RejectDatagram("Missing software version");
                     }
 
-                    connection->phoenix = &Database::Phoenixes::PhoenixByToken(phoenixToken);
+                    session->phoenix = &Database::Phoenixes::PhoenixByToken(phoenixToken);
 
-                    connection->phoenix->setSoftwareVersion(softwareVersion);
+                    session->phoenix->setSoftwareVersion(softwareVersion);
 
                     response.reset();
                     response["CSeq"] = expectedCSeq;
@@ -473,7 +409,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     response["Reason"] = "Missing mandatory statements";
                     response.generateResponse(RTSP::BadRequest);
 
-                    throw Phoenix::RejectDatagram("Missing statements");
+                    throw Anticipator::RejectDatagram("Missing statements");
                 }
             }
             else
@@ -486,20 +422,20 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 response["Agent"] = Primus::SoftwareVersion;
                 response.generateResponse(RTSP::MethodNotAllowed);
 
-                throw Phoenix::RejectDatagram("Unknown method");
+                throw Anticipator::RejectDatagram("Unknown method");
             }
         }
         catch (APNS::BrokenDeviceToken& exception)
         {
-            ReportWarning("[Phoenix] Rejected: %s", exception.what());
+            ReportWarning("[Anticipator] Rejected: %s", exception.what());
 
             Primus::Debug::CommentPhoenixSession(debugSessionId, exception.what());
 
             sessionOK = false;
         }
-        catch (Phoenix::RejectDatagram& exception)
+        catch (Anticipator::RejectDatagram& exception)
         {
-            ReportWarning("[Phoenix] Rejected: %s", exception.what());
+            ReportWarning("[Anticipator] Rejected: %s", exception.what());
 
             Primus::Debug::CommentPhoenixSession(debugSessionId, exception.what());
 
@@ -507,7 +443,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
         }
         catch (std::exception& exception)
         {
-            ReportWarning("[Phoenix] Rejected: %s", exception.what());
+            ReportWarning("[Anticipator] Rejected: %s", exception.what());
 
             Primus::Debug::CommentPhoenixSession(debugSessionId, exception.what());
 
@@ -517,7 +453,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
         try
         {
             Communicator::Send(
-                    connection->socket(),
+                    session->socket(),
                     response.payloadBuffer,
                     response.payloadLength);
         }
@@ -534,7 +470,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
         try
         {
             Communicator::Poll(
-                    connection->socket(),
+                    session->socket(),
                     configuration.phoenix.keepAlive);
         }
         catch (Communicator::PollError&)
@@ -563,7 +499,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
 out:
     Primus::Debug::ClosePhoenixSession(debugSessionId);
 
-    ReportInfo("[Phoenix] Thread is going to quit");
+    ReportInfo("[Anticipator] Thread is going to quit");
 
-    delete connection;
+    delete session;
 }
