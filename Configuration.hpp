@@ -55,7 +55,7 @@ namespace Primus
         struct
         {
             unsigned short      portNumber;
-            std::string         password;
+            std::string         passwordMD5;
             unsigned int        keepAliveSession;
         }
         http;

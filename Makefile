@@ -18,6 +18,7 @@ LIBS += -L../PostgreSQL/
 LIBS += -L../Toolkit/
 
 LIBS += -lAPNS
+LIBS += -lCryptography
 LIBS += -lHTTP
 LIBS += -lMMPS
 LIBS += -lPGSQL
