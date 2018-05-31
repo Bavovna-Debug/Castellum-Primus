@@ -15,7 +15,7 @@
 //
 #include "Primus/Kernel.hpp"
 #include "Primus/WWW/Home.hpp"
-#include "Quasar/WWW/SessionManager.hpp"
+#include "Primus/WWW/SessionManager.hpp"
 
 /**
  * @brief   Generate HTML main page.

@@ -26,7 +26,7 @@
 #include "Primus/Dispatcher/Notificator.hpp"
 #include "Primus/Phoenix/Anticipator.hpp"
 #include "Primus/WWW/Home.hpp"
-#include "Quasar/WWW/SessionManager.hpp"
+#include "Primus/WWW/SessionManager.hpp"
 
 static void
 OwnSignalHandler(int signalNumber);
