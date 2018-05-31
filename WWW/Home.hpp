@@ -24,6 +24,11 @@ namespace WWW
     static const std::string DownloadSubject            = "subject";
     static const std::string DownloadSubjectAjax        = "ajax.js";
 
+    static const std::string SwitchRelay                = "switch_relay";
+    static const std::string RelayState                 = "relay_state";
+    static const std::string RelayStateDown             = "down";
+    static const std::string RelayStateUp               = "up";
+
     static const std::string Action                     = "action";
     static const std::string ActionLogin                = "login";
     static const std::string ActionServusToggleEnabled  = "servus_toggle";
@@ -68,6 +73,9 @@ namespace WWW
         generateDocument(HTTP::Connection&);
 
     private:
+        void
+        processRelays(HTTP::Connection&);
+
         /**
          * @brief   Generate the north (upper) part of main page.
          *

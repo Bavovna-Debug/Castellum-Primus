@@ -1,5 +1,6 @@
 // System definition files.
 //
+#include <cstdbool>
 #include <string>
 
 // Common definition files.
@@ -28,19 +29,21 @@ Database::Relay::Relay(const unsigned long relayId)
         query.execute(QuerySearchForRelayById);
 
         query.assertNumberOfRows(1);
-        query.assertNumberOfColumns(6);
+        query.assertNumberOfColumns(7);
         query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
         query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
         query.assertColumnOfType(3, PostgreSQL::INT8OID);
         query.assertColumnOfType(4, PostgreSQL::INT4OID);
-        query.assertColumnOfType(5, PostgreSQL::VARCHAROID);
+        query.assertColumnOfType(5, PostgreSQL::BOOLOID);
+        query.assertColumnOfType(6, PostgreSQL::VARCHAROID);
 
         this->timestamp         = query.popTIMESTAMP();
         this->relayId           = query.popBIGINT();
         this->token             = query.popUUID();
         this->servusId          = query.popBIGINT();
         this->gpioPinNumber     = query.popINTEGER();
+        this->state             = query.popBOOLEAN();
         this->description       = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -105,3 +108,27 @@ Database::Relay::setDescription(const std::string& description)
         throw exception;
     }
 }
+
+bool
+Database::Relay::isOff()
+{
+    return (this->state == false);
+}
+
+bool
+Database::Relay::isOn()
+{
+    return (this->state == true);
+}
+
+void
+Database::Relay::switchOff()
+{ }
+
+void
+Database::Relay::switchOn()
+{ }
+
+void
+Database::Relay::switchOver()
+{ }

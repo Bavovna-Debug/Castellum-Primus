@@ -2,6 +2,7 @@
 
 // System definition files.
 //
+#include <cstdbool>
 #include <string>
 
 // Common definition files.
@@ -18,6 +19,7 @@ namespace Database
         std::string         token;
         unsigned long       servusId;
         unsigned int        gpioPinNumber;
+        bool                state;
         std::string         description;
 
     public:
@@ -27,5 +29,14 @@ namespace Database
 
         void
         setDescription(const std::string&);
+
+        bool
+        isOff(),
+        isOn();
+
+        void
+        switchOff(),
+        switchOn(),
+        switchOver();
     };
 };

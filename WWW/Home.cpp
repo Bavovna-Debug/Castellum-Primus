@@ -14,6 +14,8 @@
 // Local definition files.
 //
 #include "Primus/Kernel.hpp"
+#include "Primus/Database/Relay.hpp"
+#include "Primus/Database/Relays.hpp"
 #include "Primus/WWW/Home.hpp"
 #include "Primus/WWW/SessionManager.hpp"
 
@@ -42,6 +44,8 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
     }
 
     HTML::Instance instance(connection);
+
+    this->processRelays(connection);
 
     if (connection.pageName().find(WWW::Images) == 0)
     {
@@ -132,6 +136,39 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
             }
         } // HTML.Body
     } // HTML.Document
+}
+
+void
+WWW::Site::processRelays(HTTP::Connection& connection)
+{
+    try
+    {
+        const unsigned long relayId = connection[WWW::SwitchRelay];
+
+        Database::Relay& relay = Database::Relays::RelayById(relayId);
+
+        try
+        {
+            const std::string relayState = connection[WWW::RelayState];
+
+            if (relayState == WWW::RelayStateDown)
+            {
+                relay.switchOff();
+            }
+            else if (relayState == WWW::RelayStateUp)
+            {
+                relay.switchOn();
+            }
+        }
+        catch (HTTP::ArgumentDoesNotExist&)
+        {
+            relay.switchOver();
+        }
+
+        delete &relay;
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    { }
 }
 
 /**

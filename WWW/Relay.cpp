@@ -108,6 +108,20 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
 
                     {
                         HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("Status");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
                     }
                 }
             }
@@ -134,6 +148,69 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
                         tableDataCell.plain("%u", relay.gpioPinNumber);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing,
+                                (relay.isOff()) ? "red" : "green");
+
+                        tableDataCell.plain((relay.isOff()) ? "Aus" : "Ein");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
+
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%u&%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::SwitchRelay.c_str(),
+                                    relayIndex,
+                                    WWW::RelayState.c_str(),
+                                    WWW::RelayStateUp.c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Schalte Relais ein.");
+
+                            url.image("img/enable.png", "Einschalten.");
+
+                            { // HTML.Span
+                                HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
+
+                                span.plain("Ein");
+                            } // HTML.Span
+                        } // HTML.URL
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
+
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%u&%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::SwitchRelay.c_str(),
+                                    relayIndex,
+                                    WWW::RelayState.c_str(),
+                                    WWW::RelayStateDown.c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Schalte Relais aus.");
+
+                            url.image("img/disable.png", "Ausschalten.");
+
+                            { // HTML.Span
+                                HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
+
+                                span.plain("Aus");
+                            } // HTML.Span
+                        } // HTML.URL
                     }
 
                     {
