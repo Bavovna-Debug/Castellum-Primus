@@ -1,6 +1,7 @@
 // System definition files.
 //
 #include <libconfig.h++>
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -68,6 +69,8 @@ Primus::Configuration::load()
             unsigned int portNumber         = httpSetting["PortNumberIPv4"];
             std::string passwordMD5         = httpSetting["PasswordMD5"];
             unsigned int keepAliveSession   = httpSetting["KeepAliveSession"];
+
+            std::transform(passwordMD5.begin(), passwordMD5.end(),passwordMD5.begin(), ::toupper);
 
             this->http.portNumber = portNumber;
             this->http.passwordMD5 = passwordMD5;
