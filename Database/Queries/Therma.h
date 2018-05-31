@@ -7,7 +7,7 @@ FROM kernel.thermas"
 #define QuerySearchForThermaByIndex "\
 SELECT therma_id \
 FROM kernel.thermas \
-ORDER BY therma_id DESC \
+ORDER BY list_order ASC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForThermaById "\

@@ -7,7 +7,7 @@ FROM kernel.relays"
 #define QuerySearchForRelayByIndex "\
 SELECT relay_id \
 FROM kernel.relays \
-ORDER BY relay_id DESC \
+ORDER BY list_order ASC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForRelayById "\
