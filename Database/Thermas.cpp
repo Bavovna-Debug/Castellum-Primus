@@ -82,7 +82,7 @@ Database::Thermas::ThermaByIndex(const unsigned long thermaIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load therma: %s",
+        ReportError("[Database] Cannot find therma: %s",
                 exception.what());
 
         throw exception;

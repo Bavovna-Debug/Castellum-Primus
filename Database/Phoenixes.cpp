@@ -81,7 +81,7 @@ Database::Phoenixes::PhoenixByIndex(const unsigned long phoenixIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot find phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -118,7 +118,7 @@ Database::Phoenixes::PhoenixByToken(const std::string& phoenixToken)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot find phoenix: %s",
                 exception.what());
 
         throw exception;

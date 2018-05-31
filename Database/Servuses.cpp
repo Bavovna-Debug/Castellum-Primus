@@ -82,7 +82,7 @@ Database::Servuses::ServusByAuthenticator(const std::string& authenticator)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load servus: %s",
+        ReportError("[Database] Cannot find servus: %s",
                 exception.what());
 
         throw exception;
@@ -121,7 +121,7 @@ Database::Servuses::ServusByIndex(const unsigned long servusIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load servus: %s",
+        ReportError("[Database] Cannot find servus: %s",
                 exception.what());
 
         throw exception;

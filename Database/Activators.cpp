@@ -80,7 +80,7 @@ Database::Activators::ActivatorByIndex(const unsigned long activatorIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load activator: %s",
+        ReportError("[Database] Cannot find activator: %s",
                 exception.what());
 
         throw exception;
