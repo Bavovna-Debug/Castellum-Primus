@@ -26,6 +26,7 @@
 #include "Primus/Dispatcher/Notificator.hpp"
 #include "Primus/Phoenix/Anticipator.hpp"
 #include "Primus/WWW/Home.hpp"
+#include "Quasar/WWW/SessionManager.hpp"
 
 static void
 OwnSignalHandler(int signalNumber);
@@ -78,6 +79,7 @@ Workspace::Kernel::kernelInit()
         Phoenix::Anticipator::InitInstance();
         Dispatcher::Notificator::InitInstance();
         APNS::Service::InitInstance();
+        WWW::SessionManager::InitInstance();
     }
     catch (std::exception& exception)
     {
@@ -98,18 +100,18 @@ Workspace::Kernel::kernelInit()
     this->http = new HTTP::Service(new WWW::Site(),
             IP::IPv4,
             "",
-            configuration.httpPortNumber,
+            configuration.http.portNumber,
             0x9000,
             0xAA00,
             this->timestampOfStart->seconds());
 
     new Dispatcher::Listener(
         IP::IPv4,
-        configuration.servusPortNumberIPv4);
+        configuration.servus.portNumberIPv4);
 
     new Dispatcher::Listener(
         IP::IPv6,
-        configuration.servusPortNumberIPv6);
+        configuration.servus.portNumberIPv6);
 
     Toolkit::SetSignalCaptureOn(SIGINT, OwnSignalHandler);
     Toolkit::SetSignalCaptureOn(SIGTERM, OwnSignalHandler);

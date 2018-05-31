@@ -36,9 +36,9 @@ Phoenix::Anticipator::Anticipator()
 
     this->listenerIPv4 = new Phoenix::Listener(
             IP::IPv4,
-            configuration.anticipatorPortNumberIPv4);
+            configuration.phoenix.portNumberIPv4);
 
     this->listenerIPv6 = new Phoenix::Listener(
             IP::IPv6,
-            configuration.anticipatorPortNumberIPv6);
+            configuration.phoenix.portNumberIPv6);
 }

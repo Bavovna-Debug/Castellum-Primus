@@ -18,6 +18,7 @@ LIBS += -L../PostgreSQL/
 LIBS += -L../Toolkit/
 
 LIBS += -lAPNS
+LIBS += -lCryptography
 LIBS += -lHTTP
 LIBS += -lMMPS
 LIBS += -lPGSQL
@@ -69,7 +70,7 @@ OBJECTS_ROOT        := Configuration.o Kernel.o Main.o Parse.o
 OBJECTS_DATABASE    := Database/Activator.o Database/Activators.o Database/Database.o Database/Debug.o Database/Phoenix.o Database/Phoenixes.o Database/Servus.o Database/Servuses.o Database/Therma.o Database/Thermas.o
 OBJECTS_DISPATCHER  := Dispatcher/Fabula.o Dispatcher/Fabulas.o Dispatcher/Listener.o Dispatcher/Notificator.o Dispatcher/Session.o
 OBJECTS_PHOENIX     := Phoenix/Anticipator.o Phoenix/Listener.o
-OBJECTS_WWW         := WWW/Activator.o WWW/Home.o WWW/Phoenix.o WWW/Servus.o WWW/SystemInformation.o WWW/Therma.o
+OBJECTS_WWW         := WWW/Activator.o WWW/Home.o WWW/Phoenix.o WWW/Servus.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
 
 all: Primus
 
@@ -159,6 +160,9 @@ WWW/Phoenix.o: WWW/Phoenix.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/Servus.o: WWW/Servus.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+WWW/SessionManager.o: WWW/SessionManager.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/SystemInformation.o: WWW/SystemInformation.cpp

@@ -140,7 +140,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.httpPortNumber);
+                        tableDataCell.plain("%u", configuration.http.portNumber);
                     }
                 }
 
@@ -156,7 +156,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.servusPortNumberIPv4);
+                        tableDataCell.plain("%u", configuration.servus.portNumberIPv4);
                     }
                 }
 
@@ -172,7 +172,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.servusPortNumberIPv6);
+                        tableDataCell.plain("%u", configuration.servus.portNumberIPv6);
                     }
                 }
 
@@ -188,7 +188,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.anticipatorPortNumberIPv4);
+                        tableDataCell.plain("%u", configuration.phoenix.portNumberIPv4);
                     }
                 }
 
@@ -204,7 +204,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("%u", configuration.anticipatorPortNumberIPv6);
+                        tableDataCell.plain("%u", configuration.phoenix.portNumberIPv6);
                     }
                 }
             }
