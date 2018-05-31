@@ -41,7 +41,7 @@ Database::Servuses::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servuses] Cannot get number of servuses: %s",
+        ReportError("[Database] Cannot get number of servuses: %s",
                 exception.what());
 
         throw exception;
@@ -82,7 +82,7 @@ Database::Servuses::ServusByAuthenticator(const std::string& authenticator)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servuses] Cannot load servus: %s",
+        ReportError("[Database] Cannot load servus: %s",
                 exception.what());
 
         throw exception;
@@ -121,7 +121,7 @@ Database::Servuses::ServusByIndex(const unsigned long servusIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servuses] Cannot load servus: %s",
+        ReportError("[Database] Cannot load servus: %s",
                 exception.what());
 
         throw exception;

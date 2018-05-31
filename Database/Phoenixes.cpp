@@ -42,7 +42,7 @@ Database::Phoenixes::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenixes] Cannot get number of phoenixes: %s",
+        ReportError("[Database] Cannot get number of phoenixes: %s",
                 exception.what());
 
         throw exception;
@@ -81,7 +81,7 @@ Database::Phoenixes::PhoenixByIndex(const unsigned long phoenixIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenixes] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot load phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -118,7 +118,7 @@ Database::Phoenixes::PhoenixByToken(const std::string& phoenixToken)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenixes] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot load phoenix: %s",
                 exception.what());
 
         throw exception;

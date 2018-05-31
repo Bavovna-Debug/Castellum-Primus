@@ -51,7 +51,7 @@ Database::Therma::Therma(const unsigned long thermaId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Therma] Cannot load therma: %s",
+        ReportError("[Database] Cannot load therma: %s",
                 exception.what());
 
         throw exception;
@@ -99,7 +99,7 @@ Database::Therma::setDescription(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Therma] Cannot update therma: %s",
+        ReportError("[Database] Cannot update therma: %s",
                 exception.what());
 
         throw exception;

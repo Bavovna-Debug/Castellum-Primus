@@ -54,7 +54,7 @@ Database::Phoenix::Phoenix(const unsigned long phoenixId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenix] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot load phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -96,7 +96,7 @@ Database::Phoenix::saveDeviceToken()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenix] Cannot update phoenix: %s",
+        ReportError("[Database] Cannot update phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -136,7 +136,7 @@ Database::Phoenix::setDescription(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenix] Cannot update phoenix: %s",
+        ReportError("[Database] Cannot update phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -176,7 +176,7 @@ Database::Phoenix::setSoftwareVersion(const std::string& softwareVersion)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenix] Cannot update phoenix: %s",
+        ReportError("[Database] Cannot update phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -278,7 +278,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenix] Cannot register phoenix: %s",
+        ReportError("[Database] Cannot register phoenix: %s",
                 exception.what());
 
         throw exception;

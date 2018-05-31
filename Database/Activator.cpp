@@ -62,7 +62,7 @@ Database::Activator::Activator(const unsigned long activatorId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activator] Cannot load activator: %s",
+        ReportError("[Database] Cannot load activator: %s",
                 exception.what());
 
         throw exception;
@@ -104,7 +104,7 @@ Database::Activator::setActivationCode(const std::string& activationCode)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activator] Cannot change activation code: %s",
+        ReportError("[Database] Cannot change activation code: %s",
                 exception.what());
 
         throw exception;
@@ -138,7 +138,7 @@ Database::Activator::setDescription(const std::string& activatorDescription)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activator] Cannot update activator: %s",
+        ReportError("[Database] Cannot update activator: %s",
                 exception.what());
 
         throw exception;
@@ -182,7 +182,7 @@ Database::Activator::DefineActivator(
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activator] Cannot define activator: %s",
+        ReportError("[Database] Cannot define activator: %s",
                 exception.what());
 
         throw exception;

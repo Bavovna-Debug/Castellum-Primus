@@ -41,7 +41,7 @@ Database::Activators::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activators] Cannot get number of activators: %s",
+        ReportError("[Database] Cannot get number of activators: %s",
                 exception.what());
 
         throw exception;
@@ -80,7 +80,7 @@ Database::Activators::ActivatorByIndex(const unsigned long activatorIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activators] Cannot load activator: %s",
+        ReportError("[Database] Cannot load activator: %s",
                 exception.what());
 
         throw exception;

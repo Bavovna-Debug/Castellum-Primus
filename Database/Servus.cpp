@@ -53,7 +53,7 @@ Database::Servus::Servus(const unsigned long servusId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot load servus: %s",
+        ReportError("[Database] Cannot load servus: %s",
                 exception.what());
 
         throw exception;
@@ -102,7 +102,7 @@ Database::Servus::configurationJSON()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot update servus: %s",
+        ReportError("[Database] Cannot update servus: %s",
                 exception.what());
 
         throw exception;
@@ -135,7 +135,7 @@ Database::Servus::setOnline()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot update servus online status: %s",
+        ReportError("[Database] Cannot update servus online status: %s",
                 exception.what());
 
         throw exception;
@@ -168,7 +168,7 @@ Database::Servus::setOffline()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot update servus online status: %s",
+        ReportError("[Database] Cannot update servus online status: %s",
                 exception.what());
 
         throw exception;
@@ -207,7 +207,7 @@ Database::Servus::toggleEnabledFlag()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot toggle servus enabled flag: %s",
+        ReportError("[Database] Cannot toggle servus enabled flag: %s",
                 exception.what());
 
         throw exception;
@@ -247,7 +247,7 @@ Database::Servus::setDescription(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot update servus: %s",
+        ReportError("[Database] Cannot update servus: %s",
                 exception.what());
 
         throw exception;
@@ -288,7 +288,7 @@ Database::Servus::DefineServus(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Activator] Cannot define servus: %s",
+        ReportError("[Database] Cannot define servus: %s",
                 exception.what());
 
         throw exception;
