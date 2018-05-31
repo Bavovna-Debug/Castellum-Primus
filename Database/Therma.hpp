@@ -27,5 +27,10 @@ namespace Database
 
         void
         setDescription(const std::string&);
+
+        float
+        lastKnownTemperature(),
+        lowestKnownTemperature(),
+        highestKnownTemperature();
     };
 };

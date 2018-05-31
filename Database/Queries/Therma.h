@@ -26,3 +26,20 @@ INSERT INTO journal.temperatures (temperature_stamp, therma_id, original_stamp, 
 SELECT $1, therma_id, $3, $4 \
 FROM kernel.thermas \
 WHERE therma_token = $2"
+
+#define QueryThermaLastKnownTemperature "\
+SELECT temperature \
+FROM journal.temperatures \
+WHERE therma_id = $1 \
+ORDER BY temperature_id DESC \
+LIMIT 1"
+
+#define QueryThermaLowestTemperature "\
+SELECT MIN(temperature) \
+FROM journal.temperatures \
+WHERE therma_id = $1"
+
+#define QueryThermaHighestTemperature "\
+SELECT MAX(temperature) \
+FROM journal.temperatures \
+WHERE therma_id = $1"

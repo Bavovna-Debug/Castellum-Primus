@@ -105,3 +105,120 @@ Database::Therma::setDescription(const std::string& description)
         throw exception;
     }
 }
+
+float
+Database::Therma::lastKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryThermaLastKnownTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update therma: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::Therma::lowestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryThermaLowestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update therma: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::Therma::highestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryThermaHighestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update therma: %s",
+                exception.what());
+
+        throw exception;
+    }
+}

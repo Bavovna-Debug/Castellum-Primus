@@ -107,6 +107,36 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Tief");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Delta");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Aktuell");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Delta");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Hoch");
+                    }
+
+                    {
                         HTML::TableDataCell tableDataCell(instance);
                     }
                 }
@@ -134,6 +164,40 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
                         tableDataCell.plain(therma.description);
+                    }
+
+                    float current = therma.lastKnownTemperature();
+                    float lowest = therma.lowestKnownTemperature();
+                    float highest = therma.highestKnownTemperature();
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
+
+                        tableDataCell.plain("%4.2f &#x2103;", lowest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
+
+                        tableDataCell.plain("[-%4.2f &#x2103;]", current - lowest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
+
+                        tableDataCell.plain("%4.2f &#x2103;", current);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
+
+                        tableDataCell.plain("[+%4.2f &#x2103;]", highest - current);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
+
+                        tableDataCell.plain("%4.2f &#x2103;", highest);
                     }
 
                     {
