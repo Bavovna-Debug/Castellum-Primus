@@ -129,7 +129,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
     {
         Communicator::Poll(
                 connection->socket(),
-                configuration.network.phoenix.waitForFirstDatagram);
+                configuration.phoenix.waitForFirstDatagram);
     }
     catch (Communicator::PollError&)
     {
@@ -218,7 +218,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             {
                 Communicator::Poll(
                         connection->socket(),
-                        configuration.network.phoenix.waitForDatagramCompletion);
+                        configuration.phoenix.waitForDatagramCompletion);
             }
             catch (Communicator::PollError&)
             {
@@ -247,7 +247,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 if (providedCSeq != expectedCSeq)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds
-                            { configuration.network.phoenix.delayResponseForRejected } );
+                            { configuration.phoenix.delayResponseForRejected } );
 
                     response.reset();
                     response["CSeq"] = expectedCSeq;
@@ -261,7 +261,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             catch (RTSP::StatementNotFound& exception)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.network.phoenix.delayResponseForRejected } );
+                        { configuration.phoenix.delayResponseForRejected } );
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -275,7 +275,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             if (request.methodIs("ACTIVATE") == true)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.network.phoenix.delayResponseForActivate } );
+                        { configuration.phoenix.delayResponseForActivate } );
 
                 try
                 {
@@ -288,7 +288,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     if (softwareVersion.length() == 0)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.network.phoenix.delayResponseForRejected } );
+                                { configuration.phoenix.delayResponseForRejected } );
 
                         response.reset();
                         response["CSeq"] = expectedCSeq;
@@ -302,7 +302,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     if (activationCode.length() != Primus::ActivationCodeLength)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.network.phoenix.delayResponseForRejected } );
+                                { configuration.phoenix.delayResponseForRejected } );
 
                         response.reset();
                         response["CSeq"] = expectedCSeq;
@@ -316,7 +316,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     if (vendorToken.length() != PostgreSQL::UUIDPlainLength)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.network.phoenix.delayResponseForRejected } );
+                                { configuration.phoenix.delayResponseForRejected } );
 
                         response.reset();
                         response["CSeq"] = expectedCSeq;
@@ -330,7 +330,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     if (deviceName.length() == 0)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.network.phoenix.delayResponseForRejected } );
+                                { configuration.phoenix.delayResponseForRejected } );
 
                         response.reset();
                         response["CSeq"] = expectedCSeq;
@@ -344,7 +344,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                     if (deviceModel.length() == 0)
                     {
                         std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.network.phoenix.delayResponseForRejected } );
+                                { configuration.phoenix.delayResponseForRejected } );
 
                         response.reset();
                         response["CSeq"] = expectedCSeq;
@@ -384,7 +384,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 catch (RTSP::StatementNotFound& exception)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds
-                            { configuration.network.phoenix.delayResponseForRejected } );
+                            { configuration.phoenix.delayResponseForRejected } );
 
                     response.reset();
                     response["CSeq"] = expectedCSeq;
@@ -413,7 +413,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             else if (request.methodIs("LOGIN") == true)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.network.phoenix.delayResponseForLogin } );
+                        { configuration.phoenix.delayResponseForLogin } );
 
                 try
                 {
@@ -465,7 +465,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
                 catch (RTSP::StatementNotFound& exception)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds
-                            { configuration.network.phoenix.delayResponseForRejected } );
+                            { configuration.phoenix.delayResponseForRejected } );
 
                     response.reset();
                     response["CSeq"] = expectedCSeq;
@@ -479,7 +479,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
             else
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.network.phoenix.delayResponseForRejected } );
+                        { configuration.phoenix.delayResponseForRejected } );
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -535,7 +535,7 @@ Phoenix::Connection::ThreadHandler(Phoenix::Connection* connection)
         {
             Communicator::Poll(
                     connection->socket(),
-                    configuration.network.phoenix.keepAlive);
+                    configuration.phoenix.keepAlive);
         }
         catch (Communicator::PollError&)
         {

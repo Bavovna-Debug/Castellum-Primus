@@ -15,8 +15,8 @@ namespace Primus
 
     static const unsigned DefaultServusPortNumberIPv4               = 15024;
     static const unsigned DefaultServusPortNumberIPv6               = 15026;
-    static const unsigned DefaultAnticipatorPortNumberIPv4          = 15004;
-    static const unsigned DefaultAnticipatorPortNumberIPv6          = 15006;
+    static const unsigned DefaultPhoenixPortNumberIPv4              = 15004;
+    static const unsigned DefaultPhoenixPortNumberIPv6              = 15006;
 
     static const unsigned DefaultServusWaitForFirstDatagram         = 5000;     /**< Milliseconds. */
     static const unsigned DefaultServusWaitForDatagramCompletion    = 2000;     /**< Milliseconds. */

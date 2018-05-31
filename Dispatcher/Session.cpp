@@ -76,7 +76,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
     {
         Communicator::Poll(
                 session->socket(),
-                configuration.network.servus.waitForFirstDatagram);
+                configuration.servus.waitForFirstDatagram);
     }
     catch (Communicator::PollError&)
     {
@@ -165,7 +165,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
             {
                 Communicator::Poll(
                         session->socket(),
-                        configuration.network.servus.waitForDatagramCompletion);
+                        configuration.servus.waitForDatagramCompletion);
             }
             catch (Communicator::PollError&)
             {
@@ -274,7 +274,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 response["CSeq"] = expectedCSeq;
                 response["Agent"] = Primus::SoftwareVersion;
                 response["Neutrino-Interval"] =
-                        configuration.network.servus.intervalBetweenNeutrinos;
+                        configuration.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::OK);
             }
             else if (request.methodIs("SETUP") == true)
@@ -288,7 +288,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 response["CSeq"] = expectedCSeq;
                 response["Agent"] = Primus::SoftwareVersion;
                 response["Neutrino-Interval"] =
-                        configuration.network.servus.intervalBetweenNeutrinos;
+                        configuration.servus.intervalBetweenNeutrinos;
                 response.content = configurationJSON;
                 response.generateResponse(RTSP::OK);
             }
@@ -301,7 +301,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 response["CSeq"] = expectedCSeq;
                 response["Agent"] = Primus::SoftwareVersion;
                 response["Neutrino-Interval"] =
-                        configuration.network.servus.intervalBetweenNeutrinos;
+                        configuration.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::Continue);
             }
             else if (request.methodIs("NEUTRINO") == true)
@@ -312,7 +312,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 response["CSeq"] = expectedCSeq;
                 response["Agent"] = Primus::SoftwareVersion;
                 response["Neutrino-Interval"] =
-                        configuration.network.servus.intervalBetweenNeutrinos;
+                        configuration.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::Continue);
             }
             else if (request.methodIs("FABULA") == true)
@@ -341,7 +341,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response["Agent"] = Primus::SoftwareVersion;
                     response["Aviso-Id"] = avisoId;
                     response["Neutrino-Interval"] =
-                            configuration.network.servus.intervalBetweenNeutrinos;
+                            configuration.servus.intervalBetweenNeutrinos;
                     response.generateResponse(RTSP::Created);
 
                     notificator.triggerProcessing();
@@ -355,7 +355,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response["CSeq"] = expectedCSeq;
                     response["Agent"] = Primus::SoftwareVersion;
                     response["Neutrino-Interval"] =
-                            configuration.network.servus.intervalBetweenNeutrinos;
+                            configuration.servus.intervalBetweenNeutrinos;
                     response.generateResponse(RTSP::NotAcceptable);
                 }
             }
@@ -383,7 +383,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response["Agent"] = Primus::SoftwareVersion;
                     response["Aviso-Id"] = avisoId;
                     response["Neutrino-Interval"] =
-                            configuration.network.servus.intervalBetweenNeutrinos;
+                            configuration.servus.intervalBetweenNeutrinos;
                     response.generateResponse(RTSP::Created);
                 }
                 catch (std::exception& exception)
@@ -395,7 +395,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response["CSeq"] = expectedCSeq;
                     response["Agent"] = Primus::SoftwareVersion;
                     response["Neutrino-Interval"] =
-                            configuration.network.servus.intervalBetweenNeutrinos;
+                            configuration.servus.intervalBetweenNeutrinos;
                     response.generateResponse(RTSP::NotAcceptable);
                 }
             }
@@ -442,8 +442,8 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
         {
             Communicator::Poll(
                     session->socket(),
-                    configuration.network.servus.intervalBetweenNeutrinos +
-                    configuration.network.servus.finalWaitForNeutrino);
+                    configuration.servus.intervalBetweenNeutrinos +
+                    configuration.servus.finalWaitForNeutrino);
         }
         catch (Communicator::PollError&)
         {
