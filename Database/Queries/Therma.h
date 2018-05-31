@@ -11,7 +11,7 @@ ORDER BY list_order ASC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForThermaById "\
-SELECT therma_stamp, therma_id, therma_token, servus_id, gpio_device_number, therma_description \
+SELECT therma_stamp, therma_id, therma_token, servus_id, gpio_device_number, temperature_edge, therma_description \
 FROM kernel.thermas \
 WHERE therma_id = $1"
 

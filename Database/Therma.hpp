@@ -18,6 +18,7 @@ namespace Database
         std::string         token;
         unsigned long       servusId;
         std::string         gpioDeviceNumber;
+        float               edge;
         std::string         description;
 
     public:

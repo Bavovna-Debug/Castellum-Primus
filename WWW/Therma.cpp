@@ -137,6 +137,12 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Präzision");
+                    }
+
+                    {
                         HTML::TableDataCell tableDataCell(instance);
                     }
                 }
@@ -198,6 +204,12 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
                         tableDataCell.plain("%4.2f &#x2103;", highest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
+
+                        tableDataCell.plain("%3.2f &#x2103;", therma.edge);
                     }
 
                     {
