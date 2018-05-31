@@ -36,28 +36,29 @@ Primus::Configuration::SharedInstance()
 Primus::Configuration::Configuration(const std::string& configurationFilePath) :
 configurationFilePath(configurationFilePath)
 {
-    this->httpPortNumber             = Primus::DefaultHTTPPortNumber;
-    this->servusPortNumberIPv4       = Primus::DefaultServusPortNumberIPv4;
-    this->servusPortNumberIPv6       = Primus::DefaultServusPortNumberIPv6;
-    this->anticipatorPortNumberIPv4  = Primus::DefaultAnticipatorPortNumberIPv4;
-    this->anticipatorPortNumberIPv6  = Primus::DefaultAnticipatorPortNumberIPv6;
+    this->http.portNumber                           = Primus::DefaultHTTPPortNumberIPv4;
+    this->http.keepAliveSession                     = Primus::DefaultHTTPKeepAliveSession;
 
-    this->network.servus.waitForFirstDatagram       = Primus::DefaultServusWaitForFirstDatagram;
-    this->network.servus.waitForDatagramCompletion  = Primus::DefaultServusWaitForDatagramCompletion;
-    this->network.servus.intervalBetweenNeutrinos   = Primus::DefaultServusIntervalBetweenNeutrinos;
-    this->network.servus.finalWaitForNeutrino       = Primus::DefaultServusFinalWaitForNeutrino;
+    this->servus.portNumberIPv4                     = Primus::DefaultServusPortNumberIPv4;
+    this->servus.portNumberIPv6                     = Primus::DefaultServusPortNumberIPv6;
+    this->servus.waitForFirstDatagram               = Primus::DefaultServusWaitForFirstDatagram;
+    this->servus.waitForDatagramCompletion          = Primus::DefaultServusWaitForDatagramCompletion;
+    this->servus.intervalBetweenNeutrinos           = Primus::DefaultServusIntervalBetweenNeutrinos;
+    this->servus.finalWaitForNeutrino               = Primus::DefaultServusFinalWaitForNeutrino;
 
-    this->network.phoenix.waitForFirstDatagram      = Primus::DefaultPhoenixWaitForFirstDatagram;
-    this->network.phoenix.waitForDatagramCompletion = Primus::DefaultPhoenixWaitForDatagramCompletion;
-    this->network.phoenix.delayResponseForActivate  = Primus::DefaultPhoenixDelayResponseForActivate;
-    this->network.phoenix.delayResponseForLogin     = Primus::DefaultPhoenixDelayResponseForLogin;
-    this->network.phoenix.delayResponseForRejected  = Primus::DefaultPhoenixDelayResponseForRejected;
-    this->network.phoenix.keepAlive                 = Primus::DefaultPhoenixKeepAlive;
+    this->phoenix.portNumberIPv4                    = Primus::DefaultPhoenixPortNumberIPv4;
+    this->phoenix.portNumberIPv6                    = Primus::DefaultPhoenixPortNumberIPv6;
+    this->phoenix.waitForFirstDatagram              = Primus::DefaultPhoenixWaitForFirstDatagram;
+    this->phoenix.waitForDatagramCompletion         = Primus::DefaultPhoenixWaitForDatagramCompletion;
+    this->phoenix.delayResponseForActivate          = Primus::DefaultPhoenixDelayResponseForActivate;
+    this->phoenix.delayResponseForLogin             = Primus::DefaultPhoenixDelayResponseForLogin;
+    this->phoenix.delayResponseForRejected          = Primus::DefaultPhoenixDelayResponseForRejected;
+    this->phoenix.keepAlive                         = Primus::DefaultPhoenixKeepAlive;
 
-    this->apns.delayAfterWakeup      = Primus::DefaultDelayAfterWakeup;
-    this->apns.delayBetweenFrames    = Primus::DefaultDelayBetweenFrames;
-    this->apns.delayAfterCompletion  = Primus::DefaultDelayAfterCompletion;
-    this->apns.pauseBeforeReconnect  = Primus::DefaultPauseBeforeReconnect;
+    this->apns.delayAfterWakeup                     = Primus::DefaultDelayAfterWakeup;
+    this->apns.delayBetweenFrames                   = Primus::DefaultDelayBetweenFrames;
+    this->apns.delayAfterCompletion                 = Primus::DefaultDelayAfterCompletion;
+    this->apns.pauseBeforeReconnect                 = Primus::DefaultPauseBeforeReconnect;
 
     this->load();
 }

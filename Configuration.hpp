@@ -10,7 +10,9 @@ namespace Primus
 {
     static const std::string SoftwareVersion = "Primus 0.1 [180529]";
 
-    static const unsigned DefaultHTTPPortNumber                     = 15080;
+    static const unsigned DefaultHTTPPortNumberIPv4                 = 15080;
+    static const unsigned DefaultHTTPKeepAliveSession               = 300;      /**< Seconds. */
+
     static const unsigned DefaultServusPortNumberIPv4               = 15024;
     static const unsigned DefaultServusPortNumberIPv6               = 15026;
     static const unsigned DefaultAnticipatorPortNumberIPv4          = 15004;
@@ -50,35 +52,37 @@ namespace Primus
         }
         database;
 
-        unsigned short          httpPortNumber;
-        unsigned short          servusPortNumberIPv4;
-        unsigned short          servusPortNumberIPv6;
-        unsigned short          anticipatorPortNumberIPv4;
-        unsigned short          anticipatorPortNumberIPv6;
+        struct
+        {
+            unsigned short      portNumber;
+            std::string         password;
+            unsigned int        keepAliveSession;
+        }
+        http;
 
         struct
         {
-            struct
-            {
-                unsigned int    waitForFirstDatagram;
-                unsigned int    waitForDatagramCompletion;
-                unsigned int    intervalBetweenNeutrinos;
-                unsigned int    finalWaitForNeutrino;
-            }
-            servus;
-
-            struct
-            {
-                unsigned int    waitForFirstDatagram;
-                unsigned int    waitForDatagramCompletion;
-                unsigned int    delayResponseForActivate;
-                unsigned int    delayResponseForLogin;
-                unsigned int    delayResponseForRejected;
-                unsigned int    keepAlive;
-            }
-            phoenix;
+            unsigned short      portNumberIPv4;
+            unsigned short      portNumberIPv6;
+            unsigned int        waitForFirstDatagram;
+            unsigned int        waitForDatagramCompletion;
+            unsigned int        intervalBetweenNeutrinos;
+            unsigned int        finalWaitForNeutrino;
         }
-        network;
+        servus;
+
+        struct
+        {
+            unsigned short      portNumberIPv4;
+            unsigned short      portNumberIPv6;
+            unsigned int        waitForFirstDatagram;
+            unsigned int        waitForDatagramCompletion;
+            unsigned int        delayResponseForActivate;
+            unsigned int        delayResponseForLogin;
+            unsigned int        delayResponseForRejected;
+            unsigned int        keepAlive;
+        }
+        phoenix;
 
         struct
         {

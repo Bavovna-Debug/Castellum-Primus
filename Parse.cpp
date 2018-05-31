@@ -25,10 +25,10 @@ Primus::Configuration::load()
     {
         Setting &rootSetting = config.getRoot();
 
-        Setting &primusSetting = rootSetting["Primus"];
-
+        // Database block.
+        //
         {
-            Setting &databaseSetting = primusSetting["Database"];
+            Setting &databaseSetting = rootSetting["Database"];
 
             try
             {
@@ -60,36 +60,60 @@ Primus::Configuration::load()
             }
         }
 
-        unsigned int httpPortNumber             = primusSetting["HTTP_PortNumberIPv4"];
-        unsigned int servusPortNumberIPv4       = primusSetting["Servus_PortNumberIPv4"];
-        unsigned int servusPortNumberIPv6       = primusSetting["Servus_PortNumberIPv6"];
-        unsigned int anticipatorPortNumberIPv4  = primusSetting["Anticipator_PortNumberIPv4"];
-        unsigned int anticipatorPortNumberIPv6  = primusSetting["Anticipator_PortNumberIPv6"];
-
-        this->httpPortNumber             = httpPortNumber;
-        this->servusPortNumberIPv4       = servusPortNumberIPv4;
-        this->servusPortNumberIPv6       = servusPortNumberIPv6;
-        this->anticipatorPortNumberIPv4  = anticipatorPortNumberIPv4;
-        this->anticipatorPortNumberIPv6  = anticipatorPortNumberIPv6;
-
+        // HTTP block.
+        //
         {
-            Setting &networkSetting = primusSetting["Network"];
+            Setting &httpSetting = rootSetting["HTTP"];
 
-            this->network.servus.waitForFirstDatagram       = networkSetting["ServusWaitForFirstDatagram"];
-            this->network.servus.waitForDatagramCompletion  = networkSetting["ServusWaitForDatagramCompletion"];
-            this->network.servus.intervalBetweenNeutrinos   = networkSetting["ServusIntervalBetweenNeutrinos"];
-            this->network.servus.finalWaitForNeutrino       = networkSetting["ServusFinalWaitForNeutrino"];
+            unsigned int portNumber         = httpSetting["PortNumberIPv4"];
+            std::string password            = httpSetting["Password"];
+            unsigned int keepAliveSession   = httpSetting["KeepAliveSession"];
 
-            this->network.phoenix.waitForFirstDatagram      = networkSetting["PhoenixWaitForFirstDatagram"];
-            this->network.phoenix.waitForDatagramCompletion = networkSetting["PhoenixWaitForDatagramCompletion"];
-            this->network.phoenix.delayResponseForActivate  = networkSetting["PhoenixDelayResponseForActivate"];
-            this->network.phoenix.delayResponseForLogin     = networkSetting["PhoenixDelayResponseForLogin"];
-            this->network.phoenix.delayResponseForRejected  = networkSetting["PhoenixDelayResponseForRejected"];
-            this->network.phoenix.keepAlive                 = networkSetting["PhoenixKeepAlive"];
+            this->http.portNumber = portNumber;
+            this->http.password = password;
+            this->http.keepAliveSession = keepAliveSession;
         }
 
+        // Servus block.
+        //
         {
-            Setting &apnsSetting = primusSetting["APNS"];
+            Setting &servusSetting = rootSetting["Servus"];
+
+            unsigned int portNumberIPv4 = servusSetting["PortNumberIPv4"];
+            unsigned int portNumberIPv6 = servusSetting["PortNumberIPv6"];
+
+            this->servus.portNumberIPv4 = portNumberIPv4;
+            this->servus.portNumberIPv6 = portNumberIPv6;
+
+            this->servus.waitForFirstDatagram       = servusSetting["WaitForFirstDatagram"];
+            this->servus.waitForDatagramCompletion  = servusSetting["WaitForDatagramCompletion"];
+            this->servus.intervalBetweenNeutrinos   = servusSetting["IntervalBetweenNeutrinos"];
+            this->servus.finalWaitForNeutrino       = servusSetting["FinalWaitForNeutrino"];
+        }
+
+        // Anticipator block.
+        //
+        {
+            Setting &anticipatorSetting = rootSetting["Anticipator"];
+
+            unsigned int portNumberIPv4 = anticipatorSetting["PortNumberIPv4"];
+            unsigned int portNumberIPv6 = anticipatorSetting["PortNumberIPv6"];
+
+            this->phoenix.portNumberIPv4 = portNumberIPv4;
+            this->phoenix.portNumberIPv6 = portNumberIPv6;
+
+            this->phoenix.waitForFirstDatagram      = anticipatorSetting["WaitForFirstDatagram"];
+            this->phoenix.waitForDatagramCompletion = anticipatorSetting["WaitForDatagramCompletion"];
+            this->phoenix.delayResponseForActivate  = anticipatorSetting["DelayResponseForActivate"];
+            this->phoenix.delayResponseForLogin     = anticipatorSetting["DelayResponseForLogin"];
+            this->phoenix.delayResponseForRejected  = anticipatorSetting["DelayResponseForRejected"];
+            this->phoenix.keepAlive                 = anticipatorSetting["KeepAlive"];
+        }
+
+        // APNS block.
+        //
+        {
+            Setting &apnsSetting = rootSetting["APNS"];
 
             try
             {
