@@ -162,7 +162,7 @@ WWW::Site::pageSystemInformation(HTTP::Connection& connection, HTML::Instance& i
                         HTML::TableDataCell tableDataCell(instance);
 
                         tableDataCell.plain("%s (%s)",
-                                configuration.apns.certificate->c_str(),
+                                configuration.apns.certificate.c_str(),
                                 (configuration.apns.sandbox == false) ? "Deployment" : "Development");
                     }
                 }

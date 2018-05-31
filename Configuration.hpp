@@ -44,11 +44,11 @@ namespace Primus
 
         struct
         {
-            std::string*        hostName;
+            std::string         hostName;
             unsigned short      portNumber;
-            std::string*        databaseName;
-            std::string*        role;
-            std::string*        password;
+            std::string         databaseName;
+            std::string         role;
+            std::string         password;
         }
         database;
 
@@ -88,7 +88,7 @@ namespace Primus
         struct
         {
             bool                sandbox;
-            std::string*        certificate;
+            std::string         certificate;
             unsigned int        delayAfterWakeup;
             unsigned int        delayBetweenFrames;
             unsigned int        delayAfterCompletion;

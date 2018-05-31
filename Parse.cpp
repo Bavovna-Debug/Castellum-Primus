@@ -47,11 +47,11 @@ Primus::Configuration::load()
                     throw std::exception();
                 }
 
-                this->database.hostName     = new std::string(hostName);
+                this->database.hostName     = hostName;
                 this->database.portNumber   = portNumber;
-                this->database.databaseName = new std::string(databaseName);
-                this->database.role         = new std::string(role);
-                this->database.password     = new std::string(password);
+                this->database.databaseName = databaseName;
+                this->database.role         = role;
+                this->database.password     = password;
             }
             catch (SettingNotFoundException &exception)
             {
@@ -136,7 +136,7 @@ Primus::Configuration::load()
                 const std::string certificate = apnsSetting["Certificate"];
 
                 this->apns.sandbox = apnsSetting["Sandbox"];
-                this->apns.certificate = new std::string(certificate);
+                this->apns.certificate = certificate;
             }
             catch (SettingNotFoundException &exception)
             {

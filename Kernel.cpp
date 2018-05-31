@@ -93,7 +93,7 @@ Workspace::Kernel::kernelInit()
     apns.setDelayBetweenFrames(configuration.apns.delayBetweenFrames);
     apns.setDelayAfterCompletion(configuration.apns.delayAfterCompletion);
     apns.setPauseBeforeReconnect(configuration.apns.pauseBeforeReconnect);
-    apns.setup(configuration.apns.sandbox, *configuration.apns.certificate);
+    apns.setup(configuration.apns.sandbox, configuration.apns.certificate);
 
     // Start HTTP service.
     //
