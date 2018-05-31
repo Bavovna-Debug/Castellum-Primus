@@ -12,54 +12,54 @@
 
 // Local definition files.
 //
-#include "Primus/Database/Therma.hpp"
-#include "Primus/Database/Thermas.hpp"
+#include "Primus/Database/Relay.hpp"
+#include "Primus/Database/Relays.hpp"
 #include "Primus/WWW/Home.hpp"
 
 /**
- * @brief   Generate HTML page for the 'Therma' tab.
+ * @brief   Generate HTML page for the 'Relay' tab.
  *
  * @param   connection      HTTP connection.
  * @param   instance        HTML instance.
  */
 void
-WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
+WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
 {
     // Process forms.
     //
     {
-        if (connection.argumentPairExists(WWW::Action, WWW::ActionThermaEdit) == true)
+        if (connection.argumentPairExists(WWW::Action, WWW::ActionRelayEdit) == true)
         {
-            this->pageThermaEditForm(connection, instance);
+            this->pageRelayEditForm(connection, instance);
 
             return;
         }
 
         if (this->formSubmitted(connection) == true)
         {
-            if (connection.argumentPairExists(WWW::Action, WWW::ActionThermaSave) == true)
+            if (connection.argumentPairExists(WWW::Action, WWW::ActionRelaySave) == true)
             {
                 try
                 {
-                    const unsigned long thermaId = connection[WWW::ThermaId];
+                    const unsigned long relayId = connection[WWW::RelayId];
 
                     try
                     {
-                        const std::string thermaDescription = connection[WWW::ThermaDescription];
-                        if (thermaDescription.empty() == true)
+                        const std::string relayDescription = connection[WWW::RelayDescription];
+                        if (relayDescription.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
-                        Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
+                        Database::Relay& relay = Database::Relays::RelayById(relayId);
 
-                        therma.setDescription(thermaDescription);
+                        relay.setDescription(relayDescription);
 
-                        delete &therma;
+                        delete &relay;
                     }
                     catch (HTTP::ArgumentDoesNotExist&)
                     {
                         instance.errorMessage("Beschreibung fehlt!");
 
-                        this->pageThermaEditForm(connection, instance);
+                        this->pageRelayEditForm(connection, instance);
 
                         return;
                     }
@@ -82,7 +82,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
         { // HTML.HeadingText
             HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
 
-            headingText.plain("Therma");
+            headingText.plain("Relay");
         } // HTML.HeadingText
 
         {
@@ -97,7 +97,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("GPIO Gerätenummer");
+                        tableDataCell.plain("GPIO Pin");
                     }
 
                     {
@@ -115,25 +115,25 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
             {
                 HTML::TableBody tableBody(instance);
 
-                unsigned long numberOfThermas = Database::Thermas::TotalNumber();
-                for (unsigned int thermaIndex = 0;
-                     thermaIndex < numberOfThermas;
-                     thermaIndex++)
+                unsigned long numberOfRelays = Database::Relays::TotalNumber();
+                for (unsigned int relayIndex = 0;
+                     relayIndex < numberOfRelays;
+                     relayIndex++)
                 {
-                    Database::Therma& therma = Database::Thermas::ThermaByIndex(thermaIndex);
+                    Database::Relay& relay = Database::Relays::RelayByIndex(relayIndex);
 
                     HTML::TableRow tableRow(instance);
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(therma.gpioDeviceNumber);
+                        tableDataCell.plain("%u", relay.gpioPinNumber);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(therma.description);
+                        tableDataCell.plain(relay.description);
                     }
 
                     {
@@ -146,9 +146,9 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                                     "%s?%s=%s&%s=%s",
                                     connection.pageName().c_str(),
                                     WWW::Action.c_str(),
-                                    WWW::ActionThermaEdit.c_str(),
-                                    WWW::ThermaId.c_str(),
-                                    std::to_string(therma.thermaId).c_str());
+                                    WWW::ActionRelayEdit.c_str(),
+                                    WWW::RelayId.c_str(),
+                                    std::to_string(relay.relayId).c_str());
 
                             HTML::URL url(instance,
                                     urlString,
@@ -160,7 +160,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                         } // HTML.URL
                     }
 
-                    delete &therma;
+                    delete &relay;
                 }
             }
         }
@@ -168,23 +168,23 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 }
 
 /**
- * @brief   Generate HTML page for the 'Therma' edit form.
+ * @brief   Generate HTML page for the 'Relay' edit form.
  *
  * @param   connection      HTTP connection.
  * @param   instance        HTML instance.
  */
 void
-WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& instance)
+WWW::Site::pageRelayEditForm(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    unsigned long thermaId;
+    unsigned long relayId;
 
     try
     {
-        thermaId = connection[WWW::ThermaId];
+        relayId = connection[WWW::RelayId];
     }
     catch (HTTP::ArgumentDoesNotExist&)
     {
-        thermaId = 0;
+        relayId = 0;
     }
 
     HTML::Form form(instance,
@@ -194,19 +194,19 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
             "observatorium",
             connection.pageName());
 
-    form.hidden(WWW::Action, WWW::ActionThermaSave);
+    form.hidden(WWW::Action, WWW::ActionRelaySave);
 
-    form.hidden(WWW::ThermaId, thermaId);
+    form.hidden(WWW::RelayId, relayId);
 
-    std::string thermaDescription;
+    std::string relayDescription;
 
-    if (thermaId != 0)
+    if (relayId != 0)
     {
-        Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
+        Database::Relay& relay = Database::Relays::RelayById(relayId);
 
-        thermaDescription = therma.description;
+        relayDescription = relay.description;
 
-        delete &therma;
+        delete &relay;
     }
 
     {
@@ -215,14 +215,14 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
         { // HTML.HeadingText
             HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
 
-            if (thermaId == 0)
+            if (relayId == 0)
             {
                 instance.alertMessage("Fehler in Browser!");
 
                 return;
             }
 
-            headingText.plain("Therma <b>%s</b> bearbeiten", thermaDescription.c_str());
+            headingText.plain("Relay <b>%s</b> bearbeiten", relayDescription.c_str());
         } // HTML.HeadingText
 
         {
@@ -242,8 +242,8 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::ThermaDescription,
-                        thermaDescription.c_str(),
+                        WWW::RelayDescription,
+                        relayDescription.c_str(),
                         100, 40);
             }
         }

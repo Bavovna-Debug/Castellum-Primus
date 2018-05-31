@@ -235,23 +235,23 @@ WWW::Site::pageNorth(HTTP::Connection& connection, HTML::Instance& instance)
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
                         HTML::Nothing,
-                        (connection.pageName() == WWW::PageActivator)
+                        (connection.pageName() == WWW::PageRelay)
                                 ? "tabs_item active"
                                 : "tabs_item");
 
                 { // HTML.URL
-                    HTML::URL url(instance, WWW::PageActivator);
+                    HTML::URL url(instance, WWW::PageRelay);
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, "title");
 
-                        span.plain("Aktivierungen");
+                        span.plain("Relais");
                     } // HTML.Span
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, "subtitle");
 
-                        span.plain("Aktivierungscodes");
+                        span.plain("Relaisstation");
                     } // HTML.Span
                 } // HTML.URL
             } // HTML.ListItem
@@ -309,10 +309,11 @@ WWW::Site::pageSouth(HTTP::Connection& connection, HTML::Instance& instance)
     else if (connection.pageName() == WWW::PagePhoenix)
     {
         this->pagePhoenix(connection, instance);
-    }
-    else if (connection.pageName() == WWW::PageActivator)
-    {
         this->pageActivator(connection, instance);
+    }
+    else if (connection.pageName() == WWW::PageRelay)
+    {
+        this->pageRelay(connection, instance);
     }
     else if (connection.pageName() == WWW::PageTherma)
     {

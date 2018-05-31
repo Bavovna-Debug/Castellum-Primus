@@ -16,7 +16,7 @@ namespace WWW
     static const std::string PageSystemInformation      = "sysinfo";
     static const std::string PageServus                 = "servus";
     static const std::string PagePhoenix                = "phoenix";
-    static const std::string PageActivator              = "activator";
+    static const std::string PageRelay                  = "relay";
     static const std::string PageTherma                 = "therma";
 
     static const std::string Images                     = "img";
@@ -35,6 +35,8 @@ namespace WWW
     static const std::string ActionActivatorSave        = "activator_save";
     static const std::string ActionThermaEdit           = "therma_edit";
     static const std::string ActionThermaSave           = "therma_save";
+    static const std::string ActionRelayEdit            = "therma_edit";
+    static const std::string ActionRelaySave            = "therma_save";
 
     static const std::string Button                     = "button";
     static const std::string ButtonSubmit               = "submit";
@@ -55,6 +57,9 @@ namespace WWW
 
     static const std::string ThermaId                   = "therma_id";
     static const std::string ThermaDescription          = "therma_name";
+
+    static const std::string RelayId                    = "relay_id";
+    static const std::string RelayDescription           = "relay_name";
 
     class Site : public HTTP::Site
     {
@@ -161,6 +166,24 @@ namespace WWW
          */
         void
         pageActivatorEditForm(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Relay' tab.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageRelay(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Relay' edit form.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageRelayEditForm(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Therma' tab.
