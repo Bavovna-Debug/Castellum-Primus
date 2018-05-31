@@ -25,6 +25,7 @@ namespace WWW
     static const std::string DownloadSubjectAjax        = "ajax.js";
 
     static const std::string Action                     = "action";
+    static const std::string ActionLogin                = "login";
     static const std::string ActionServusToggleEnabled  = "servus_toggle";
     static const std::string ActionServusEdit           = "servus_edit";
     static const std::string ActionServusSave           = "servus_save";
@@ -38,6 +39,9 @@ namespace WWW
     static const std::string Button                     = "button";
     static const std::string ButtonSubmit               = "submit";
     static const std::string ButtonCancel               = "cancel";
+
+    static const std::string Username                   = "username";
+    static const std::string Password                   = "password";
 
     static const std::string ServusId                   = "servus_id";
     static const std::string ServusDescription          = "servus_name";
@@ -76,6 +80,15 @@ namespace WWW
          */
         void
         pageSouth(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate login form.
+         *
+         * @param[in]   connection  Pointer to HTTP connection.
+         * @param[in]   instance    Pointer to HTML instance.
+         */
+        void
+        pageLogin(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'System Information' tab.
