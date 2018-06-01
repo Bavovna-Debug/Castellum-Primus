@@ -134,3 +134,36 @@ Database::Phoenixes::PhoenixById(const unsigned long phoenixId)
 
     return *phoenix;
 }
+
+void
+Database::Phoenixes::RemovePhoenixById(const unsigned long phoenixId)
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long phoenixIdQuery = htobe64(phoenixId);
+
+            query.pushBIGINT(&phoenixIdQuery);
+            query.execute(QueryRemovePhoenixById);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot remove phoenix: %s",
+                exception.what());
+
+        throw exception;
+    }
+}

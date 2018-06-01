@@ -78,6 +78,29 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     return;
                 }
             }
+            else if (connection.argumentPairExists(WWW::Action, WWW::ActionPhoenixRemoveConfirmed) == true)
+            {
+                try
+                {
+                    unsigned long phoenixId = connection[WWW::PhoenixId];
+
+                    Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
+
+                    instance.noticeMessage("Phoenix <b>%s</b> und zugeordnete Push Notifications " \
+                            "wurden unwiderruflich aus dem System entfernen.",
+                            phoenix.description.c_str());
+
+                    Database::Phoenixes::RemovePhoenixById(phoenixId);
+
+                    delete &phoenix;
+                }
+                catch (HTTP::ArgumentDoesNotExist&)
+                {
+                    instance.alertMessage("Fehler in Browser!");
+
+                    return;
+                }
+            }
         }
     }
 
@@ -413,7 +436,7 @@ WWW::Site::generatePhoenixRemoveForm(HTTP::Connection& connection, HTML::Instanc
             label.breakLine();
 
             label.plain("Für Aktivierung verwendete Aktivierungscode " \
-                    "darf nicht mehr verwendet werden und wird ebenfalls gelöscht.");
+                    "wird freigelassen und darf für Aktivierung anderer Walker verwendet werden.");
 
             label.breakLine();
 

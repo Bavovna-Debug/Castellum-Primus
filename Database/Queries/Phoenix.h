@@ -52,6 +52,10 @@ SET software_version = $2 \
 WHERE phoenix_id = $1 \
 RETURNING software_version"
 
+#define QueryRemovePhoenixById "\
+DELETE FROM kernel.phoenixes \
+WHERE phoenix_id = $1"
+
 #define QueryGetNumberOfNotificationsForPhoenix "\
 SELECT COUNT(*) \
 FROM journal.notifications \
