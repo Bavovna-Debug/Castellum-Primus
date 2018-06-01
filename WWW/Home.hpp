@@ -37,6 +37,7 @@ namespace WWW
     static const std::string ActionPhoenixEdit          = "phoenix_edit";
     static const std::string ActionPhoenixSave          = "phoenix_save";
     static const std::string ActionPhoenixRemove        = "phoenix_remove";
+    static const std::string ActionPhoenixRemoveConfirmed = "phoenix_remove_confirmed";
     static const std::string ActionActivatorEdit        = "activator_edit";
     static const std::string ActionActivatorSave        = "activator_save";
     static const std::string ActionThermaEdit           = "therma_edit";
@@ -157,6 +158,15 @@ namespace WWW
          */
         void
         pagePhoenixEditForm(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Phoenix' remove form.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        generatePhoenixRemoveForm(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Activator' tab.
