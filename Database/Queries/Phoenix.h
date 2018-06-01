@@ -51,3 +51,8 @@ UPDATE kernel.phoenixes \
 SET software_version = $2 \
 WHERE phoenix_id = $1 \
 RETURNING software_version"
+
+#define QueryGetNumberOfNotificationsForPhoenix "\
+SELECT COUNT(*) \
+FROM journal.notifications \
+WHERE phoenix_id = $1"

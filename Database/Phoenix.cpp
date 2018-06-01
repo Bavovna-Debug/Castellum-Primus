@@ -184,6 +184,41 @@ Database::Phoenix::setSoftwareVersion(const std::string& softwareVersion)
 }
 
 unsigned long
+Database::Phoenix::numberOfNotifications()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Query query(*database.connection);
+
+        unsigned long phoenixIdQuery = htobe64(this->phoenixId);
+
+        query.pushBIGINT(&phoenixIdQuery);
+        query.execute(QueryGetNumberOfNotificationsForPhoenix);
+
+        query.assertNumberOfRows(1);
+        query.assertNumberOfColumns(1);
+        query.assertColumnOfType(0, PostgreSQL::INT8OID);
+
+        return query.popBIGINT();
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update phoenix: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+unsigned long
 Database::Phoenix::RegisterPhoenixWithActivationCode(
     const std::string&  activationCode,
     const std::string&  vendorToken,

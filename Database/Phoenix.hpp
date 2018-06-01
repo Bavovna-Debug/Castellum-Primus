@@ -38,6 +38,9 @@ namespace Database
         void
         setSoftwareVersion(const std::string&);
 
+        unsigned long
+        numberOfNotifications();
+
         static unsigned long
         RegisterPhoenixWithActivationCode(
             const std::string&  activationCode,
