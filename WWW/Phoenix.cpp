@@ -212,6 +212,30 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                         } // HTML.URL
                     }
 
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
+
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%s&%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::Action.c_str(),
+                                    WWW::ActionPhoenixRemove.c_str(),
+                                    WWW::PhoenixId.c_str(),
+                                    std::to_string(phoenix.phoenixId).c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Unwiderruflich aus dem System entfernen.");
+
+                            url.image("img/delete.png", "Löschen.");
+
+                            url.plain("[Löschen]");
+                        } // HTML.URL
+                    }
+
                     delete &phoenix;
                 }
             }

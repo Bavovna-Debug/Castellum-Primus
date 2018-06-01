@@ -36,6 +36,7 @@ namespace WWW
     static const std::string ActionServusSave           = "servus_save";
     static const std::string ActionPhoenixEdit          = "phoenix_edit";
     static const std::string ActionPhoenixSave          = "phoenix_save";
+    static const std::string ActionPhoenixRemove        = "phoenix_remove";
     static const std::string ActionActivatorEdit        = "activator_edit";
     static const std::string ActionActivatorSave        = "activator_save";
     static const std::string ActionThermaEdit           = "therma_edit";
