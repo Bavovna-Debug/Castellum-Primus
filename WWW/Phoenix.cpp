@@ -106,6 +106,30 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
 
     HTML::Division division(instance, HTML::Nothing, "workspace");
 
+    this->pagePhoenixInfo(connection, instance);
+
+    this->pagePhoenixList(connection, instance);
+}
+
+/**
+ * @brief   Show Phoenix info panel.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pagePhoenixInfo(HTTP::Connection& connection, HTML::Instance& instance)
+{ }
+
+/**
+ * @brief   Show list of Phoenixes.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pagePhoenixList(HTTP::Connection& connection, HTML::Instance& instance)
+{
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");
 
@@ -161,11 +185,10 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance,
+                                HTML::Nothing,
+                                HTML::Nothing,
+                                3);
                     }
                 }
             }
@@ -236,7 +259,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL
@@ -260,7 +283,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Unwiderruflich aus dem System entfernen.");
 
-                            url.image("img/delete.png", "Löschen.");
+                            url.image("img/delete.png", "Löschen");
 
                             url.plain("[Löschen]");
                         } // HTML.URL

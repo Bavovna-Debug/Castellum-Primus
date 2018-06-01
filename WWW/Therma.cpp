@@ -230,7 +230,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL

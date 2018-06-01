@@ -124,6 +124,15 @@ namespace WWW
         pageServus(HTTP::Connection&, HTML::Instance&);
 
         /**
+         * @brief   Show Servus info panel.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageServusInfo(HTTP::Connection&, HTML::Instance&);
+
+        /**
          * @brief   Show list of Servuses.
          *
          * @param   connection      HTTP connection.
@@ -149,6 +158,24 @@ namespace WWW
          */
         void
         pagePhoenix(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Show Phoenix info panel.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pagePhoenixInfo(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Show list of Phoenixes.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pagePhoenixList(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Phoenix' edit form.

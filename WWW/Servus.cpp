@@ -130,8 +130,22 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
         }
     }
 
+    HTML::Division division(instance, HTML::Nothing, "workspace");
+
+    this->pageServusInfo(connection, instance);
+
     this->pageServusList(connection, instance);
 }
+
+/**
+ * @brief   Show Servus info panel.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pageServusInfo(HTTP::Connection& connection, HTML::Instance& instance)
+{ }
 
 /**
  * @brief   Show list of Servuses.
@@ -142,8 +156,6 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
 void
 WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    HTML::Division division(instance, HTML::Nothing, "workspace");
-
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");
 
@@ -172,7 +184,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                             urlString,
                             "Neuen Servus erstellen.");
 
-                    url.image("img/new.png", "Neuen Servus erstellen.");
+                    url.image("img/new.png", "Definieren");
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
@@ -217,11 +229,10 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance,
+                                HTML::Nothing,
+                                HTML::Nothing,
+                                3);
                     }
                 }
             }
@@ -284,6 +295,28 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                             char urlString[200];
 
                             snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::ServusId.c_str(),
+                                    std::to_string(servus.servusId).c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Mehr Details.");
+
+                            url.image("img/details.png", "Details");
+
+                            url.plain("[Details]");
+                        } // HTML.URL
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
+
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
                                     "%s?%s=%s&%s=%s",
                                     connection.pageName().c_str(),
                                     WWW::Action.c_str(),
@@ -295,7 +328,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL
@@ -320,7 +353,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                                     urlString,
                                     "Deaktivieren.");
 
-                            url.image("img/disable.png", "Deaktivieren.");
+                            url.image("img/disable.png", "Deaktivieren");
 
                             url.plain("[Deaktivieren]");
                         } // HTML.URL
@@ -340,7 +373,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                                     urlString,
                                     "Aktivieren.");
 
-                            url.image("img/enable.png", "Aktivieren.");
+                            url.image("img/enable.png", "Aktivieren");
 
                             url.plain("[Aktivieren]");
                         } // HTML.URL

@@ -155,7 +155,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                             urlString,
                             "Neuen Aktivierungscode erstellen.");
 
-                    url.image("img/new.png", "Neuen Aktivierungscode erstellen.");
+                    url.image("img/new.png", "Definieren");
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
@@ -276,7 +276,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL
