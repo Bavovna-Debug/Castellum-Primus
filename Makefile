@@ -68,7 +68,7 @@ CPPFLAGS += -Wwrite-strings
 
 OBJECTS_ROOT        := Configuration.o Kernel.o Main.o Parse.o
 OBJECTS_DATABASE    := Database/Activator.o Database/Activators.o Database/Database.o Database/Debug.o Database/Phoenix.o Database/Phoenixes.o Database/Relay.o Database/Relays.o Database/Servus.o Database/Servuses.o Database/Therma.o Database/Thermas.o
-OBJECTS_DISPATCHER  := Dispatcher/Fabula.o Dispatcher/Fabulas.o Dispatcher/Listener.o Dispatcher/Notificator.o Dispatcher/Session.o
+OBJECTS_DISPATCHER  := Dispatcher/Fabula.o Dispatcher/Fabulas.o Dispatcher/Listener.o Dispatcher/Notificator.o Dispatcher/Service.o Dispatcher/Session.o
 OBJECTS_ANTICIPATOR := Anticipator/Listener.o Anticipator/Service.o Anticipator/Session.o
 OBJECTS_WWW         := WWW/Activator.o WWW/Home.o WWW/Phoenix.o WWW/Relay.o WWW/Servus.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
 
@@ -141,6 +141,9 @@ Dispatcher/Listener.o: Dispatcher/Listener.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Dispatcher/Notificator.o: Dispatcher/Notificator.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Dispatcher/Service.o: Dispatcher/Service.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Dispatcher/Session.o: Dispatcher/Session.cpp

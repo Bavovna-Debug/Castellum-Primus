@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
+#include <stdexcept>
 
 // Common definition files.
 //
@@ -22,7 +23,7 @@ Anticipator::Service&
 Anticipator::Service::InitInstance()
 {
     if (instance != NULL)
-        throw std::runtime_error("Service already initialized");
+        throw std::runtime_error("[Anticipator] Service already initialized");
 
     instance = new Anticipator::Service();
 
@@ -33,7 +34,7 @@ Anticipator::Service&
 Anticipator::Service::SharedInstance()
 {
     if (instance == NULL)
-        throw std::runtime_error("Service not initialized");
+        throw std::runtime_error("[Anticipator] Service not initialized");
 
     return *instance;
 }
