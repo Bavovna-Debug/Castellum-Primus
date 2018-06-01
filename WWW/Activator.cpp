@@ -178,6 +178,12 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
+                        tableDataCell.plain("Bezeichnung");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
                         tableDataCell.plain("Definiert");
                     }
 
@@ -191,12 +197,6 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::TableDataCell tableDataCell(instance);
 
                         tableDataCell.plain("Aktivierungscode");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("Beschreibung");
                     }
 
                     {
@@ -217,6 +217,12 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                             Database::Activators::ActivatorByIndex(activatorIndex);
 
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(activator.description);
+                    }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
@@ -250,12 +256,6 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
 
                         tableDataCell.plain(activator.activationCode);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
-
-                        tableDataCell.plain(activator.description);
                     }
 
                     {

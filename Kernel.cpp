@@ -24,7 +24,7 @@
 #include "Primus/Database/Database.hpp"
 #include "Primus/Database/Debug.hpp"
 #include "Primus/Dispatcher/Notificator.hpp"
-#include "Helios/Dispatcher/Service.hpp"
+#include "Primus/Dispatcher/Service.hpp"
 #include "Primus/WWW/Home.hpp"
 #include "Primus/WWW/SessionManager.hpp"
 

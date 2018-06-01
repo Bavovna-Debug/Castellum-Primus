@@ -195,6 +195,12 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
+                        tableDataCell.plain("Bezeichnung");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
                         tableDataCell.plain("Enabled");
                     }
 
@@ -208,12 +214,6 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                         HTML::TableDataCell tableDataCell(instance);
 
                         tableDataCell.plain("Authenticator");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("Beschreibung");
                     }
 
                     {
@@ -238,6 +238,12 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                             Database::Servuses::ServusByIndex(servusIndex);
 
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(servus.description);
+                    }
 
                     if (servus.enabled == true)
                     {
@@ -269,12 +275,6 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
 
                         tableDataCell.plain(servus.authenticator);
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
-
-                        tableDataCell.plain(servus.description);
                     }
 
                     {

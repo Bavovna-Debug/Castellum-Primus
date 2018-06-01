@@ -97,6 +97,12 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
+                        tableDataCell.plain("Bezeichnung");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
                         tableDataCell.plain("Aktiviert");
                     }
 
@@ -121,7 +127,11 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Beschreibung");
+                        tableDataCell.plain("Notifications");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
                     }
 
                     {
@@ -141,6 +151,12 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     Database::Phoenix& phoenix = Database::Phoenixes::PhoenixByIndex(phoenixIndex);
 
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(phoenix.description);
+                    }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
@@ -167,9 +183,9 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
 
-                        tableDataCell.plain(phoenix.description);
+                        tableDataCell.plain("%lu", phoenix.numberOfNotifications());
                     }
 
                     {

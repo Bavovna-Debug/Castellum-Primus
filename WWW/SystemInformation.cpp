@@ -9,7 +9,7 @@
 //
 #include "Primus/Configuration.hpp"
 #include "Primus/Kernel.hpp"
-#include "Helios/Anticipator/Service.hpp"
+#include "Primus/Anticipator/Service.hpp"
 #include "Primus/WWW/Home.hpp"
 
 /**
