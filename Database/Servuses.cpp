@@ -137,3 +137,33 @@ Database::Servuses::ServusById(const unsigned long servusId)
 
     return *servus;
 }
+
+void
+Database::Servuses::ResetAllServuses()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            query.execute(QueryResetAllServuses);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot reset online status for all servuses: %s",
+                exception.what());
+
+        throw exception;
+    }
+}

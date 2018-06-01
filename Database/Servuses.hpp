@@ -28,6 +28,9 @@ namespace Database
 
         static Database::Servus&
         ServusById(const unsigned long);
+
+        static void
+        ResetAllServuses();
     };
 
     class ServusNotFound : public std::runtime_error

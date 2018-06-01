@@ -49,3 +49,7 @@ WHERE servus_id = $1"
 UPDATE kernel.servuses \
 SET online = FALSE \
 WHERE servus_id = $1"
+
+#define QueryResetAllServuses "\
+UPDATE kernel.servuses \
+SET online = FALSE"
