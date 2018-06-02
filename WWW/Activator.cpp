@@ -312,8 +312,8 @@ WWW::Site::pageActivatorEditForm(HTTP::Connection& connection, HTML::Instance& i
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium", connection.pageName());
+            "colloquium",
+            "colloquium", connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionActivatorSave);
 

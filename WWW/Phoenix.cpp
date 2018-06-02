@@ -319,8 +319,8 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionPhoenixSave);
@@ -428,8 +428,8 @@ WWW::Site::generatePhoenixRemoveForm(HTTP::Connection& connection, HTML::Instanc
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionPhoenixRemoveConfirmed);

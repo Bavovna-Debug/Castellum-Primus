@@ -266,8 +266,8 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionThermaSave);

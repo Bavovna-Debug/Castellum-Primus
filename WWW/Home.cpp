@@ -374,8 +374,9 @@ WWW::Site::pageLogin(HTTP::Connection& connection, HTML::Instance& instance)
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium", connection.pageName());
+            "colloquium",
+            "colloquium",
+            connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionLogin);
 

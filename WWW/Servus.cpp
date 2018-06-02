@@ -409,8 +409,8 @@ WWW::Site::pageServusEditForm(HTTP::Connection& connection, HTML::Instance& inst
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionServusSave);
