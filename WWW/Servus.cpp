@@ -104,7 +104,7 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
                             throw HTTP::ArgumentDoesNotExist();
 
                         const unsigned long servusId =
-                                Database::Servus::DefineServus(servusDescription);
+                                Database::Servuses::DefineServus(servusDescription);
 
                         if (servusId != 0)
                         {

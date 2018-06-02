@@ -138,6 +138,49 @@ Database::Servuses::ServusById(const unsigned long servusId)
     return *servus;
 }
 
+unsigned long
+Database::Servuses::DefineServus(const std::string& description)
+{
+    unsigned long servusId;
+
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        // Create a new record for new activator.
+        //
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            query.pushVARCHAR(&description);
+            query.execute(QueryInsertServus);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::INT8OID);
+
+            servusId = query.popBIGINT();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot define servus: %s",
+                exception.what());
+
+        throw exception;
+    }
+
+    return servusId;
+}
+
 void
 Database::Servuses::ResetAllServuses()
 {
