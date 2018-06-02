@@ -19,6 +19,7 @@ namespace Database
         std::string         token;
         bool                enabled;
         bool                online;
+        Toolkit::Timestamp* runningSince;
         std::string         authenticator;
         std::string         description;
 
@@ -31,18 +32,12 @@ namespace Database
         configurationJSON();
 
         void
-        setOnline();
-
-        void
-        setOffline();
-
-        void
-        toggleEnabledFlag();
+        toggleEnabledFlag(),
+        setOnline(),
+        setOffline(),
+        setRunningSince(Toolkit::Timestamp&);
 
         void
         setDescription(const std::string&);
-
-        static unsigned long
-        DefineServus(const std::string& description);
     };
 };

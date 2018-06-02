@@ -16,7 +16,7 @@ ORDER BY list_order ASC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForServusById "\
-SELECT servus_stamp, servus_id, servus_token, enabled, online, authenticator, servus_description \
+SELECT servus_stamp, servus_id, servus_token, enabled, online, running_since, authenticator, servus_description \
 FROM kernel.servuses \
 WHERE servus_id = $1"
 
@@ -27,12 +27,6 @@ SELECT kernel.servus_configuration($1)"
 INSERT INTO kernel.servuses (servus_description) \
 VALUES ($1) \
 RETURNING servus_id"
-
-#define QueryToggleServusEnabledFlag "\
-UPDATE kernel.servuses \
-SET enabled = NOT enabled \
-WHERE servus_id = $1 \
-RETURNING enabled"
 
 #define QueryUpdateServusDescription "\
 UPDATE kernel.servuses \
@@ -48,6 +42,17 @@ WHERE servus_id = $1"
 #define QueryServusSetOffline "\
 UPDATE kernel.servuses \
 SET online = FALSE \
+WHERE servus_id = $1"
+
+#define QueryToggleServusEnabledFlag "\
+UPDATE kernel.servuses \
+SET enabled = NOT enabled \
+WHERE servus_id = $1 \
+RETURNING enabled"
+
+#define QueryServusSetRunningSince "\
+UPDATE kernel.servuses \
+SET running_since = $2 \
 WHERE servus_id = $1"
 
 #define QueryResetAllServuses "\
