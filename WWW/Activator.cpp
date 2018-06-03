@@ -155,7 +155,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                             urlString,
                             "Neuen Aktivierungscode erstellen.");
 
-                    url.image("img/new.png", "Neuen Aktivierungscode erstellen.");
+                    url.image("img/new.png", "Definieren");
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
@@ -178,6 +178,12 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
+                        tableDataCell.plain("Bezeichnung");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
                         tableDataCell.plain("Definiert");
                     }
 
@@ -191,12 +197,6 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         HTML::TableDataCell tableDataCell(instance);
 
                         tableDataCell.plain("Aktivierungscode");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("Beschreibung");
                     }
 
                     {
@@ -217,6 +217,12 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                             Database::Activators::ActivatorByIndex(activatorIndex);
 
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(activator.description);
+                    }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
@@ -253,12 +259,6 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
-
-                        tableDataCell.plain(activator.description);
-                    }
-
-                    {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
 
                         { // HTML.URL
@@ -276,7 +276,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL
@@ -312,8 +312,8 @@ WWW::Site::pageActivatorEditForm(HTTP::Connection& connection, HTML::Instance& i
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium", connection.pageName());
+            "colloquium",
+            "colloquium", connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionActivatorSave);
 

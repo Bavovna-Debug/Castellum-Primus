@@ -20,11 +20,11 @@
 //
 #include "Primus/Configuration.hpp"
 #include "Primus/Kernel.hpp"
+#include "Primus/Anticipator/Service.hpp"
 #include "Primus/Database/Database.hpp"
 #include "Primus/Database/Debug.hpp"
-#include "Primus/Dispatcher/Listener.hpp"
 #include "Primus/Dispatcher/Notificator.hpp"
-#include "Primus/Phoenix/Anticipator.hpp"
+#include "Primus/Dispatcher/Service.hpp"
 #include "Primus/WWW/Home.hpp"
 #include "Primus/WWW/SessionManager.hpp"
 
@@ -76,8 +76,9 @@ Workspace::Kernel::kernelInit()
         Primus::Database::InitInstance(Primus::Database::Notificator);
         Primus::Database::InitInstance(Primus::Database::WWW);
         Primus::Debug::InitInstance();
-        Phoenix::Anticipator::InitInstance();
         Dispatcher::Notificator::InitInstance();
+        Dispatcher::Service::InitInstance();
+        Anticipator::Service::InitInstance();
         APNS::Service::InitInstance();
         WWW::SessionManager::InitInstance();
     }
@@ -93,7 +94,7 @@ Workspace::Kernel::kernelInit()
     apns.setDelayBetweenFrames(configuration.apns.delayBetweenFrames);
     apns.setDelayAfterCompletion(configuration.apns.delayAfterCompletion);
     apns.setPauseBeforeReconnect(configuration.apns.pauseBeforeReconnect);
-    apns.setup(configuration.apns.sandbox, *configuration.apns.certificate);
+    apns.setup(configuration.apns.sandbox, configuration.apns.certificate);
 
     // Start HTTP service.
     //
@@ -104,14 +105,6 @@ Workspace::Kernel::kernelInit()
             0x9000,
             0xAA00,
             this->timestampOfStart->seconds());
-
-    new Dispatcher::Listener(
-        IP::IPv4,
-        configuration.servus.portNumberIPv4);
-
-    new Dispatcher::Listener(
-        IP::IPv6,
-        configuration.servus.portNumberIPv6);
 
     Toolkit::SetSignalCaptureOn(SIGINT, OwnSignalHandler);
     Toolkit::SetSignalCaptureOn(SIGTERM, OwnSignalHandler);

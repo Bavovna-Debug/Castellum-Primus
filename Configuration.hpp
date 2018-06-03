@@ -8,7 +8,7 @@
 
 namespace Primus
 {
-    static const std::string SoftwareVersion = "Primus 0.2 [180531]";
+    static const std::string SoftwareVersion = "Primus 0.3 [180602]";
 
     static const unsigned DefaultHTTPPortNumberIPv4                 = 15080;
     static const unsigned DefaultHTTPKeepAliveSession               = 300;      /**< Seconds. */
@@ -44,11 +44,11 @@ namespace Primus
 
         struct
         {
-            std::string*        hostName;
+            std::string         hostName;
             unsigned short      portNumber;
-            std::string*        databaseName;
-            std::string*        role;
-            std::string*        password;
+            std::string         databaseName;
+            std::string         role;
+            std::string         password;
         }
         database;
 
@@ -73,6 +73,7 @@ namespace Primus
 
         struct
         {
+            std::string         interfaceAddress;
             unsigned short      portNumberIPv4;
             unsigned short      portNumberIPv6;
             unsigned int        waitForFirstDatagram;
@@ -87,7 +88,7 @@ namespace Primus
         struct
         {
             bool                sandbox;
-            std::string*        certificate;
+            std::string         certificate;
             unsigned int        delayAfterWakeup;
             unsigned int        delayBetweenFrames;
             unsigned int        delayAfterCompletion;

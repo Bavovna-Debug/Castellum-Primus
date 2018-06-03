@@ -1,6 +1,7 @@
 // System definition files.
 //
 #include <libconfig.h++>
+#include <algorithm>
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -46,11 +47,11 @@ Primus::Configuration::load()
                     throw std::exception();
                 }
 
-                this->database.hostName     = new std::string(hostName);
+                this->database.hostName     = hostName;
                 this->database.portNumber   = portNumber;
-                this->database.databaseName = new std::string(databaseName);
-                this->database.role         = new std::string(role);
-                this->database.password     = new std::string(password);
+                this->database.databaseName = databaseName;
+                this->database.role         = role;
+                this->database.password     = password;
             }
             catch (SettingNotFoundException &exception)
             {
@@ -68,6 +69,8 @@ Primus::Configuration::load()
             unsigned int portNumber         = httpSetting["PortNumberIPv4"];
             std::string passwordMD5         = httpSetting["PasswordMD5"];
             unsigned int keepAliveSession   = httpSetting["KeepAliveSession"];
+
+            std::transform(passwordMD5.begin(), passwordMD5.end(),passwordMD5.begin(), ::toupper);
 
             this->http.portNumber = portNumber;
             this->http.passwordMD5 = passwordMD5;
@@ -96,6 +99,19 @@ Primus::Configuration::load()
         {
             Setting &anticipatorSetting = rootSetting["Anticipator"];
 
+            try
+            {
+                const std::string interfaceAddress = anticipatorSetting["InterfaceAddress"];
+
+                this->phoenix.interfaceAddress = interfaceAddress;
+            }
+            catch (SettingNotFoundException &exception)
+            {
+                ReportSoftAlert("[Workspace] Missing mandatory option in \"Anticipator\" section");
+
+                throw exception;
+            }
+
             unsigned int portNumberIPv4 = anticipatorSetting["PortNumberIPv4"];
             unsigned int portNumberIPv6 = anticipatorSetting["PortNumberIPv6"];
 
@@ -120,7 +136,7 @@ Primus::Configuration::load()
                 const std::string certificate = apnsSetting["Certificate"];
 
                 this->apns.sandbox = apnsSetting["Sandbox"];
-                this->apns.certificate = new std::string(certificate);
+                this->apns.certificate = certificate;
             }
             catch (SettingNotFoundException &exception)
             {

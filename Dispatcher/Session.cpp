@@ -254,6 +254,19 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     throw Dispatcher::RejectDatagram("Invalid authenticator");
                 }
 
+                try
+                {
+                    const std::string* originStamp = request["Running-Since"];
+
+                    Toolkit::Timestamp runningSince(*originStamp);
+
+                    session->servus->setRunningSince(runningSince);
+                }
+                catch (RTSP::StatementNotFound& exception)
+                {
+                    // Running-since statement is optional.
+                }
+
                 if (session->servus->enabled == false)
                 {
                     response.reset();

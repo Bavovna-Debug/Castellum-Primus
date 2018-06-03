@@ -49,11 +49,11 @@ Primus::Database::connect()
     Primus::Configuration& configuration = Primus::Configuration::SharedInstance();
 
     this->connection = new PostgreSQL::Connection(
-            configuration.database.hostName->c_str(),
+            configuration.database.hostName.c_str(),
             configuration.database.portNumber,
-            configuration.database.databaseName->c_str(),
-            configuration.database.role->c_str(),
-            configuration.database.password->c_str());
+            configuration.database.databaseName.c_str(),
+            configuration.database.role.c_str(),
+            configuration.database.password.c_str());
 }
 
 void

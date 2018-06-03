@@ -43,7 +43,7 @@ Database::Thermas::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Thermas] Cannot get number of thermas: %s",
+        ReportError("[Database] Cannot get number of thermas: %s",
                 exception.what());
 
         throw exception;
@@ -82,7 +82,7 @@ Database::Thermas::ThermaByIndex(const unsigned long thermaIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Thermas] Cannot load therma: %s",
+        ReportError("[Database] Cannot find therma: %s",
                 exception.what());
 
         throw exception;
@@ -148,7 +148,7 @@ Database::NoticeTemperature(
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Therma] Cannot store temperature: %s",
+        ReportError("[Database] Cannot store temperature: %s",
                 exception.what());
 
         throw exception;

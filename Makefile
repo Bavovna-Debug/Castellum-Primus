@@ -67,14 +67,14 @@ CPPFLAGS += -Wwrite-strings
 # ******************************************************************************
 
 OBJECTS_ROOT        := Configuration.o Kernel.o Main.o Parse.o
-OBJECTS_DATABASE    := Database/Activator.o Database/Activators.o Database/Database.o Database/Debug.o Database/Phoenix.o Database/Phoenixes.o Database/Servus.o Database/Servuses.o Database/Therma.o Database/Thermas.o
-OBJECTS_DISPATCHER  := Dispatcher/Fabula.o Dispatcher/Fabulas.o Dispatcher/Listener.o Dispatcher/Notificator.o Dispatcher/Session.o
-OBJECTS_PHOENIX     := Phoenix/Anticipator.o Phoenix/Listener.o
-OBJECTS_WWW         := WWW/Activator.o WWW/Home.o WWW/Phoenix.o WWW/Servus.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
+OBJECTS_DATABASE    := Database/Activator.o Database/Activators.o Database/Database.o Database/Debug.o Database/Phoenix.o Database/Phoenixes.o Database/Relay.o Database/Relays.o Database/Servus.o Database/Servuses.o Database/Therma.o Database/Thermas.o
+OBJECTS_DISPATCHER  := Dispatcher/Fabula.o Dispatcher/Fabulas.o Dispatcher/Listener.o Dispatcher/Notificator.o Dispatcher/Service.o Dispatcher/Session.o
+OBJECTS_ANTICIPATOR := Anticipator/Listener.o Anticipator/Service.o Anticipator/Session.o
+OBJECTS_WWW         := WWW/Activator.o WWW/Home.o WWW/Phoenix.o WWW/Relay.o WWW/Servus.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
 
 all: Primus
 
-Primus: $(OBJECTS_ROOT) $(OBJECTS_APNS) $(OBJECTS_DATABASE) $(OBJECTS_DISPATCHER) $(OBJECTS_PHOENIX) $(OBJECTS_WWW)
+Primus: $(OBJECTS_ROOT) $(OBJECTS_APNS) $(OBJECTS_DATABASE) $(OBJECTS_DISPATCHER) $(OBJECTS_ANTICIPATOR) $(OBJECTS_WWW)
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(LIBS)
 
 # ******************************************************************************
@@ -111,6 +111,12 @@ Database/Phoenix.o: Database/Phoenix.cpp
 Database/Phoenixes.o: Database/Phoenixes.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
+Database/Relay.o: Database/Relay.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Database/Relays.o: Database/Relays.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
 Database/Servus.o: Database/Servus.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
@@ -137,15 +143,21 @@ Dispatcher/Listener.o: Dispatcher/Listener.cpp
 Dispatcher/Notificator.o: Dispatcher/Notificator.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
+Dispatcher/Service.o: Dispatcher/Service.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
 Dispatcher/Session.o: Dispatcher/Session.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ******************************************************************************
 
-Phoenix/Anticipator.o: Phoenix/Anticipator.cpp
+Anticipator/Listener.o: Anticipator/Listener.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-Phoenix/Listener.o: Phoenix/Listener.cpp
+Anticipator/Service.o: Anticipator/Service.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Anticipator/Session.o: Anticipator/Session.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 # ******************************************************************************
@@ -154,6 +166,9 @@ WWW/Activator.o: WWW/Activator.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/Home.o: WWW/Home.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+WWW/Relay.o: WWW/Relay.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 WWW/Phoenix.o: WWW/Phoenix.cpp

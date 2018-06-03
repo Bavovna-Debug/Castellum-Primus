@@ -2,6 +2,7 @@
 
 // System definition files.
 //
+#include <cstdbool>
 #include <string>
 
 // Common definition files.
@@ -10,28 +11,32 @@
 
 namespace Database
 {
-    class Therma
+    class Relay
     {
     public:
         Toolkit::Timestamp* timestamp;
-        unsigned long       thermaId;
+        unsigned long       relayId;
         std::string         token;
         unsigned long       servusId;
-        std::string         gpioDeviceNumber;
-        float               edge;
+        unsigned int        gpioPinNumber;
+        bool                state;
         std::string         description;
 
     public:
-        Therma(const unsigned long thermaId);
+        Relay(const unsigned long relayId);
 
-        ~Therma();
+        ~Relay();
 
         void
         setDescription(const std::string&);
 
-        float
-        lastKnownTemperature(),
-        lowestKnownTemperature(),
-        highestKnownTemperature();
+        bool
+        isOff(),
+        isOn();
+
+        void
+        switchOff(),
+        switchOn(),
+        switchOver();
     };
 };

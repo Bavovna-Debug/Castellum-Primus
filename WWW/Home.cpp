@@ -14,6 +14,8 @@
 // Local definition files.
 //
 #include "Primus/Kernel.hpp"
+#include "Primus/Database/Relay.hpp"
+#include "Primus/Database/Relays.hpp"
 #include "Primus/WWW/Home.hpp"
 #include "Primus/WWW/SessionManager.hpp"
 
@@ -42,6 +44,8 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
     }
 
     HTML::Instance instance(connection);
+
+    this->processRelays(connection);
 
     if (connection.pageName().find(WWW::Images) == 0)
     {
@@ -132,6 +136,39 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
             }
         } // HTML.Body
     } // HTML.Document
+}
+
+void
+WWW::Site::processRelays(HTTP::Connection& connection)
+{
+    try
+    {
+        const unsigned long relayId = connection[WWW::SwitchRelay];
+
+        Database::Relay& relay = Database::Relays::RelayById(relayId);
+
+        try
+        {
+            const std::string relayState = connection[WWW::RelayState];
+
+            if (relayState == WWW::RelayStateDown)
+            {
+                relay.switchOff();
+            }
+            else if (relayState == WWW::RelayStateUp)
+            {
+                relay.switchOn();
+            }
+        }
+        catch (HTTP::ArgumentDoesNotExist&)
+        {
+            relay.switchOver();
+        }
+
+        delete &relay;
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    { }
 }
 
 /**
@@ -235,23 +272,23 @@ WWW::Site::pageNorth(HTTP::Connection& connection, HTML::Instance& instance)
             { // HTML.ListItem
                 HTML::ListItem listItem(instance,
                         HTML::Nothing,
-                        (connection.pageName() == WWW::PageActivator)
+                        (connection.pageName() == WWW::PageRelay)
                                 ? "tabs_item active"
                                 : "tabs_item");
 
                 { // HTML.URL
-                    HTML::URL url(instance, WWW::PageActivator);
+                    HTML::URL url(instance, WWW::PageRelay);
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, "title");
 
-                        span.plain("Aktivierungen");
+                        span.plain("Relais");
                     } // HTML.Span
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, "subtitle");
 
-                        span.plain("Aktivierungscodes");
+                        span.plain("Relaisstation");
                     } // HTML.Span
                 } // HTML.URL
             } // HTML.ListItem
@@ -309,10 +346,11 @@ WWW::Site::pageSouth(HTTP::Connection& connection, HTML::Instance& instance)
     else if (connection.pageName() == WWW::PagePhoenix)
     {
         this->pagePhoenix(connection, instance);
-    }
-    else if (connection.pageName() == WWW::PageActivator)
-    {
         this->pageActivator(connection, instance);
+    }
+    else if (connection.pageName() == WWW::PageRelay)
+    {
+        this->pageRelay(connection, instance);
     }
     else if (connection.pageName() == WWW::PageTherma)
     {
@@ -336,8 +374,9 @@ WWW::Site::pageLogin(HTTP::Connection& connection, HTML::Instance& instance)
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium", connection.pageName());
+            "colloquium",
+            "colloquium",
+            connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionLogin);
 

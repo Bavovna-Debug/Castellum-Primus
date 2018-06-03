@@ -104,7 +104,7 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
                             throw HTTP::ArgumentDoesNotExist();
 
                         const unsigned long servusId =
-                                Database::Servus::DefineServus(servusDescription);
+                                Database::Servuses::DefineServus(servusDescription);
 
                         if (servusId != 0)
                         {
@@ -130,8 +130,22 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
         }
     }
 
+    HTML::Division division(instance, HTML::Nothing, "workspace");
+
+    this->pageServusInfo(connection, instance);
+
     this->pageServusList(connection, instance);
 }
+
+/**
+ * @brief   Show Servus info panel.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pageServusInfo(HTTP::Connection& connection, HTML::Instance& instance)
+{ }
 
 /**
  * @brief   Show list of Servuses.
@@ -142,8 +156,6 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
 void
 WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    HTML::Division division(instance, HTML::Nothing, "workspace");
-
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");
 
@@ -172,7 +184,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                             urlString,
                             "Neuen Servus erstellen.");
 
-                    url.image("img/new.png", "Neuen Servus erstellen.");
+                    url.image("img/new.png", "Definieren");
 
                     { // HTML.Span
                         HTML::Span span(instance, HTML::Nothing, HTML::Nothing);
@@ -195,6 +207,12 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
+                        tableDataCell.plain("Bezeichnung");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
                         tableDataCell.plain("Enabled");
                     }
 
@@ -211,13 +229,10 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
-
-                        tableDataCell.plain("Beschreibung");
-                    }
-
-                    {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance,
+                                HTML::Nothing,
+                                HTML::Nothing,
+                                3);
                     }
                 }
             }
@@ -234,6 +249,12 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                             Database::Servuses::ServusByIndex(servusIndex);
 
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(servus.description);
+                    }
 
                     if (servus.enabled == true)
                     {
@@ -268,9 +289,25 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
 
-                        tableDataCell.plain(servus.description);
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::ServusId.c_str(),
+                                    std::to_string(servus.servusId).c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Mehr Details.");
+
+                            url.image("img/details.png", "Details");
+
+                            url.plain("[Details]");
+                        } // HTML.URL
                     }
 
                     {
@@ -291,7 +328,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL
@@ -316,7 +353,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                                     urlString,
                                     "Deaktivieren.");
 
-                            url.image("img/disable.png", "Deaktivieren.");
+                            url.image("img/disable.png", "Deaktivieren");
 
                             url.plain("[Deaktivieren]");
                         } // HTML.URL
@@ -336,7 +373,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                                     urlString,
                                     "Aktivieren.");
 
-                            url.image("img/enable.png", "Aktivieren.");
+                            url.image("img/enable.png", "Aktivieren");
 
                             url.plain("[Aktivieren]");
                         } // HTML.URL
@@ -372,8 +409,8 @@ WWW::Site::pageServusEditForm(HTTP::Connection& connection, HTML::Instance& inst
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionServusSave);

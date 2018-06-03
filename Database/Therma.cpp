@@ -28,19 +28,21 @@ Database::Therma::Therma(const unsigned long thermaId)
         query.execute(QuerySearchForThermaById);
 
         query.assertNumberOfRows(1);
-        query.assertNumberOfColumns(6);
+        query.assertNumberOfColumns(7);
         query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
         query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
         query.assertColumnOfType(3, PostgreSQL::INT8OID);
         query.assertColumnOfType(4, PostgreSQL::BPCHAROID);
-        query.assertColumnOfType(5, PostgreSQL::VARCHAROID);
+        query.assertColumnOfType(5, PostgreSQL::FLOAT4OID);
+        query.assertColumnOfType(6, PostgreSQL::VARCHAROID);
 
         this->timestamp         = query.popTIMESTAMP();
         this->thermaId          = query.popBIGINT();
         this->token             = query.popUUID();
         this->servusId          = query.popBIGINT();
         this->gpioDeviceNumber  = query.popCHAR();
+        this->edge              = query.popREAL();
         this->description       = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -51,7 +53,7 @@ Database::Therma::Therma(const unsigned long thermaId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Therma] Cannot load therma: %s",
+        ReportError("[Database] Cannot load therma: %s",
                 exception.what());
 
         throw exception;
@@ -99,7 +101,124 @@ Database::Therma::setDescription(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Therma] Cannot update therma: %s",
+        ReportError("[Database] Cannot update therma: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::Therma::lastKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryThermaLastKnownTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update therma: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::Therma::lowestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryThermaLowestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update therma: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::Therma::highestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryThermaHighestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update therma: %s",
                 exception.what());
 
         throw exception;
