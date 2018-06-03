@@ -41,7 +41,7 @@ Database::Servuses::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servuses] Cannot get number of servuses: %s",
+        ReportError("[Database] Cannot get number of servuses: %s",
                 exception.what());
 
         throw exception;
@@ -82,7 +82,7 @@ Database::Servuses::ServusByAuthenticator(const std::string& authenticator)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servuses] Cannot load servus: %s",
+        ReportError("[Database] Cannot find servus: %s",
                 exception.what());
 
         throw exception;
@@ -121,7 +121,7 @@ Database::Servuses::ServusByIndex(const unsigned long servusIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servuses] Cannot load servus: %s",
+        ReportError("[Database] Cannot find servus: %s",
                 exception.what());
 
         throw exception;
@@ -136,4 +136,77 @@ Database::Servuses::ServusById(const unsigned long servusId)
     Database::Servus* servus = new Database::Servus(servusId);
 
     return *servus;
+}
+
+unsigned long
+Database::Servuses::DefineServus(const std::string& description)
+{
+    unsigned long servusId;
+
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        // Create a new record for new activator.
+        //
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            query.pushVARCHAR(&description);
+            query.execute(QueryInsertServus);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::INT8OID);
+
+            servusId = query.popBIGINT();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot define servus: %s",
+                exception.what());
+
+        throw exception;
+    }
+
+    return servusId;
+}
+
+void
+Database::Servuses::ResetAllServuses()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            query.execute(QueryResetAllServuses);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot reset online status for all servuses: %s",
+                exception.what());
+
+        throw exception;
+    }
 }

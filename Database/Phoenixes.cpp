@@ -42,7 +42,7 @@ Database::Phoenixes::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenixes] Cannot get number of phoenixes: %s",
+        ReportError("[Database] Cannot get number of phoenixes: %s",
                 exception.what());
 
         throw exception;
@@ -81,7 +81,7 @@ Database::Phoenixes::PhoenixByIndex(const unsigned long phoenixIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenixes] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot find phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -118,7 +118,7 @@ Database::Phoenixes::PhoenixByToken(const std::string& phoenixToken)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Phoenixes] Cannot load phoenix: %s",
+        ReportError("[Database] Cannot find phoenix: %s",
                 exception.what());
 
         throw exception;
@@ -133,4 +133,37 @@ Database::Phoenixes::PhoenixById(const unsigned long phoenixId)
     Database::Phoenix* phoenix = new Database::Phoenix(phoenixId);
 
     return *phoenix;
+}
+
+void
+Database::Phoenixes::RemovePhoenixById(const unsigned long phoenixId)
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long phoenixIdQuery = htobe64(phoenixId);
+
+            query.pushBIGINT(&phoenixIdQuery);
+            query.execute(QueryRemovePhoenixById);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot remove phoenix: %s",
+                exception.what());
+
+        throw exception;
+    }
 }

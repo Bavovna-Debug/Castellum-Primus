@@ -16,13 +16,18 @@ namespace WWW
     static const std::string PageSystemInformation      = "sysinfo";
     static const std::string PageServus                 = "servus";
     static const std::string PagePhoenix                = "phoenix";
-    static const std::string PageActivator              = "activator";
+    static const std::string PageRelay                  = "relay";
     static const std::string PageTherma                 = "therma";
 
     static const std::string Images                     = "img";
     static const std::string Download                   = "download";
     static const std::string DownloadSubject            = "subject";
     static const std::string DownloadSubjectAjax        = "ajax.js";
+
+    static const std::string SwitchRelay                = "switch_relay";
+    static const std::string RelayState                 = "relay_state";
+    static const std::string RelayStateDown             = "down";
+    static const std::string RelayStateUp               = "up";
 
     static const std::string Action                     = "action";
     static const std::string ActionLogin                = "login";
@@ -31,10 +36,14 @@ namespace WWW
     static const std::string ActionServusSave           = "servus_save";
     static const std::string ActionPhoenixEdit          = "phoenix_edit";
     static const std::string ActionPhoenixSave          = "phoenix_save";
+    static const std::string ActionPhoenixRemove        = "phoenix_remove";
+    static const std::string ActionPhoenixRemoveConfirmed = "phoenix_remove_confirmed";
     static const std::string ActionActivatorEdit        = "activator_edit";
     static const std::string ActionActivatorSave        = "activator_save";
     static const std::string ActionThermaEdit           = "therma_edit";
     static const std::string ActionThermaSave           = "therma_save";
+    static const std::string ActionRelayEdit            = "therma_edit";
+    static const std::string ActionRelaySave            = "therma_save";
 
     static const std::string Button                     = "button";
     static const std::string ButtonSubmit               = "submit";
@@ -56,6 +65,9 @@ namespace WWW
     static const std::string ThermaId                   = "therma_id";
     static const std::string ThermaDescription          = "therma_name";
 
+    static const std::string RelayId                    = "relay_id";
+    static const std::string RelayDescription           = "relay_name";
+
     class Site : public HTTP::Site
     {
     public:
@@ -63,6 +75,9 @@ namespace WWW
         generateDocument(HTTP::Connection&);
 
     private:
+        void
+        processRelays(HTTP::Connection&);
+
         /**
          * @brief   Generate the north (upper) part of main page.
          *
@@ -109,6 +124,15 @@ namespace WWW
         pageServus(HTTP::Connection&, HTML::Instance&);
 
         /**
+         * @brief   Show Servus info panel.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageServusInfo(HTTP::Connection&, HTML::Instance&);
+
+        /**
          * @brief   Show list of Servuses.
          *
          * @param   connection      HTTP connection.
@@ -136,6 +160,24 @@ namespace WWW
         pagePhoenix(HTTP::Connection&, HTML::Instance&);
 
         /**
+         * @brief   Show Phoenix info panel.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pagePhoenixInfo(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Show list of Phoenixes.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pagePhoenixList(HTTP::Connection&, HTML::Instance&);
+
+        /**
          * @brief   Generate HTML page for the 'Phoenix' edit form.
          *
          * @param   connection      HTTP connection.
@@ -143,6 +185,15 @@ namespace WWW
          */
         void
         pagePhoenixEditForm(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Phoenix' remove form.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        generatePhoenixRemoveForm(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Activator' tab.
@@ -161,6 +212,24 @@ namespace WWW
          */
         void
         pageActivatorEditForm(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Relay' tab.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageRelay(HTTP::Connection&, HTML::Instance&);
+
+        /**
+         * @brief   Generate HTML page for the 'Relay' edit form.
+         *
+         * @param   connection      HTTP connection.
+         * @param   instance        HTML instance.
+         */
+        void
+        pageRelayEditForm(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Therma' tab.

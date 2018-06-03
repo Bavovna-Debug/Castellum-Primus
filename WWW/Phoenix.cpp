@@ -35,6 +35,13 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
             return;
         }
 
+        if (connection.argumentPairExists(WWW::Action, WWW::ActionPhoenixRemove) == true)
+        {
+            this->generatePhoenixRemoveForm(connection, instance);
+
+            return;
+        }
+
         if (this->formSubmitted(connection) == true)
         {
             if (connection.argumentPairExists(WWW::Action, WWW::ActionPhoenixSave) == true)
@@ -71,11 +78,58 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     return;
                 }
             }
+            else if (connection.argumentPairExists(WWW::Action, WWW::ActionPhoenixRemoveConfirmed) == true)
+            {
+                try
+                {
+                    unsigned long phoenixId = connection[WWW::PhoenixId];
+
+                    Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
+
+                    instance.noticeMessage("Phoenix <b>%s</b> und zugeordnete Push Notifications " \
+                            "wurden unwiderruflich aus dem System entfernen.",
+                            phoenix.description.c_str());
+
+                    Database::Phoenixes::RemovePhoenixById(phoenixId);
+
+                    delete &phoenix;
+                }
+                catch (HTTP::ArgumentDoesNotExist&)
+                {
+                    instance.alertMessage("Fehler in Browser!");
+
+                    return;
+                }
+            }
         }
     }
 
     HTML::Division division(instance, HTML::Nothing, "workspace");
 
+    this->pagePhoenixInfo(connection, instance);
+
+    this->pagePhoenixList(connection, instance);
+}
+
+/**
+ * @brief   Show Phoenix info panel.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pagePhoenixInfo(HTTP::Connection& connection, HTML::Instance& instance)
+{ }
+
+/**
+ * @brief   Show list of Phoenixes.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pagePhoenixList(HTTP::Connection& connection, HTML::Instance& instance)
+{
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");
 
@@ -93,6 +147,12 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
 
                 {
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("Bezeichnung");
+                    }
 
                     {
                         HTML::TableDataCell tableDataCell(instance);
@@ -121,11 +181,14 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Beschreibung");
+                        tableDataCell.plain("Notifications");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance,
+                                HTML::Nothing,
+                                HTML::Nothing,
+                                3);
                     }
                 }
             }
@@ -141,6 +204,12 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     Database::Phoenix& phoenix = Database::Phoenixes::PhoenixByIndex(phoenixIndex);
 
                     HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(phoenix.description);
+                    }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
@@ -167,9 +236,9 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
 
-                        tableDataCell.plain(phoenix.description);
+                        tableDataCell.plain("%lu", phoenix.numberOfNotifications());
                     }
 
                     {
@@ -190,9 +259,33 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
+                        } // HTML.URL
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
+
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%s&%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::Action.c_str(),
+                                    WWW::ActionPhoenixRemove.c_str(),
+                                    WWW::PhoenixId.c_str(),
+                                    std::to_string(phoenix.phoenixId).c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Unwiderruflich aus dem System entfernen.");
+
+                            url.image("img/delete.png", "Löschen");
+
+                            url.plain("[Löschen]");
                         } // HTML.URL
                     }
 
@@ -226,8 +319,8 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionPhoenixSave);
@@ -296,6 +389,108 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
                     WWW::ButtonSubmit);
 
             submitButton.plain("Speichern");
+        }
+
+        {
+            HTML::Button cancelButton(instance,
+                    HTML::Nothing,
+                    HTML::Nothing,
+                    WWW::Button,
+                    WWW::ButtonCancel);
+
+            cancelButton.plain("Abbrechen");
+        }
+    }
+}
+
+/**
+ * @brief   Generate HTML page for the 'Phoenix' remove form.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::generatePhoenixRemoveForm(HTTP::Connection& connection, HTML::Instance& instance)
+{
+    unsigned long phoenixId;
+
+    try
+    {
+        phoenixId = connection[WWW::PhoenixId];
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    {
+        instance.alertMessage("Fehler in Browser!");
+
+        return;
+    }
+
+    HTML::Form form(instance,
+            HTML::Get,
+            "full",
+            "colloquium",
+            "colloquium",
+            connection.pageName());
+
+    form.hidden(WWW::Action, WWW::ActionPhoenixRemoveConfirmed);
+
+    form.hidden(WWW::PhoenixId, phoenixId);
+
+    Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
+
+    unsigned long numberOfNotifications = phoenix.numberOfNotifications();
+
+    {
+        HTML::FieldSet fieldSet(instance, HTML::Nothing, "north");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("Phoenix <b>%s</b> unwiderruflich aus dem System entfernen",
+                    phoenix.description.c_str());
+        } // HTML.HeadingText
+
+        {
+            HTML::Label label(instance);
+
+            label.plain("Phoenix <b>%s</b> wird aus dem System unwiderruflich entfernt.",
+                    phoenix.description.c_str());
+
+            label.breakLine();
+
+            label.plain("Für Aktivierung verwendete Aktivierungscode " \
+                    "wird freigelassen und darf für Aktivierung anderer Walker verwendet werden.");
+
+            label.breakLine();
+
+            if (numberOfNotifications > 0)
+            {
+                label.plain("Diesem Phoenix zugeordnete %lu Push Notifications " \
+                        "werden unwiderruflich entfernen.",
+                        numberOfNotifications);
+
+                label.breakLine();
+
+                label.plain("Entsprechende Fabulas beliben in Datenbank für History " \
+                        "und evetuell spätere Debugging.",
+                        numberOfNotifications);
+            }
+        }
+    }
+
+    delete &phoenix;
+
+    {
+        HTML::FieldSet fieldSet(instance, HTML::Nothing, "south");
+
+        {
+            HTML::Button submitButton(instance,
+                    HTML::Nothing,
+                    HTML::Nothing,
+                    WWW::Button,
+                    WWW::ButtonSubmit);
+
+            submitButton.plain("Bestätigen");
         }
 
         {

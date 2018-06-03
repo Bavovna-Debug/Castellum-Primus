@@ -97,19 +97,49 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("Aktiviert");
+                        tableDataCell.plain("Bezeichnung");
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance);
 
-                        tableDataCell.plain("GPIO Gerätenummer");
+                        tableDataCell.plain("GPIO Id");
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
-                        tableDataCell.plain("Beschreibung");
+                        tableDataCell.plain("Tief");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Delta");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Aktuell");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Delta");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Hoch");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        tableDataCell.plain("Präzision");
                     }
 
                     {
@@ -133,7 +163,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(therma.timestamp->YYYYMMDD());
+                        tableDataCell.plain(therma.description);
                     }
 
                     {
@@ -142,10 +172,44 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                         tableDataCell.plain(therma.gpioDeviceNumber);
                     }
 
-                    {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+                    float current = therma.lastKnownTemperature();
+                    float lowest = therma.lowestKnownTemperature();
+                    float highest = therma.highestKnownTemperature();
 
-                        tableDataCell.plain(therma.description);
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
+
+                        tableDataCell.plain("%4.2f &#x2103;", lowest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
+
+                        tableDataCell.plain("[-%4.2f &#x2103;]", current - lowest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
+
+                        tableDataCell.plain("%4.2f &#x2103;", current);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
+
+                        tableDataCell.plain("[+%4.2f &#x2103;]", highest - current);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
+
+                        tableDataCell.plain("%4.2f &#x2103;", highest);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
+
+                        tableDataCell.plain("%3.2f &#x2103;", therma.edge);
                     }
 
                     {
@@ -166,7 +230,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                                     urlString,
                                     "Bearbeiten.");
 
-                            url.image("img/edit.png", "Bearbeiten.");
+                            url.image("img/edit.png", "Bearbeiten");
 
                             url.plain("[Bearbeiten]");
                         } // HTML.URL
@@ -202,8 +266,8 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
     HTML::Form form(instance,
             HTML::Get,
             "full",
-            "observatorium",
-            "observatorium",
+            "colloquium",
+            "colloquium",
             connection.pageName());
 
     form.hidden(WWW::Action, WWW::ActionThermaSave);

@@ -28,20 +28,22 @@ Database::Servus::Servus(const unsigned long servusId)
         query.execute(QuerySearchForServusById);
 
         query.assertNumberOfRows(1);
-        query.assertNumberOfColumns(7);
+        query.assertNumberOfColumns(8);
         query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
         query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
         query.assertColumnOfType(3, PostgreSQL::BOOLOID);
         query.assertColumnOfType(4, PostgreSQL::BOOLOID);
-        query.assertColumnOfType(5, PostgreSQL::UUIDOID);
-        query.assertColumnOfType(6, PostgreSQL::VARCHAROID);
+        query.assertColumnOfType(5, PostgreSQL::TIMESTAMPOID);
+        query.assertColumnOfType(6, PostgreSQL::UUIDOID);
+        query.assertColumnOfType(7, PostgreSQL::VARCHAROID);
 
         this->timestamp     = query.popTIMESTAMP();
         this->servusId      = query.popBIGINT();
         this->token         = query.popUUID();
         this->enabled       = query.popBOOLEAN();
         this->online        = query.popBOOLEAN();
+        this->runningSince  = query.popTIMESTAMP();
         this->authenticator = query.popUUID();
         this->description   = query.popVARCHAR();
     }
@@ -53,7 +55,7 @@ Database::Servus::Servus(const unsigned long servusId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot load servus: %s",
+        ReportError("[Database] Cannot load servus: %s",
                 exception.what());
 
         throw exception;
@@ -102,73 +104,7 @@ Database::Servus::configurationJSON()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot update servus: %s",
-                exception.what());
-
-        throw exception;
-    }
-}
-
-void
-Database::Servus::setOnline()
-{
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            unsigned long servusIdQuery = htobe64(this->servusId);
-
-            query.pushBIGINT(&servusIdQuery);
-            query.execute(QueryServusSetOnline);
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Servus] Cannot update servus online status: %s",
-                exception.what());
-
-        throw exception;
-    }
-}
-
-void
-Database::Servus::setOffline()
-{
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            unsigned long servusIdQuery = htobe64(this->servusId);
-
-            query.pushBIGINT(&servusIdQuery);
-            query.execute(QueryServusSetOffline);
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Servus] Cannot update servus online status: %s",
+        ReportError("[Database] Cannot update servus: %s",
                 exception.what());
 
         throw exception;
@@ -207,7 +143,107 @@ Database::Servus::toggleEnabledFlag()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot toggle servus enabled flag: %s",
+        ReportError("[Database] Cannot toggle servus enabled flag: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+void
+Database::Servus::setOnline()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long servusIdQuery = htobe64(this->servusId);
+
+            query.pushBIGINT(&servusIdQuery);
+            query.execute(QueryServusSetOnline);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update servus online status: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+void
+Database::Servus::setOffline()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long servusIdQuery = htobe64(this->servusId);
+
+            query.pushBIGINT(&servusIdQuery);
+            query.execute(QueryServusSetOffline);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update servus online status: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+void
+Database::Servus::setRunningSince(Toolkit::Timestamp& runningSince)
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long servusIdQuery = htobe64(this->servusId);
+
+            query.pushBIGINT(&servusIdQuery);
+            query.pushTIMESTAMP(runningSince);
+            query.execute(QueryServusSetRunningSince);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot update servus running-since timestamp: %s",
                 exception.what());
 
         throw exception;
@@ -247,52 +283,9 @@ Database::Servus::setDescription(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Servus] Cannot update servus: %s",
+        ReportError("[Database] Cannot update servus: %s",
                 exception.what());
 
         throw exception;
     }
-}
-
-unsigned long
-Database::Servus::DefineServus(const std::string& description)
-{
-    unsigned long servusId;
-
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        // Create a new record for new activator.
-        //
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            query.pushVARCHAR(&description);
-            query.execute(QueryInsertServus);
-
-            query.assertNumberOfRows(1);
-            query.assertNumberOfColumns(1);
-            query.assertColumnOfType(0, PostgreSQL::INT8OID);
-
-            servusId = query.popBIGINT();
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Activator] Cannot define servus: %s",
-                exception.what());
-
-        throw exception;
-    }
-
-    return servusId;
 }

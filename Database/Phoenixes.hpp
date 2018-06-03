@@ -24,5 +24,8 @@ namespace Database
 
         static Database::Phoenix&
         PhoenixById(const unsigned long);
+
+        static void
+        RemovePhoenixById(const unsigned long);
     };
 };

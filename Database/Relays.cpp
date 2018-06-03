@@ -1,23 +1,25 @@
 // System definition files.
 //
 #include <endian.h>
+#include <cstring>
 
 // Common definition files.
 //
 #include "PostgreSQL/PostgreSQL.hpp"
 #include "Toolkit/Report.h"
+#include "Toolkit/Times.hpp"
 
 // Local definition files.
 //
 #include "Primus/Database/Database.hpp"
-#include "Primus/Database/Activator.hpp"
-#include "Primus/Database/Activators.hpp"
-#include "Primus/Database/Queries/Activator.h"
+#include "Primus/Database/Relay.hpp"
+#include "Primus/Database/Relays.hpp"
+#include "Primus/Database/Queries/Relay.h"
 
 unsigned long
-Database::Activators::TotalNumber()
+Database::Relays::TotalNumber()
 {
-    unsigned long numberOfActivators;
+    unsigned long numberOfRelays;
 
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -25,13 +27,13 @@ Database::Activators::TotalNumber()
     {
         PostgreSQL::Query query(*database.connection);
 
-        query.execute(QueryTotalNumberOfActivators);
+        query.execute(QueryTotalNumberOfRelays);
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(1);
         query.assertColumnOfType(0, PostgreSQL::INT8OID);
 
-        numberOfActivators = query.popBIGINT();
+        numberOfRelays = query.popBIGINT();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -41,19 +43,19 @@ Database::Activators::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot get number of activators: %s",
+        ReportError("[Database] Cannot get number of relays: %s",
                 exception.what());
 
         throw exception;
     }
 
-    return numberOfActivators;
+    return numberOfRelays;
 }
 
-Database::Activator&
-Database::Activators::ActivatorByIndex(const unsigned long activatorIndex)
+Database::Relay&
+Database::Relays::RelayByIndex(const unsigned long relayIndex)
 {
-    unsigned long activatorId;
+    unsigned long relayId;
 
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -61,16 +63,16 @@ Database::Activators::ActivatorByIndex(const unsigned long activatorIndex)
     {
         PostgreSQL::Query query(*database.connection);
 
-        unsigned long activatorIndexQuery = htobe64(activatorIndex);
+        unsigned long relayIndexQuery = htobe64(relayIndex);
 
-        query.pushBIGINT(&activatorIndexQuery);
-        query.execute(QuerySearchForActivatorByIndex);
+        query.pushBIGINT(&relayIndexQuery);
+        query.execute(QuerySearchForRelayByIndex);
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(1);
         query.assertColumnOfType(0, PostgreSQL::INT8OID);
 
-        activatorId = query.popBIGINT();
+        relayId = query.popBIGINT();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -80,19 +82,19 @@ Database::Activators::ActivatorByIndex(const unsigned long activatorIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot find activator: %s",
+        ReportError("[Database] Cannot find relay: %s",
                 exception.what());
 
         throw exception;
     }
 
-    return Database::Activators::ActivatorById(activatorId);
+    return Database::Relays::RelayById(relayId);
 }
 
-Database::Activator&
-Database::Activators::ActivatorById(const unsigned long activatorId)
+Database::Relay&
+Database::Relays::RelayById(const unsigned long relayId)
 {
-    Database::Activator* activator = new Database::Activator(activatorId);
+    Database::Relay* relay = new Database::Relay(relayId);
 
-    return *activator;
+    return *relay;
 }
