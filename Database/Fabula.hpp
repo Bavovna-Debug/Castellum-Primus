@@ -8,7 +8,7 @@
 //
 #include "Toolkit/Times.hpp"
 
-namespace Dispatcher
+namespace Database
 {
     class Fabula
     {

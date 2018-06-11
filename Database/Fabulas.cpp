@@ -2,6 +2,7 @@
 //
 #include <endian.h>
 #include <cstring>
+#include <string>
 
 // Common definition files.
 //
@@ -11,12 +12,12 @@
 // Local definition files.
 //
 #include "Primus/Database/Database.hpp"
+#include "Primus/Database/Fabula.hpp"
+#include "Primus/Database/Fabulas.hpp"
 #include "Primus/Database/Queries/Fabula.h"
-#include "Primus/Dispatcher/Fabula.hpp"
-#include "Primus/Dispatcher/Fabulas.hpp"
 
 unsigned long
-Dispatcher::Fabulas::totalNumber()
+Database::Fabulas::totalNumber()
 {
     unsigned long numberOfFabulas;
 
@@ -42,7 +43,7 @@ Dispatcher::Fabulas::totalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Fabulas] Cannot get number of fabulas: %s",
+        ReportError("[Database] Cannot get number of fabulas: %s",
                 exception.what());
 
         throw exception;
@@ -51,8 +52,8 @@ Dispatcher::Fabulas::totalNumber()
     return numberOfFabulas;
 }
 
-Dispatcher::Fabula&
-Dispatcher::Fabulas::fabulaByIndex(const unsigned long fabulaIndex)
+Database::Fabula&
+Database::Fabulas::fabulaByIndex(const unsigned long fabulaIndex)
 {
     unsigned long fabulaId;
 
@@ -81,7 +82,7 @@ Dispatcher::Fabulas::fabulaByIndex(const unsigned long fabulaIndex)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Fabulas] Cannot load fabula: %s",
+        ReportError("[Database] Cannot load fabula: %s",
                 exception.what());
 
         throw exception;
@@ -90,10 +91,57 @@ Dispatcher::Fabulas::fabulaByIndex(const unsigned long fabulaIndex)
     return this->fabulaById(fabulaId);
 }
 
-Dispatcher::Fabula&
-Dispatcher::Fabulas::fabulaById(const unsigned long fabulaId)
+Database::Fabula&
+Database::Fabulas::fabulaById(const unsigned long fabulaId)
 {
-    Dispatcher::Fabula* fabula = new Dispatcher::Fabula(fabulaId);
+    Database::Fabula* fabula = new Database::Fabula(fabulaId);
 
     return *fabula;
+}
+
+const std::string
+Database::Fabulas::FabulasAsXML(
+    const std::string&  lastKnownFabulaToken,
+    const unsigned int  maximalFabulasPerXML)
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Query query(*database.connection);
+
+        unsigned int limitQuery = htobe32(maximalFabulasPerXML);
+
+        if (lastKnownFabulaToken.empty() == true)
+        {
+            // Set second argument tu null in case fabula token has not been specified.
+            //
+            query.pushUUID();
+        }
+        else
+        {
+            query.pushUUID(&lastKnownFabulaToken);
+        }
+        query.pushINTEGER(&limitQuery);
+        query.execute(QueryFabulasAsXML);
+
+        query.assertNumberOfRows(1);
+        query.assertNumberOfColumns(1);
+        query.assertColumnOfType(0, PostgreSQL::XMLOID);
+
+        return query.popXML();
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch list of fabulas: %s",
+                exception.what());
+
+        throw exception;
+    }
 }
