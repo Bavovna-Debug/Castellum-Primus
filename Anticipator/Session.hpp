@@ -7,6 +7,7 @@
 // Common definition files.
 //
 #include "Communicator/TCP.hpp"
+#include "RTSP/RTSP.hpp"
 
 // Local definition files.
 //
@@ -21,10 +22,13 @@ namespace Anticipator
         typedef TCP::Connection Inherited;
 
     private:
-        char* receiveBuffer;
+        char*               receiveBuffer;
 
     public:
-        Database::Phoenix* phoenix;
+        RTSP::Datagram      request;
+        RTSP::Datagram      response;
+        unsigned int        expectedCSeq;
+        Database::Phoenix*  phoenix;
 
     public:
         Session(TCP::Service&);
@@ -33,6 +37,15 @@ namespace Anticipator
 
         static void
         ThreadHandler(Anticipator::Session*);
+
+        void
+        handleActivate(),
+        handleAPNS(),
+        handleLogin(),
+        handleServusList(),
+        handleFabulaList(),
+        handleUnknown(),
+        loginRequired();
     };
 
     class RejectDatagram : public std::runtime_error

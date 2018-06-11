@@ -20,12 +20,19 @@
 #include "Primus/Configuration.hpp"
 #include "Primus/Anticipator/Session.hpp"
 #include "Primus/Database/Debug.hpp"
-#include "Primus/Database/Phoenix.hpp"
-#include "Primus/Database/Phoenixes.hpp"
 
 Anticipator::Session::Session(TCP::Service& service) :
-Inherited(service)
+Inherited(service),
+request(),
+response()
 {
+    // Session should begin with CSeq 1 incrementing for each new datagram.
+    // Any other value means that either Walker had a problem or be interpreted as intrusion attack.
+    //
+    this->expectedCSeq = 1;
+
+    this->phoenix = nullptr;
+
     // Allocate resources to be used for receive buffer.
     //
     this->receiveBuffer = (char*) malloc(Anticipator::BytesReceivePerStep);
@@ -52,11 +59,6 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
     unsigned long debugSessionId = Primus::Debug::BeginPhoenixSession(session->remoteAddress);
 
     bool sessionOK = true;
-
-    // Session should begin with CSeq 1 incrementing for each new datagram.
-    // Any other value means that either Phoenix had a problem or be interpreted as intrusion attack.
-    //
-    unsigned int expectedCSeq = 1;
 
     // Wait for the beginning of transmission (it should not explicitly begin immediately).
     // Cancel session in case of timeout.
@@ -94,8 +96,7 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
     //
     do
     {
-        RTSP::Datagram request;
-        RTSP::Datagram response;
+        session->request.reset();
 
         // Receive datagram chunks continuously until either complete datagram is received
         // or timeout ocures.
@@ -135,7 +136,7 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
 
             try
             {
-                request.push(session->receiveBuffer, receivedBytes);
+                session->request.push(session->receiveBuffer, receivedBytes);
             }
             catch (std::exception& exception)
             {
@@ -144,8 +145,10 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
                 goto out;
             }
 
-            if (request.headerComplete == true)
+            if (session->request.headerComplete == true)
+            {
                 break;
+            }
 
             // Wait until next chunk of datagram is available.
             // Cancel session in case of timeout.
@@ -178,18 +181,18 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
         {
             try
             {
-                const unsigned int providedCSeq = request["CSeq"];
+                const unsigned int providedCSeq = session->request["CSeq"];
 
-                if (providedCSeq != expectedCSeq)
+                if (providedCSeq != session->expectedCSeq)
                 {
                     std::this_thread::sleep_for(std::chrono::milliseconds
                             { configuration.phoenix.delayResponseForRejected } );
 
-                    response.reset();
-                    response["CSeq"] = expectedCSeq;
-                    response["Agent"] = Primus::SoftwareVersion;
-                    response["Reason"] = "Unexpected CSeq";
-                    response.generateResponse(RTSP::BadRequest);
+                    session->response.reset();
+                    session->response["CSeq"] = session->expectedCSeq;
+                    session->response["Agent"] = Primus::SoftwareVersion;
+                    session->response["Reason"] = "Unexpected CSeq";
+                    session->response.generateResponse(RTSP::BadRequest);
 
                     throw Anticipator::RejectDatagram("Unexpected CSeq");
                 }
@@ -199,230 +202,38 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
                 std::this_thread::sleep_for(std::chrono::milliseconds
                         { configuration.phoenix.delayResponseForRejected } );
 
-                response.reset();
-                response["CSeq"] = expectedCSeq;
-                response["Agent"] = Primus::SoftwareVersion;
-                response["Reason"] = "Missing CSeq";
-                response.generateResponse(RTSP::BadRequest);
+                session->response.reset();
+                session->response["CSeq"] = session->expectedCSeq;
+                session->response["Agent"] = Primus::SoftwareVersion;
+                session->response["Reason"] = "Missing CSeq";
+                session->response.generateResponse(RTSP::BadRequest);
 
                 throw Anticipator::RejectDatagram("Missing CSeq");
             }
 
-            if (request.methodIs("ACTIVATE") == true)
+            if (session->request.methodIs("ACTIVATE") == true)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.phoenix.delayResponseForActivate } );
-
-                try
-                {
-                    const std::string softwareVersion = request["Software-Version"];
-                    const std::string activationCode = request["Activation-Code"];
-                    const std::string vendorToken = request["Vendor-Token"];
-                    const std::string deviceName = request["Device-Name"];
-                    const std::string deviceModel = request["Device-Model"];
-
-                    if (softwareVersion.length() == 0)
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.phoenix.delayResponseForRejected } );
-
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Missing software version";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Missing software version");
-                    }
-
-                    if (activationCode.length() != Primus::ActivationCodeLength)
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.phoenix.delayResponseForRejected } );
-
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Activation code in wrong format";
-                        response.generateResponse(RTSP::NotAcceptable);
-
-                        throw Anticipator::RejectDatagram("Activation code in wrong format");
-                    }
-
-                    if (vendorToken.length() != PostgreSQL::UUIDPlainLength)
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.phoenix.delayResponseForRejected } );
-
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Bad ventor token";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Bad ventor token");
-                    }
-
-                    if (deviceName.length() == 0)
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.phoenix.delayResponseForRejected } );
-
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Missing device name";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Missing device name");
-                    }
-
-                    if (deviceModel.length() == 0)
-                    {
-                        std::this_thread::sleep_for(std::chrono::milliseconds
-                                { configuration.phoenix.delayResponseForRejected } );
-
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Missing device model";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Missing device model");
-                    }
-
-                    unsigned long phoenixId = Database::Phoenix::RegisterPhoenixWithActivationCode(
-                            activationCode,
-                            vendorToken,
-                            deviceName,
-                            deviceModel,
-                            softwareVersion,
-                            deviceName);
-
-                    if (phoenixId == 0)
-                    {
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response.generateResponse(RTSP::NotFound);
-                    }
-                    else
-                    {
-                        session->phoenix = &Database::Phoenixes::PhoenixById(phoenixId);
-
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Walker-Token"] = session->phoenix->token;
-                        response.generateResponse(RTSP::OK);
-                    }
-                }
-                catch (RTSP::StatementNotFound& exception)
-                {
-                    std::this_thread::sleep_for(std::chrono::milliseconds
-                            { configuration.phoenix.delayResponseForRejected } );
-
-                    response.reset();
-                    response["CSeq"] = expectedCSeq;
-                    response["Agent"] = Primus::SoftwareVersion;
-                    response["Reason"] = "Missing mandatory statements";
-                    response.generateResponse(RTSP::BadRequest);
-
-                    throw Anticipator::RejectDatagram("Missing statements");
-                }
+                session->handleActivate();
             }
-            else if (request.methodIs("APNS") == true)
+            else if (session->request.methodIs("APNS") == true)
             {
-                const std::string deviceToken = request["Device-Token"];
-
-                char t[72];
-                APNS::DeviceTokenFromString(t, deviceToken.c_str());
-                APNS::DeviceTokenSymbolToBin(session->phoenix->deviceToken, t);
-
-                session->phoenix->saveDeviceToken();
-
-                response.reset();
-                response["CSeq"] = expectedCSeq;
-                response["Agent"] = Primus::SoftwareVersion;
-                response.generateResponse(RTSP::Created);
+                session->handleAPNS();
             }
-            else if (request.methodIs("LOGIN") == true)
+            else if (session->request.methodIs("LOGIN") == true)
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.phoenix.delayResponseForLogin } );
-
-                try
-                {
-                    const std::string phoenixToken = request["Walker-Token"];
-                    const std::string softwareVersion = request["Software-Version"];
-
-                    if (phoenixToken.length() == 0)
-                    {
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Bad phoenix token";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Bad phoenix token");
-                    }
-
-                    if (phoenixToken.length() != PostgreSQL::UUIDPlainLength)
-                    {
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Walker token in wrong format";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Walker token in wrong format");
-                    }
-
-                    if (softwareVersion.length() == 0)
-                    {
-                        response.reset();
-                        response["CSeq"] = expectedCSeq;
-                        response["Agent"] = Primus::SoftwareVersion;
-                        response["Reason"] = "Missing software version";
-                        response.generateResponse(RTSP::BadRequest);
-
-                        throw Anticipator::RejectDatagram("Missing software version");
-                    }
-
-                    session->phoenix = &Database::Phoenixes::PhoenixByToken(phoenixToken);
-
-                    session->phoenix->setSoftwareVersion(softwareVersion);
-
-                    response.reset();
-                    response["CSeq"] = expectedCSeq;
-                    response["Agent"] = Primus::SoftwareVersion;
-                    response.generateResponse(RTSP::OK);
-                }
-                catch (RTSP::StatementNotFound& exception)
-                {
-                    std::this_thread::sleep_for(std::chrono::milliseconds
-                            { configuration.phoenix.delayResponseForRejected } );
-
-                    response.reset();
-                    response["CSeq"] = expectedCSeq;
-                    response["Agent"] = Primus::SoftwareVersion;
-                    response["Reason"] = "Missing mandatory statements";
-                    response.generateResponse(RTSP::BadRequest);
-
-                    throw Anticipator::RejectDatagram("Missing statements");
-                }
+                session->handleLogin();
+            }
+            else if (session->request.methodIs("QUASAR-LIST") == true)
+            {
+                session->handleServusList();
+            }
+            else if (session->request.methodIs("FABULA-LIST") == true)
+            {
+                session->handleFabulaList();
             }
             else
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds
-                        { configuration.phoenix.delayResponseForRejected } );
-
-                response.reset();
-                response["CSeq"] = expectedCSeq;
-                response["Agent"] = Primus::SoftwareVersion;
-                response.generateResponse(RTSP::MethodNotAllowed);
-
-                throw Anticipator::RejectDatagram("Unknown method");
+                session->handleUnknown();
             }
         }
         catch (APNS::BrokenDeviceToken& exception)
@@ -454,13 +265,13 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
         {
             Communicator::Send(
                     session->socket(),
-                    response.payloadBuffer,
-                    response.payloadLength);
+                    session->response.contentBuffer,
+                    session->response.contentLength);
         }
         catch (...)
         { }
 
-        Primus::Debug::ReportPhoenixRTSP(debugSessionId, request, response);
+        Primus::Debug::ReportPhoenixRTSP(debugSessionId, session->request, session->response);
 
         // Wait until next datagram is available.
         // Cancel session in case of timeout.
@@ -479,7 +290,7 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
                     debugSessionId,
                     "Keep-alive polling did break");
 
-            goto out;
+            sessionOK = false;
         }
         catch (Communicator::PollTimeout&)
         {
@@ -487,12 +298,12 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
                     debugSessionId,
                     "Session timed out");
 
-            goto out;
+            sessionOK = false;
         }
 
         // CSeq for each new datagram should be incremented by one.
         //
-        expectedCSeq++;
+        session->expectedCSeq++;
     }
     while (sessionOK == true);
 
