@@ -16,10 +16,10 @@
 //
 #include "Primus/Configuration.hpp"
 #include "Primus/Database/Debug.hpp"
+#include "Primus/Database/Fabula.hpp"
 #include "Primus/Database/Servus.hpp"
 #include "Primus/Database/Servuses.hpp"
 #include "Primus/Database/Thermas.hpp"
-#include "Primus/Dispatcher/Fabula.hpp"
 #include "Primus/Dispatcher/Listener.hpp"
 #include "Primus/Dispatcher/Notificator.hpp"
 #include "Primus/Dispatcher/Session.hpp"
@@ -156,7 +156,9 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
             }
 
             if (request.headerComplete == true)
+            {
                 break;
+            }
 
             // Wait until next chunk of datagram is available.
             // Cancel session in case of timeout.
@@ -302,8 +304,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 response["Agent"] = Primus::SoftwareVersion;
                 response["Neutrino-Interval"] =
                         configuration.servus.intervalBetweenNeutrinos;
-                response.content = configurationJSON;
-                response.generateResponse(RTSP::OK);
+                response.generateResponse(RTSP::OK, configurationJSON);
             }
             else if (request.methodIs("PLAY") == true)
             {
@@ -328,26 +329,104 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                         configuration.servus.intervalBetweenNeutrinos;
                 response.generateResponse(RTSP::Continue);
             }
-            else if (request.methodIs("FABULA") == true)
+            else if (request.methodIs("AVISO") == true)
             {
-                ReportDebug("[Dispatcher] Received fabula");
+                ReportDebug("[Dispatcher] Received aviso");
 
                 try
                 {
-                    const unsigned int avisoId      = request["Aviso-Id"];
-                    const std::string originStamp   = request["Timestamp"];
-                    const unsigned short severity   = request["Severity"];
-                    const std::string originator    = request["Originator"];
-                    const std::string message       = request["Message"];
+                    unsigned int    avisoId;
+                    std::string*    originStamp;
+                    unsigned short  severity;
+                    std::string*    originator;
 
-                    Toolkit::Timestamp timestamp(originStamp);
+                    try
+                    {
+                        avisoId = request["Aviso-Id"];
+                    }
+                    catch (RTSP::StatementNotFound& exception)
+                    {
+                        response.reset();
+                        response["CSeq"] = expectedCSeq;
+                        response["Agent"] = Primus::SoftwareVersion;
+                        response["Neutrino-Interval"] =
+                                configuration.servus.intervalBetweenNeutrinos;
+                        response.generateResponse(RTSP::NotAcceptable);
 
-                    Dispatcher::Fabula::Enqueue(
+                        throw Dispatcher::RejectDatagram("[Dispatcher] Missing 'Aviso-Id'");
+                    }
+
+                    try
+                    {
+                        originStamp = request["Timestamp"];
+                        severity = request["Severity"];
+                    }
+                    catch (RTSP::StatementNotFound& exception)
+                    {
+                        response.reset();
+                        response["CSeq"] = expectedCSeq;
+                        response["Agent"] = Primus::SoftwareVersion;
+                        response["Aviso-Id"] = avisoId;
+                        response["Neutrino-Interval"] =
+                                configuration.servus.intervalBetweenNeutrinos;
+                        response.generateResponse(RTSP::NotAcceptable);
+
+                        throw Dispatcher::RejectDatagram("[Dispatcher] Missing 'Timestamp' or 'Severity'");
+                    }
+
+                    try
+                    {
+                        originator = request["Originator"];
+
+                        if (originator->empty() == true)
+                        {
+                            response.reset();
+                            response["CSeq"] = expectedCSeq;
+                            response["Agent"] = Primus::SoftwareVersion;
+                            response["Aviso-Id"] = avisoId;
+                            response["Neutrino-Interval"] =
+                                    configuration.servus.intervalBetweenNeutrinos;
+                            response.generateResponse(RTSP::NotAcceptable);
+
+                            throw Dispatcher::RejectDatagram("[Dispatcher] Empty 'Originator'");
+                        }
+                    }
+                    catch (RTSP::StatementNotFound& exception)
+                    {
+                        response.reset();
+                        response["CSeq"] = expectedCSeq;
+                        response["Agent"] = Primus::SoftwareVersion;
+                        response["Aviso-Id"] = avisoId;
+                        response["Neutrino-Interval"] =
+                                configuration.servus.intervalBetweenNeutrinos;
+                        response.generateResponse(RTSP::NotAcceptable);
+
+                        throw Dispatcher::RejectDatagram("[Dispatcher] Missing 'Originator'");
+                    }
+
+                    if (request.payloadLength() == 0)
+                    {
+                        response.reset();
+                        response["CSeq"] = expectedCSeq;
+                        response["Agent"] = Primus::SoftwareVersion;
+                        response["Aviso-Id"] = avisoId;
+                        response["Neutrino-Interval"] =
+                                configuration.servus.intervalBetweenNeutrinos;
+                        response.generateResponse(RTSP::NotAcceptable);
+
+                        throw Dispatcher::RejectDatagram("[Dispatcher] Missing payload");
+                    }
+
+                    Toolkit::Timestamp timestamp(*originStamp);
+
+                    std::string payload = request.payload();
+
+                    Database::Fabula::Enqueue(
                             timestamp,
                             session->servus->servusId,
-                            originator,
+                            *originator,
                             severity,
-                            message);
+                            payload);
 
                     response.reset();
                     response["CSeq"] = expectedCSeq;
@@ -435,8 +514,8 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
         {
             Communicator::Send(
                     session->socket(),
-                    response.payloadBuffer,
-                    response.payloadLength);
+                    response.contentBuffer,
+                    response.contentLength);
         }
         catch (...)
         { }
