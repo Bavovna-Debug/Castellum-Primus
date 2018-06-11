@@ -34,6 +34,9 @@ namespace Database
 
         static void
         ResetAllServuses();
+
+        static const std::string
+        ServusesAsXML();
     };
 
     class ServusNotFound : public std::runtime_error

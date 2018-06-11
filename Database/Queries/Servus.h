@@ -58,3 +58,6 @@ WHERE servus_id = $1"
 #define QueryResetAllServuses "\
 UPDATE kernel.servuses \
 SET online = FALSE"
+
+#define QueryServusesAsXML "\
+SELECT kernel.servuses_for_walker()"

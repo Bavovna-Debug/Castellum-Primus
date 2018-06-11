@@ -35,7 +35,9 @@ namespace Primus
     static const unsigned DefaultDelayAfterCompletion               = 500;      /**< Milliseconds. */
     static const unsigned DefaultPauseBeforeReconnect               = 10;
 
-    static const unsigned int ActivationCodeLength = 10;
+    static const unsigned int ActivationCodeLength                  = 10;
+
+    static const unsigned int MaximalNumberOfFabulasPerXML          = 20;
 
     class Configuration
     {

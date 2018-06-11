@@ -210,3 +210,35 @@ Database::Servuses::ResetAllServuses()
         throw exception;
     }
 }
+
+const std::string
+Database::Servuses::ServusesAsXML()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Query query(*database.connection);
+
+        query.execute(QueryServusesAsXML);
+
+        query.assertNumberOfRows(1);
+        query.assertNumberOfColumns(1);
+        query.assertColumnOfType(0, PostgreSQL::XMLOID);
+
+        return query.popXML();
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch list of servuses: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
