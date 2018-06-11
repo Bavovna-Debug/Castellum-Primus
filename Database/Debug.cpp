@@ -210,8 +210,8 @@ Primus::Debug::ReportServusRTSP(
             query.pushBIGINT(&sessionIdQuery);
             query.pushBOOLEAN(&request.headerComplete);
             query.pushBOOLEAN(&request.payloadComplete);
-            query.pushVARCHAR(request.payloadBuffer, request.payloadLength);
-            query.pushVARCHAR(response.payloadBuffer, response.payloadLength);
+            query.pushVARCHAR(request.contentBuffer, request.contentLength);
+            query.pushVARCHAR(response.contentBuffer, response.contentLength);
 
             query.execute(QueryReportServusRTSP);
         }
@@ -372,8 +372,8 @@ Primus::Debug::ReportPhoenixRTSP(
             query.pushBIGINT(&sessionIdQuery);
             query.pushBOOLEAN(&request.headerComplete);
             query.pushBOOLEAN(&request.payloadComplete);
-            query.pushVARCHAR(request.payloadBuffer, request.payloadLength);
-            query.pushVARCHAR(response.payloadBuffer, response.payloadLength);
+            query.pushVARCHAR(request.contentBuffer, request.contentLength);
+            query.pushVARCHAR(response.contentBuffer, response.contentLength);
             query.pushINTEGER(&responseStatus);
 
             query.execute(QueryReportPhoenixRTSP);
