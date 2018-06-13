@@ -208,8 +208,6 @@ Primus::Debug::ReportServusRTSP(
             unsigned long sessionIdQuery = htobe64(sessionId);
 
             query.pushBIGINT(&sessionIdQuery);
-            query.pushBOOLEAN(&request.headerComplete);
-            query.pushBOOLEAN(&request.payloadComplete);
             query.pushVARCHAR(request.contentBuffer, request.contentLength);
             query.pushVARCHAR(response.contentBuffer, response.contentLength);
 
@@ -370,8 +368,6 @@ Primus::Debug::ReportPhoenixRTSP(
             unsigned int responseStatus = htobe32(response.statusCode);
 
             query.pushBIGINT(&sessionIdQuery);
-            query.pushBOOLEAN(&request.headerComplete);
-            query.pushBOOLEAN(&request.payloadComplete);
             query.pushVARCHAR(request.contentBuffer, request.contentLength);
             query.pushVARCHAR(response.contentBuffer, response.contentLength);
             query.pushINTEGER(&responseStatus);
