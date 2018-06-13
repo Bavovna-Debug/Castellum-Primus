@@ -15,7 +15,7 @@
 
 namespace Anticipator
 {
-    static const unsigned int BytesReceivePerStep = 2048;
+    static const unsigned int BytesReceivePerStep = 64 * 1024;
 
     class Session : public TCP::Connection
     {

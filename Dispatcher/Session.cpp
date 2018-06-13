@@ -155,7 +155,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 goto out;
             }
 
-            if (request.headerComplete == true)
+            if (request.datagramComplete() == true)
             {
                 break;
             }

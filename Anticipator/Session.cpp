@@ -145,7 +145,7 @@ Anticipator::Session::ThreadHandler(Anticipator::Session* session)
                 goto out;
             }
 
-            if (session->request.headerComplete == true)
+            if (session->request.datagramComplete() == true)
             {
                 break;
             }
