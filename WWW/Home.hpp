@@ -53,20 +53,20 @@ namespace WWW
     static const std::string Password                   = "password";
 
     static const std::string ServusId                   = "servus_id";
-    static const std::string ServusDescription          = "servus_name";
+    static const std::string ServusTitle                = "servus_title";
 
     static const std::string PhoenixId                  = "phoenix_id";
-    static const std::string PhoenixDescription         = "phoenix_name";
+    static const std::string PhoenixTitle               = "phoenix_title";
 
     static const std::string ActivatorId                = "activator_id";
     static const std::string ActivationCode             = "activation_code";
-    static const std::string ActivatorDescription       = "activator_name";
+    static const std::string ActivatorTitle             = "activator_title";
 
     static const std::string ThermaId                   = "therma_id";
-    static const std::string ThermaDescription          = "therma_name";
+    static const std::string ThermaTitle                = "therma_title";
 
     static const std::string RelayId                    = "relay_id";
-    static const std::string RelayDescription           = "relay_name";
+    static const std::string RelayTitle                 = "relay_title";
 
     class Site : public HTTP::Site
     {

@@ -43,7 +43,7 @@ Database::Therma::Therma(const unsigned long thermaId)
         this->servusId          = query.popBIGINT();
         this->gpioDeviceNumber  = query.popCHAR();
         this->edge              = query.popREAL();
-        this->description       = query.popVARCHAR();
+        this->title             = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -69,7 +69,7 @@ Database::Therma::~Therma()
 }
 
 void
-Database::Therma::setDescription(const std::string& description)
+Database::Therma::setTitle(const std::string& title)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -83,14 +83,14 @@ Database::Therma::setDescription(const std::string& description)
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
             query.pushBIGINT(&thermaIdQuery);
-            query.pushVARCHAR(&description);
-            query.execute(QueryUpdateThermaDescription);
+            query.pushVARCHAR(&title);
+            query.execute(QueryUpdateThermaTitle);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
 
-            this->description = query.popVARCHAR();
+            this->title = query.popVARCHAR();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)

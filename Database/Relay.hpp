@@ -20,7 +20,7 @@ namespace Database
         unsigned long       servusId;
         unsigned int        gpioPinNumber;
         bool                state;
-        std::string         description;
+        std::string         title;
 
     public:
         Relay(const unsigned long relayId);
@@ -28,7 +28,7 @@ namespace Database
         ~Relay();
 
         void
-        setDescription(const std::string&);
+        setTitle(const std::string&);
 
         bool
         isOff(),

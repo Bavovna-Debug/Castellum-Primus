@@ -11,12 +11,12 @@ ORDER BY activator_id DESC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForActivatorById "\
-SELECT activator_stamp, activator_id, activator_token, phoenix_id, activation_code, activator_description \
+SELECT activator_stamp, activator_id, activator_token, phoenix_id, activation_code, title \
 FROM kernel.activators \
 WHERE activator_id = $1"
 
 #define QueryInsertActivator "\
-INSERT INTO kernel.activators (activation_code, activator_description) \
+INSERT INTO kernel.activators (activation_code, title) \
 VALUES($1, $2) \
 RETURNING activator_id"
 
@@ -25,7 +25,7 @@ UPDATE kernel.activators \
 SET activation_code = $2 \
 WHERE activator_id = $1"
 
-#define QueryUpdateActivatorDescription "\
+#define QueryUpdateActivatorTitle "\
 UPDATE kernel.activators \
-SET activator_description = $2 \
+SET title = $2 \
 WHERE activator_id = $1"

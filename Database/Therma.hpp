@@ -19,7 +19,7 @@ namespace Database
         unsigned long       servusId;
         std::string         gpioDeviceNumber;
         float               edge;
-        std::string         description;
+        std::string         title;
 
     public:
         Therma(const unsigned long thermaId);
@@ -27,7 +27,7 @@ namespace Database
         ~Therma();
 
         void
-        setDescription(const std::string&);
+        setTitle(const std::string&);
 
         float
         lastKnownTemperature(),

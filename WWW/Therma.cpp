@@ -45,13 +45,13 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 
                     try
                     {
-                        const std::string thermaDescription = connection[WWW::ThermaDescription];
-                        if (thermaDescription.empty() == true)
+                        const std::string thermaTitle = connection[WWW::ThermaTitle];
+                        if (thermaTitle.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
                         Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
 
-                        therma.setDescription(thermaDescription);
+                        therma.setTitle(thermaTitle);
 
                         delete &therma;
                     }
@@ -163,7 +163,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(therma.description);
+                        tableDataCell.plain(therma.title);
                     }
 
                     {
@@ -274,13 +274,13 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
 
     form.hidden(WWW::ThermaId, thermaId);
 
-    std::string thermaDescription;
+    std::string thermaTitle;
 
     if (thermaId != 0)
     {
         Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
 
-        thermaDescription = therma.description;
+        thermaTitle = therma.title;
 
         delete &therma;
     }
@@ -298,7 +298,7 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
                 return;
             }
 
-            headingText.plain("Therma <b>%s</b> bearbeiten", thermaDescription.c_str());
+            headingText.plain("Therma <b>%s</b> bearbeiten", thermaTitle.c_str());
         } // HTML.HeadingText
 
         {
@@ -318,8 +318,8 @@ WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& inst
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::ThermaDescription,
-                        thermaDescription.c_str(),
+                        WWW::ThermaTitle,
+                        thermaTitle.c_str(),
                         100, 40);
             }
         }

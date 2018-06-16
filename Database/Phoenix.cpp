@@ -44,7 +44,7 @@ Database::Phoenix::Phoenix(const unsigned long phoenixId)
         this->deviceName        = query.popVARCHAR();
         this->deviceModel       = query.popVARCHAR();
         this->softwareVersion   = query.popVARCHAR();
-        this->description       = query.popVARCHAR();
+        this->title             = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -104,7 +104,7 @@ Database::Phoenix::saveDeviceToken()
 }
 
 void
-Database::Phoenix::setDescription(const std::string& description)
+Database::Phoenix::setTitle(const std::string& title)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -118,14 +118,14 @@ Database::Phoenix::setDescription(const std::string& description)
             unsigned long phoenixIdQuery = htobe64(this->phoenixId);
 
             query.pushBIGINT(&phoenixIdQuery);
-            query.pushVARCHAR(&description);
-            query.execute(QueryUpdatePhoenixDescription);
+            query.pushVARCHAR(&title);
+            query.execute(QueryUpdatePhoenixTitle);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
 
-            this->description = query.popVARCHAR();
+            this->title = query.popVARCHAR();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -225,7 +225,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
     const std::string&  deviceName,
     const std::string&  deviceModel,
     const std::string&  softwareVersion,
-    const std::string&  description)
+    const std::string&  title)
 {
     unsigned long phoenixId;
 
@@ -266,7 +266,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
                 query.pushVARCHAR(&deviceName);
                 query.pushVARCHAR(&deviceModel);
                 query.pushVARCHAR(&softwareVersion);
-                query.pushVARCHAR(&description);
+                query.pushVARCHAR(&title);
                 query.execute(QueryInsertPhoenix);
 
                 query.assertNumberOfRows(1);

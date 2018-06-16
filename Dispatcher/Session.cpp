@@ -283,7 +283,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 }
 
                 ReportInfo("[Dispatcher] Authentificated servus \"%s\"",
-                        session->servus->description.c_str());
+                        session->servus->title.c_str());
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;
@@ -295,7 +295,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
             else if (request.methodIs("SETUP") == true)
             {
                 ReportInfo("[Dispatcher] Servus \"%s\" requested configuration",
-                        session->servus->description.c_str());
+                        session->servus->title.c_str());
 
                 const std::string configurationJSON = session->servus->configurationJSON();
 
@@ -309,7 +309,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
             else if (request.methodIs("PLAY") == true)
             {
                 ReportInfo("[Dispatcher] Servus \"%s\" started measurement",
-                        session->servus->description.c_str());
+                        session->servus->title.c_str());
 
                 response.reset();
                 response["CSeq"] = expectedCSeq;

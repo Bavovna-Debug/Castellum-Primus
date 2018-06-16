@@ -52,8 +52,8 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         {
                             const std::string activationCode =
                                     connection[WWW::ActivationCode];
-                            const std::string activatorDescription =
-                                    connection[WWW::ActivatorDescription];
+                            const std::string activatorTitle =
+                                    connection[WWW::ActivatorTitle];
 
                             if (activationCode.length() != Primus::ActivationCodeLength)
                             {
@@ -70,7 +70,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                                     Database::Activators::ActivatorById(activatorId);
 
                             activator.setActivationCode(activationCode);
-                            activator.setDescription(activatorDescription);
+                            activator.setTitle(activatorTitle);
 
                             delete &activator;
                         }
@@ -87,12 +87,12 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         {
                             const std::string activationCode =
                                     connection[WWW::ActivationCode];
-                            const std::string activatorDescription =
-                                    connection[WWW::ActivatorDescription];
+                            const std::string activatorTitle =
+                                    connection[WWW::ActivatorTitle];
 
                             const unsigned long activatorId = Database::Activator::DefineActivator(
                                     connection[WWW::ActivationCode],
-                                    connection[WWW::ActivatorDescription]);
+                                    connection[WWW::ActivatorTitle]);
 
                             if (activatorId != 0)
                             {
@@ -221,7 +221,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(activator.description);
+                        tableDataCell.plain(activator.title);
                     }
 
                     {
@@ -246,7 +246,7 @@ WWW::Site::pageActivator(HTTP::Connection& connection, HTML::Instance& instance)
                         tableDataCell.plain("Seit %s bei ",
                                 phoenix.timestamp->YYYYMMDDHHMM().c_str());
                         tableDataCell.setTextStyle(HTML::Bold);
-                        tableDataCell.plain(phoenix.description.c_str());
+                        tableDataCell.plain(phoenix.title.c_str());
                         tableDataCell.setTextStyle();
 
                         delete &phoenix;
@@ -323,14 +323,14 @@ WWW::Site::pageActivatorEditForm(HTTP::Connection& connection, HTML::Instance& i
     }
 
     std::string activationCode;
-    std::string activatorDescription;
+    std::string activatorTitle;
 
     if (activatorId != 0)
     {
         Database::Activator& activator = Database::Activators::ActivatorById(activatorId);
 
         activationCode = activator.activationCode;
-        activatorDescription = activator.description;
+        activatorTitle = activator.title;
 
         delete &activator;
     }
@@ -339,10 +339,10 @@ WWW::Site::pageActivatorEditForm(HTTP::Connection& connection, HTML::Instance& i
         try
         {
             const std::string activationCodeFromURL = connection[WWW::ActivationCode];
-            const std::string activatorDescriptionFromURL = connection[WWW::ActivatorDescription];
+            const std::string activatorTitleFromURL = connection[WWW::ActivatorTitle];
 
             activationCode = activationCodeFromURL;
-            activatorDescription = activatorDescriptionFromURL;
+            activatorTitle = activatorTitleFromURL;
         }
         catch (HTTP::ArgumentDoesNotExist&)
         { }
@@ -404,8 +404,8 @@ WWW::Site::pageActivatorEditForm(HTTP::Connection& connection, HTML::Instance& i
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::ActivatorDescription,
-                        activatorDescription.c_str(),
+                        WWW::ActivatorTitle,
+                        activatorTitle.c_str(),
                         100, 40);
             }
         }

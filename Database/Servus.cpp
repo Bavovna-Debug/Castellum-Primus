@@ -45,7 +45,7 @@ Database::Servus::Servus(const unsigned long servusId)
         this->online        = query.popBOOLEAN();
         this->runningSince  = query.popTIMESTAMP();
         this->authenticator = query.popUUID();
-        this->description   = query.popVARCHAR();
+        this->title         = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -104,7 +104,7 @@ Database::Servus::configurationJSON()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot update servus: %s",
+        ReportError("[Database] Cannot generate servus configuration: %s",
                 exception.what());
 
         throw exception;
@@ -251,7 +251,7 @@ Database::Servus::setRunningSince(Toolkit::Timestamp& runningSince)
 }
 
 void
-Database::Servus::setDescription(const std::string& description)
+Database::Servus::setTitle(const std::string& title)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -265,14 +265,14 @@ Database::Servus::setDescription(const std::string& description)
             unsigned long servusIdQuery = htobe64(this->servusId);
 
             query.pushBIGINT(&servusIdQuery);
-            query.pushVARCHAR(&description);
-            query.execute(QueryUpdateServusDescription);
+            query.pushVARCHAR(&title);
+            query.execute(QueryUpdateServusTitle);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
 
-            this->description = query.popVARCHAR();
+            this->title = query.popVARCHAR();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)

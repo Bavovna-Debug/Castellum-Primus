@@ -52,13 +52,13 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
 
                     try
                     {
-                        const std::string phoenixDescription = connection[WWW::PhoenixDescription];
-                        if (phoenixDescription.empty() == true)
+                        const std::string phoenixTitle = connection[WWW::PhoenixTitle];
+                        if (phoenixTitle.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
                         Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
 
-                        phoenix.setDescription(phoenixDescription);
+                        phoenix.setTitle(phoenixTitle);
 
                         delete &phoenix;
                     }
@@ -88,7 +88,7 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
 
                     instance.noticeMessage("Phoenix <b>%s</b> und zugeordnete Push Notifications " \
                             "wurden unwiderruflich aus dem System entfernen.",
-                            phoenix.description.c_str());
+                            phoenix.title.c_str());
 
                     Database::Phoenixes::RemovePhoenixById(phoenixId);
 
@@ -208,7 +208,7 @@ WWW::Site::pagePhoenixList(HTTP::Connection& connection, HTML::Instance& instanc
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(phoenix.description);
+                        tableDataCell.plain(phoenix.title);
                     }
 
                     {
@@ -327,13 +327,13 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
 
     form.hidden(WWW::PhoenixId, phoenixId);
 
-    std::string phoenixDescription;
+    std::string phoenixTitle;
 
     if (phoenixId != 0)
     {
         Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
 
-        phoenixDescription = phoenix.description;
+        phoenixTitle = phoenix.title;
 
         delete &phoenix;
     }
@@ -351,7 +351,7 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
                 return;
             }
 
-            headingText.plain("Phoenix <b>%s</b> bearbeiten", phoenixDescription.c_str());
+            headingText.plain("Phoenix <b>%s</b> bearbeiten", phoenixTitle.c_str());
         } // HTML.HeadingText
 
         {
@@ -371,8 +371,8 @@ WWW::Site::pagePhoenixEditForm(HTTP::Connection& connection, HTML::Instance& ins
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::PhoenixDescription,
-                        phoenixDescription.c_str(),
+                        WWW::PhoenixTitle,
+                        phoenixTitle.c_str(),
                         100, 40);
             }
         }
@@ -447,19 +447,19 @@ WWW::Site::generatePhoenixRemoveForm(HTTP::Connection& connection, HTML::Instanc
             HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
 
             headingText.plain("Phoenix <b>%s</b> unwiderruflich aus dem System entfernen",
-                    phoenix.description.c_str());
+                    phoenix.title.c_str());
         } // HTML.HeadingText
 
         {
             HTML::Label label(instance);
 
             label.plain("Phoenix <b>%s</b> wird aus dem System unwiderruflich entfernt.",
-                    phoenix.description.c_str());
+                    phoenix.title.c_str());
 
             label.breakLine();
 
             label.plain("Für Aktivierung verwendete Aktivierungscode " \
-                    "wird freigelassen und darf für Aktivierung anderer Walker verwendet werden.");
+                    "wird freigelassen und darf für Aktivierung anderer Phoenixe verwendet werden.");
 
             label.breakLine();
 
