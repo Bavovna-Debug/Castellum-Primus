@@ -119,7 +119,116 @@ WWW::Site::pagePhoenix(HTTP::Connection& connection, HTML::Instance& instance)
  */
 void
 WWW::Site::pagePhoenixInfo(HTTP::Connection& connection, HTML::Instance& instance)
-{ }
+{
+    try
+    {
+        // This may cause HTTP::ArgumentDoesNotExist, which is not critical.
+        //
+        unsigned long phoenixId = connection[WWW::PhoenixId];
+
+        Database::Phoenix& phoenix = Database::Phoenixes::PhoenixById(phoenixId);
+
+        HTML::Division division(instance, "full", "slice");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("Phoenix <b>%s</b>", phoenix.title.c_str());
+        } // HTML.HeadingText
+
+        {
+            HTML::Table table(instance);
+
+            {
+                HTML::TableBody tableBody(instance);
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Aktiviert am:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain(phoenix.timestamp->YYYYMMDDHHMM());
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Gerätename:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain(phoenix.deviceName);
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Model und Betriebsystem:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain(phoenix.deviceModel);
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Verwendete Phoenix App:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain(phoenix.softwareVersion);
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Gesamtzahl gesendete Notifications:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain("%lu", phoenix.numberOfNotifications());
+                    }
+                }
+            }
+        }
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    {
+        // Do nothing - no phoenix has been selected so no phoenix info needs to be shown.
+    }
+}
 
 /**
  * @brief   Show list of Phoenixes.

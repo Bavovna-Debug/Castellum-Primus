@@ -145,7 +145,99 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
  */
 void
 WWW::Site::pageServusInfo(HTTP::Connection& connection, HTML::Instance& instance)
-{ }
+{
+    try
+    {
+        // This may cause HTTP::ArgumentDoesNotExist, which is not critical.
+        //
+        unsigned long servusId = connection[WWW::ServusId];
+
+        Database::Servus& servus = Database::Servuses::ServusById(servusId);
+
+        HTML::Division division(instance, "full", "slice");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("Servus <b>%s</b>", servus.title.c_str());
+        } // HTML.HeadingText
+
+        {
+            HTML::Table table(instance);
+
+            {
+                HTML::TableBody tableBody(instance);
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Anmeldestatus:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        if (servus.enabled == true)
+                        {
+                            tableDataCell.plain("Anmeldungen zugelassen");
+                        }
+                        else
+                        {
+                            tableDataCell.plain("Gesperrt");
+                        }
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Online-Status:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        if (servus.online == true)
+                        {
+                            tableDataCell.plain("Mit Primus verbunden (Servus läuft seit %s)",
+                                    servus.runningSince->YYYYMMDDHHMM().c_str());
+                        }
+                        else
+                        {
+                            tableDataCell.plain("Nicht verbunden");
+                        }
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Authenticator:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain(servus.authenticator);
+                    }
+                }
+            }
+        }
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    {
+        // Do nothing - no servus has been selected so no servus info needs to be shown.
+    }
+}
 
 /**
  * @brief   Show list of Servuses.
