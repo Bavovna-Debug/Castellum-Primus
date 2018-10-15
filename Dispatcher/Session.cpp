@@ -16,6 +16,7 @@
 //
 #include "Primus/Configuration.hpp"
 #include "Primus/Database/Debug.hpp"
+#include "Primus/Database/DHTSensorList.hpp"
 #include "Primus/Database/Fabula.hpp"
 #include "Primus/Database/Servus.hpp"
 #include "Primus/Database/Servuses.hpp"
@@ -451,9 +452,49 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                     response.generateResponse(RTSP::NotAcceptable);
                 }
             }
-            else if (request.methodIs("TEMPERATURE") == true)
+            else if (request.methodIs("DHT_HUMIDITY") == true)
             {
-                ReportDebug("[Dispatcher] Received temperature");
+                ReportDebug("[Dispatcher] Received DHT11/DHT22 humidity");
+
+                try
+                {
+                    const unsigned int avisoId      = request["Aviso-Id"];
+                    const std::string originStamp   = request["Timestamp"];
+                    const std::string sensorToken   = request["Sensor-Token"];
+                    const float humidity            = request["Humidity"];
+
+                    Toolkit::Timestamp timestamp(originStamp);
+
+                    Database::NoticeDHTSensorHumidity(
+                            timestamp,
+                            sensorToken,
+                            std::stod(originStamp),
+                            humidity);
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Aviso-Id"] = avisoId;
+                    response["Neutrino-Interval"] =
+                            configuration.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::Created);
+                }
+                catch (std::exception& exception)
+                {
+                    ReportError("[Dispatcher] Cannot process DHT11/DHT22 humidity: %s",
+                            exception.what());
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Neutrino-Interval"] =
+                            configuration.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::NotAcceptable);
+                }
+            }
+            else if (request.methodIs("DHT_TEMPERATURE") == true)
+            {
+                ReportDebug("[Dispatcher] Received DHT11/DHT22 temperature");
 
                 try
                 {
@@ -464,7 +505,7 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
 
                     Toolkit::Timestamp timestamp(originStamp);
 
-                    Database::NoticeTemperature(
+                    Database::NoticeDHTSensorTemperature(
                             timestamp,
                             sensorToken,
                             std::stod(originStamp),
@@ -480,7 +521,47 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 }
                 catch (std::exception& exception)
                 {
-                    ReportError("[Dispatcher] Cannot process temperature: %s",
+                    ReportError("[Dispatcher] Cannot process DHT11/DHT22 temperature: %s",
+                            exception.what());
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Neutrino-Interval"] =
+                            configuration.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::NotAcceptable);
+                }
+            }
+            else if (request.methodIs("DS_TEMPERATURE") == true)
+            {
+                ReportDebug("[Dispatcher] Received DS18B20/DS18S20 temperature");
+
+                try
+                {
+                    const unsigned int avisoId      = request["Aviso-Id"];
+                    const std::string originStamp   = request["Timestamp"];
+                    const std::string sensorToken   = request["Sensor-Token"];
+                    const float temperature         = request["Temperature"];
+
+                    Toolkit::Timestamp timestamp(originStamp);
+
+                    Database::NoticeDSSensorTemperature(
+                            timestamp,
+                            sensorToken,
+                            std::stod(originStamp),
+                            temperature);
+
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Aviso-Id"] = avisoId;
+                    response["Neutrino-Interval"] =
+                            configuration.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::Created);
+                }
+                catch (std::exception& exception)
+                {
+                    ReportError("[Dispatcher] Cannot process DS18B20/DS18S20 temperature: %s",
                             exception.what());
 
                     response.reset();

@@ -11,10 +11,10 @@
 // Local definition files.
 //
 #include "Primus/Database/Database.hpp"
-#include "Primus/Database/Therma.hpp"
-#include "Primus/Database/Queries/Therma.h"
+#include "Primus/Database/DHTSensor.hpp"
+#include "Primus/Database/Queries/DHT.h"
 
-Database::Therma::Therma(const unsigned long thermaId)
+Database::DHTSensor::DHTSensor(const unsigned long sensorId)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -22,26 +22,28 @@ Database::Therma::Therma(const unsigned long thermaId)
     {
         PostgreSQL::Query query(*database.connection);
 
-        unsigned long thermaIdQuery = htobe64(thermaId);
+        unsigned long sensorIdQuery = htobe64(sensorId);
 
-        query.pushBIGINT(&thermaIdQuery);
-        query.execute(QuerySearchForDSSensorById);
+        query.pushBIGINT(&sensorIdQuery);
+        query.execute(QuerySearchForDHTSensorById);
 
         query.assertNumberOfRows(1);
-        query.assertNumberOfColumns(7);
+        query.assertNumberOfColumns(8);
         query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
         query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
         query.assertColumnOfType(3, PostgreSQL::INT8OID);
-        query.assertColumnOfType(4, PostgreSQL::BPCHAROID);
+        query.assertColumnOfType(4, PostgreSQL::INT2OID);
         query.assertColumnOfType(5, PostgreSQL::FLOAT4OID);
-        query.assertColumnOfType(6, PostgreSQL::VARCHAROID);
+        query.assertColumnOfType(6, PostgreSQL::FLOAT4OID);
+        query.assertColumnOfType(7, PostgreSQL::VARCHAROID);
 
         this->timestamp         = query.popTIMESTAMP();
-        this->thermaId          = query.popBIGINT();
+        this->sensorId          = query.popBIGINT();
         this->token             = query.popUUID();
         this->servusId          = query.popBIGINT();
-        this->gpioDeviceNumber  = query.popCHAR();
+        this->gpioPinNumber     = query.popSMALL();
+        this->humidityEdge      = query.popREAL();
         this->temperatureEdge   = query.popREAL();
         this->title             = query.popVARCHAR();
     }
@@ -53,14 +55,14 @@ Database::Therma::Therma(const unsigned long thermaId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load DS18B20/DS18S20 sensor: %s",
+        ReportError("[Database] Cannot load DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
     }
 }
 
-Database::Therma::~Therma()
+Database::DHTSensor::~DHTSensor()
 {
     if (this->timestamp != NULL)
     {
@@ -68,48 +70,8 @@ Database::Therma::~Therma()
     }
 }
 
-void
-Database::Therma::setTitle(const std::string& title)
-{
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            unsigned long thermaIdQuery = htobe64(this->thermaId);
-
-            query.pushBIGINT(&thermaIdQuery);
-            query.pushVARCHAR(&title);
-            query.execute(QueryUpdateDSSensorTitle);
-
-            query.assertNumberOfRows(1);
-            query.assertNumberOfColumns(1);
-            query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
-
-            this->title = query.popVARCHAR();
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Database] Cannot update DS18B20/DS18S20 sensor: %s",
-                exception.what());
-
-        throw exception;
-    }
-}
-
 float
-Database::Therma::lastKnownTemperature()
+Database::DHTSensor::lastKnownHumidity()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -120,10 +82,10 @@ Database::Therma::lastKnownTemperature()
         {
             PostgreSQL::Query query(*database.connection);
 
-            unsigned long thermaIdQuery = htobe64(this->thermaId);
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
 
-            query.pushBIGINT(&thermaIdQuery);
-            query.execute(QueryDSSensorLastKnownTemperature);
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLastKnownHumidity);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
@@ -140,7 +102,7 @@ Database::Therma::lastKnownTemperature()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot fetch data of DS18B20/DS18S20 sensor: %s",
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
@@ -148,7 +110,7 @@ Database::Therma::lastKnownTemperature()
 }
 
 float
-Database::Therma::lowestKnownTemperature()
+Database::DHTSensor::lowestKnownHumidity()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -159,10 +121,10 @@ Database::Therma::lowestKnownTemperature()
         {
             PostgreSQL::Query query(*database.connection);
 
-            unsigned long thermaIdQuery = htobe64(this->thermaId);
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
 
-            query.pushBIGINT(&thermaIdQuery);
-            query.execute(QueryDSSensorLowestTemperature);
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLowestHumidity);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
@@ -179,7 +141,7 @@ Database::Therma::lowestKnownTemperature()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot fetch data of DS18B20/DS18S20 sensor: %s",
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
@@ -187,7 +149,7 @@ Database::Therma::lowestKnownTemperature()
 }
 
 float
-Database::Therma::highestKnownTemperature()
+Database::DHTSensor::highestKnownHumidity()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -198,10 +160,10 @@ Database::Therma::highestKnownTemperature()
         {
             PostgreSQL::Query query(*database.connection);
 
-            unsigned long thermaIdQuery = htobe64(this->thermaId);
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
 
-            query.pushBIGINT(&thermaIdQuery);
-            query.execute(QueryDSSensorHighestTemperature);
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorHighestHumidity);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
@@ -218,7 +180,124 @@ Database::Therma::highestKnownTemperature()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot fetch data of DS18B20/DS18S20 sensor: %s",
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::DHTSensor::lastKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
+
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLastKnownTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::DHTSensor::lowestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
+
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLowestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::DHTSensor::highestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
+
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorHighestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;

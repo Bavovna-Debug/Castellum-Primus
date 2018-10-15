@@ -11,25 +11,32 @@
 
 // Local definition files.
 //
-#include "Primus/Database/Therma.hpp"
+#include "Primus/Database/DHTSensor.hpp"
 
 namespace Database
 {
-    class Thermas
+    class DHTSensorList
     {
     public:
         static unsigned long
         TotalNumber();
 
-        static Database::Therma&
+        static Database::DHTSensor&
         SensorByIndex(const unsigned long);
 
-        static Database::Therma&
+        static Database::DHTSensor&
         SensorById(const unsigned long);
     };
 
     void
-    NoticeDSSensorTemperature(
+    NoticeDHTSensorHumidity(
+        Toolkit::Timestamp& originTimestamp,
+        const std::string&  sensorToken,
+        const double        stampAsReal,
+        const float         humidity);
+
+    void
+    NoticeDHTSensorTemperature(
         Toolkit::Timestamp& originTimestamp,
         const std::string&  sensorToken,
         const double        stampAsReal,

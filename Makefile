@@ -67,7 +67,7 @@ CPPFLAGS += -Wwrite-strings
 # ******************************************************************************
 
 OBJECTS_ROOT        := Configuration.o Kernel.o Main.o Parse.o
-OBJECTS_DATABASE    := Database/Activator.o Database/Activators.o Database/Database.o Database/Debug.o Database/Fabula.o Database/Fabulas.o Database/Phoenix.o Database/Phoenixes.o Database/Relay.o Database/Relays.o Database/Servus.o Database/Servuses.o Database/Therma.o Database/Thermas.o
+OBJECTS_DATABASE    := Database/Activator.o Database/Activators.o Database/Database.o Database/Debug.o Database/DHTSensor.o Database/DHTSensorList.o Database/Fabula.o Database/Fabulas.o Database/Phoenix.o Database/Phoenixes.o Database/Relay.o Database/Relays.o Database/Servus.o Database/Servuses.o Database/Therma.o Database/Thermas.o
 OBJECTS_DISPATCHER  := Dispatcher/Listener.o Dispatcher/Notificator.o Dispatcher/Service.o Dispatcher/Session.o
 OBJECTS_ANTICIPATOR := Anticipator/Listener.o Anticipator/Processing.o Anticipator/Service.o Anticipator/Session.o
 OBJECTS_WWW         := WWW/Activator.o WWW/Home.o WWW/Phoenix.o WWW/Relay.o WWW/Servus.o WWW/SessionManager.o WWW/SystemInformation.o WWW/Therma.o
@@ -103,6 +103,12 @@ Database/Database.o: Database/Database.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Database/Debug.o: Database/Debug.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Database/DHTSensor.o: Database/DHTSensor.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+Database/DHTSensorList.o: Database/DHTSensorList.cpp
 	$(CPP) -c $(CPPFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 Database/Fabula.o: Database/Fabula.cpp
