@@ -12,6 +12,10 @@
 
 // Local definition files.
 //
+#include "Primus/Database/DHTSensor.hpp"
+#include "Primus/Database/DHTSensorList.hpp"
+#include "Primus/Database/Servus.hpp"
+#include "Primus/Database/Servuses.hpp"
 #include "Primus/Database/Therma.hpp"
 #include "Primus/Database/Thermas.hpp"
 #include "Primus/WWW/Home.hpp"
@@ -49,7 +53,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                         if (thermaTitle.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
-                        Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
+                        Database::Therma& therma = Database::Thermas::SensorById(thermaId);
 
                         therma.setTitle(thermaTitle);
 
@@ -76,13 +80,24 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
 
     HTML::Division division(instance, HTML::Nothing, "workspace");
 
+    this->pageThermaDiagram(connection, instance);
+    this->pageThermaDatasheet(connection, instance);
+}
+
+void
+WWW::Site::pageThermaDatasheet(HTTP::Connection& connection, HTML::Instance& instance)
+{
+    unsigned long numberOfDHTSensors = Database::DHTSensorList::TotalNumber();
+    unsigned long numberOfDSSensors = Database::Thermas::TotalNumber();
+
+    if ((numberOfDHTSensors > 0) && (numberOfDSSensors > 0))
     { // HTML.Division
         HTML::Division division(instance, "full", "slice");
 
         { // HTML.HeadingText
             HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
 
-            headingText.plain("Therma");
+            headingText.plain("Sensoren DHT11/DHT22 und DS18B20/DS18S20");
         } // HTML.HeadingText
 
         {
@@ -101,9 +116,9 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
-                        tableDataCell.plain("GPIO Id");
+                        tableDataCell.plain("Servus");
                     }
 
                     {
@@ -143,7 +158,10 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance);
+                        HTML::TableDataCell tableDataCell(instance,
+                                HTML::Nothing,
+                                HTML::Nothing,
+                                2);
                     }
                 }
             }
@@ -151,65 +169,157 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
             {
                 HTML::TableBody tableBody(instance);
 
-                unsigned long numberOfThermas = Database::Thermas::TotalNumber();
-                for (unsigned int thermaIndex = 0;
-                     thermaIndex < numberOfThermas;
-                     thermaIndex++)
+                for (unsigned int sensorIndex = 0;
+                     sensorIndex < numberOfDHTSensors;
+                     sensorIndex++)
                 {
-                    Database::Therma& therma = Database::Thermas::ThermaByIndex(thermaIndex);
+                    Database::DHTSensor& sensor = Database::DHTSensorList::SensorByIndex(sensorIndex);
 
                     HTML::TableRow tableRow(instance);
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(therma.title);
+                        tableDataCell.plain(sensor.title);
                     }
 
                     {
-                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "dump");
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
 
-                        tableDataCell.plain(therma.gpioDeviceNumber);
+                        Database::Servus& servus = Database::Servuses::ServusById(sensor.servusId);
+
+                        tableDataCell.plain(servus.title);
+
+                        delete &servus;
                     }
 
-                    float current = therma.lastKnownTemperature();
-                    float lowest = therma.lowestKnownTemperature();
-                    float highest = therma.highestKnownTemperature();
+                    float lastKnownHumidity = sensor.lastKnownHumidity();
+                    float lowestKnownHumidity = sensor.lowestKnownHumidity();
+                    float highestKnownHumidity = sensor.highestKnownHumidity();
+
+                    float lastKnownTemperature = sensor.lastKnownTemperature();
+                    float lowestKnownTemperature = sensor.lowestKnownTemperature();
+                    float highestKnownTemperature = sensor.highestKnownTemperature();
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
-                        tableDataCell.plain("%4.2f &#x2103;", lowest);
+                        tableDataCell.plain("%4.2f &#x2103; <br /> %4.2f %%",
+                                lowestKnownTemperature,
+                                lowestKnownHumidity);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
 
-                        tableDataCell.plain("[-%4.2f &#x2103;]", current - lowest);
+                        tableDataCell.plain("[-%4.2f &#x2103;] <br /> [%4.2f %%]",
+                                lastKnownTemperature - lowestKnownTemperature,
+                                lastKnownHumidity - lowestKnownHumidity);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
 
-                        tableDataCell.plain("%4.2f &#x2103;", current);
+                        tableDataCell.plain("%4.2f &#x2103; <br /> %4.2f %%",
+                                lastKnownTemperature,
+                                lastKnownHumidity);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
-                        tableDataCell.plain("[+%4.2f &#x2103;]", highest - current);
+                        tableDataCell.plain("[+%4.2f &#x2103;] <br /> [%4.2f %%]",
+                                highestKnownTemperature - lastKnownTemperature,
+                                highestKnownHumidity - lastKnownHumidity);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
 
-                        tableDataCell.plain("%4.2f &#x2103;", highest);
+                        tableDataCell.plain("%4.2f &#x2103; <br /> %4.2f %%",
+                                highestKnownTemperature,
+                                highestKnownHumidity);
                     }
 
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
 
-                        tableDataCell.plain("%3.2f &#x2103;", therma.edge);
+                        tableDataCell.plain("%3.2f &#x2103; <br /> %3.2f %%",
+                                sensor.temperatureEdge,
+                                sensor.humidityEdge);
+                    }
+
+                    delete &sensor;
+                }
+
+                for (unsigned int sensorIndex = 0;
+                     sensorIndex < numberOfDSSensors;
+                     sensorIndex++)
+                {
+                    Database::Therma& sensor = Database::Thermas::SensorByIndex(sensorIndex);
+
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
+
+                        tableDataCell.plain(sensor.title);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "centered");
+
+                        Database::Servus& servus = Database::Servuses::ServusById(sensor.servusId);
+
+                        tableDataCell.plain(servus.title);
+
+                        delete &servus;
+                    }
+
+                    float lastKnownTemperature = sensor.lastKnownTemperature();
+                    float lowestKnownTemperature = sensor.lowestKnownTemperature();
+                    float highestKnownTemperature = sensor.highestKnownTemperature();
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
+
+                        tableDataCell.plain("%4.2f &#x2103;",
+                                lowestKnownTemperature);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "blue");
+
+                        tableDataCell.plain("[-%4.2f &#x2103;]",
+                                lastKnownTemperature - lowestKnownTemperature);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "green");
+
+                        tableDataCell.plain("%4.2f &#x2103;",
+                                lastKnownTemperature);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
+
+                        tableDataCell.plain("[+%4.2f &#x2103;]",
+                                highestKnownTemperature - lastKnownTemperature);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "red");
+
+                        tableDataCell.plain("%4.2f &#x2103;",
+                                highestKnownTemperature);
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "value");
+
+                        tableDataCell.plain("%3.2f &#x2103;",
+                                sensor.temperatureEdge);
                     }
 
                     {
@@ -224,7 +334,7 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                                     WWW::Action.c_str(),
                                     WWW::ActionThermaEdit.c_str(),
                                     WWW::ThermaId.c_str(),
-                                    std::to_string(therma.thermaId).c_str());
+                                    std::to_string(sensor.thermaId).c_str());
 
                             HTML::URL url(instance,
                                     urlString,
@@ -236,116 +346,86 @@ WWW::Site::pageTherma(HTTP::Connection& connection, HTML::Instance& instance)
                         } // HTML.URL
                     }
 
-                    delete &therma;
+                    {
+                        HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "action");
+
+                        { // HTML.URL
+                            char urlString[200];
+
+                            snprintf(urlString, sizeof(urlString),
+                                    "%s?%s=%s&%s=%s",
+                                    connection.pageName().c_str(),
+                                    WWW::Action.c_str(),
+                                    WWW::ActionThermaDiagram.c_str(),
+                                    WWW::ThermaId.c_str(),
+                                    std::to_string(sensor.thermaId).c_str());
+
+                            HTML::URL url(instance,
+                                    urlString,
+                                    "Temperatur Diagramm.");
+
+                            url.image("img/diagram.png", "Diagramm");
+
+                            url.plain("[Diagramm]");
+                        } // HTML.URL
+                    }
+
+                    delete &sensor;
                 }
             }
         }
     } // HTML.Division
 }
 
-/**
- * @brief   Generate HTML page for the 'Therma' edit form.
- *
- * @param   connection      HTTP connection.
- * @param   instance        HTML instance.
- */
 void
-WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& instance)
+WWW::Site::pageThermaDiagram(HTTP::Connection& connection, HTML::Instance& instance)
 {
-    unsigned long thermaId;
-
-    try
+    if (connection.argumentPairExists(WWW::Action, WWW::ActionThermaDiagram) == true)
     {
-        thermaId = connection[WWW::ThermaId];
-    }
-    catch (HTTP::ArgumentDoesNotExist&)
-    {
-        thermaId = 0;
-    }
-
-    HTML::Form form(instance,
-            HTML::Get,
-            "full",
-            "colloquium",
-            "colloquium",
-            connection.pageName());
-
-    form.hidden(WWW::Action, WWW::ActionThermaSave);
-
-    form.hidden(WWW::ThermaId, thermaId);
-
-    std::string thermaTitle;
-
-    if (thermaId != 0)
-    {
-        Database::Therma& therma = Database::Thermas::ThermaById(thermaId);
-
-        thermaTitle = therma.title;
-
-        delete &therma;
-    }
-
-    {
-        HTML::FieldSet fieldSet(instance, HTML::Nothing, "north");
-
-        { // HTML.HeadingText
-            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
-
-            if (thermaId == 0)
-            {
-                instance.alertMessage("Fehler in Browser!");
-
-                return;
-            }
-
-            headingText.plain("Therma <b>%s</b> bearbeiten", thermaTitle.c_str());
-        } // HTML.HeadingText
-
+        try
         {
-            HTML::DefinitionList definitionList(instance);
+            const unsigned long thermaId = connection[WWW::ThermaId];
 
-            {
-                HTML::DefinitionTerm definitionTerm(instance);
+            HTML::Division division(instance, HTML::Nothing, "workspace");
+
+            { // HTML.Division
+                HTML::Division division(instance, "full", "slice");
+
+                { // HTML.HeadingText
+                    HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+                    headingText.plain("Diagram");
+                } // HTML.HeadingText
 
                 {
-                    HTML::Label label(instance);
+                    HTML::Division division(instance, "Diagram", HTML::Nothing);
+                }
 
-                    label.plain("Beschreibung");
+                {
+                    HTML::Script script(instance, "text/javascript", "js/chart.js");
+                }
+
+                {
+                    HTML::Script script(instance, "text/javascript", "js/line-chart.js");
+                }
+
+                {
+                    HTML::Script script(instance, "text/javascript", HTML::Nothing);
+
+                    Database::Therma& therma = Database::Thermas::SensorById(thermaId);
+
+                    script.plain(therma.diagramAsJava());
+                    script.plain("new LineChart(document.getElementById('Diagram'), data);");
+
+                    delete &therma;
                 }
             }
-
-            {
-                HTML::DefinitionDescription definitionDescription(instance);
-
-                form.textField("description", "inputbox",
-                        WWW::ThermaTitle,
-                        thermaTitle.c_str(),
-                        100, 40);
-            }
         }
-    }
-
-    {
-        HTML::FieldSet fieldSet(instance, HTML::Nothing, "south");
-
+        catch (HTTP::ArgumentDoesNotExist&)
         {
-            HTML::Button submitButton(instance,
-                    HTML::Nothing,
-                    HTML::Nothing,
-                    WWW::Button,
-                    WWW::ButtonSubmit);
+            instance.alertMessage("Fehler in Browser!");
 
-            submitButton.plain("Speichern");
-        }
-
-        {
-            HTML::Button cancelButton(instance,
-                    HTML::Nothing,
-                    HTML::Nothing,
-                    WWW::Button,
-                    WWW::ButtonCancel);
-
-            cancelButton.plain("Abbrechen");
+            return;
         }
     }
 }
