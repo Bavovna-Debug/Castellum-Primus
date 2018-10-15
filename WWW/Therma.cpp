@@ -429,3 +429,110 @@ WWW::Site::pageThermaDiagram(HTTP::Connection& connection, HTML::Instance& insta
         }
     }
 }
+
+/**
+ * @brief   Generate HTML page for the 'Therma' edit form.
+ *
+ * @param   connection      HTTP connection.
+ * @param   instance        HTML instance.
+ */
+void
+WWW::Site::pageThermaEditForm(HTTP::Connection& connection, HTML::Instance& instance)
+{
+    unsigned long thermaId;
+
+    try
+    {
+        thermaId = connection[WWW::ThermaId];
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    {
+        thermaId = 0;
+    }
+
+    HTML::Form form(instance,
+            HTML::Get,
+            "full",
+            "colloquium",
+            "colloquium",
+            connection.pageName());
+
+    form.hidden(WWW::Action, WWW::ActionThermaSave);
+
+    form.hidden(WWW::ThermaId, thermaId);
+
+    std::string thermaTitle;
+
+    if (thermaId != 0)
+    {
+        Database::Therma& therma = Database::Thermas::SensorById(thermaId);
+
+        thermaTitle = therma.title;
+
+        delete &therma;
+    }
+
+    {
+        HTML::FieldSet fieldSet(instance, HTML::Nothing, "north");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            if (thermaId == 0)
+            {
+                instance.alertMessage("Fehler in Browser!");
+
+                return;
+            }
+
+            headingText.plain("Therma <b>%s</b> bearbeiten", thermaTitle.c_str());
+        } // HTML.HeadingText
+
+        {
+            HTML::DefinitionList definitionList(instance);
+
+            {
+                HTML::DefinitionTerm definitionTerm(instance);
+
+                {
+                    HTML::Label label(instance);
+
+                    label.plain("Beschreibung");
+                }
+            }
+
+            {
+                HTML::DefinitionDescription definitionDescription(instance);
+
+                form.textField("description", "inputbox",
+                        WWW::ThermaTitle,
+                        thermaTitle.c_str(),
+                        100, 40);
+            }
+        }
+    }
+
+    {
+        HTML::FieldSet fieldSet(instance, HTML::Nothing, "south");
+
+        {
+            HTML::Button submitButton(instance,
+                    HTML::Nothing,
+                    HTML::Nothing,
+                    WWW::Button,
+                    WWW::ButtonSubmit);
+
+            submitButton.plain("Speichern");
+        }
+
+        {
+            HTML::Button cancelButton(instance,
+                    HTML::Nothing,
+                    HTML::Nothing,
+                    WWW::Button,
+                    WWW::ButtonCancel);
+
+            cancelButton.plain("Abbrechen");
+        }
+    }
+}

@@ -33,5 +33,8 @@ namespace Database
         lastKnownTemperature(),
         lowestKnownTemperature(),
         highestKnownTemperature();
+
+        std::string
+        diagramAsJava();
     };
 };

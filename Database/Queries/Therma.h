@@ -43,3 +43,6 @@ WHERE therma_id = $1"
 SELECT MAX(temperature) \
 FROM journal.temperatures \
 WHERE therma_id = $1"
+
+#define QueryDSSensorDiagramAsJava "\
+SELECT journal.temperatures_diagram($1)"

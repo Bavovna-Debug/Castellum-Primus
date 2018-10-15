@@ -19,6 +19,7 @@ namespace WWW
     static const std::string PageRelay                  = "relay";
     static const std::string PageTherma                 = "therma";
 
+    static const std::string JavaScript                 = "js";
     static const std::string Images                     = "img";
     static const std::string Download                   = "download";
     static const std::string DownloadSubject            = "subject";
@@ -42,6 +43,7 @@ namespace WWW
     static const std::string ActionActivatorSave        = "activator_save";
     static const std::string ActionThermaEdit           = "therma_edit";
     static const std::string ActionThermaSave           = "therma_save";
+    static const std::string ActionThermaDiagram        = "therma_diagram";
     static const std::string ActionRelayEdit            = "therma_edit";
     static const std::string ActionRelaySave            = "therma_save";
 
@@ -239,6 +241,12 @@ namespace WWW
          */
         void
         pageTherma(HTTP::Connection&, HTML::Instance&);
+
+        void
+        pageThermaDatasheet(HTTP::Connection&, HTML::Instance&);
+
+        void
+        pageThermaDiagram(HTTP::Connection&, HTML::Instance&);
 
         /**
          * @brief   Generate HTML page for the 'Therma' edit form.

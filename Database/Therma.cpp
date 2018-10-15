@@ -224,3 +224,42 @@ Database::Therma::highestKnownTemperature()
         throw exception;
     }
 }
+
+std::string
+Database::Therma::diagramAsJava()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryDSSensorDiagramAsJava);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::TEXTOID);
+
+            return query.popVARCHAR();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot build diagram of DS18B20/DS18S20 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
