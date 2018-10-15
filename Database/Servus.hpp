@@ -29,7 +29,7 @@ namespace Database
         ~Servus();
 
         std::string
-        configurationJSON();
+        configurationAsJSON();
 
         void
         toggleEnabledFlag(),

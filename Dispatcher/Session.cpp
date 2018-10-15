@@ -298,14 +298,21 @@ Dispatcher::Session::ThreadHandler(Dispatcher::Session* session)
                 ReportInfo("[Dispatcher] Servus \"%s\" requested configuration",
                         session->servus->title.c_str());
 
-                const std::string configurationJSON = session->servus->configurationJSON();
+                try
+                {
+                    const std::string configurationAsJSON = session->servus->configurationAsJSON();
 
-                response.reset();
-                response["CSeq"] = expectedCSeq;
-                response["Agent"] = Primus::SoftwareVersion;
-                response["Neutrino-Interval"] =
-                        configuration.servus.intervalBetweenNeutrinos;
-                response.generateResponse(RTSP::OK, configurationJSON);
+                    response.reset();
+                    response["CSeq"] = expectedCSeq;
+                    response["Agent"] = Primus::SoftwareVersion;
+                    response["Neutrino-Interval"] =
+                            configuration.servus.intervalBetweenNeutrinos;
+                    response.generateResponse(RTSP::OK, configurationAsJSON);
+                }
+                catch (PostgreSQL::Exception&)
+                {
+                    throw Dispatcher::RejectDatagram("Bad servus configuration");
+                }
             }
             else if (request.methodIs("PLAY") == true)
             {

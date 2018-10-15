@@ -71,7 +71,7 @@ Database::Servus::~Servus()
 }
 
 std::string
-Database::Servus::configurationJSON()
+Database::Servus::configurationAsJSON()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -91,9 +91,9 @@ Database::Servus::configurationJSON()
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::JSONBOID);
 
-            const std::string configurationJSON = query.popJSONB();
+            const std::string configurationAsJSON = query.popJSONB();
 
-            return configurationJSON.substr(1);
+            return configurationAsJSON.substr(1);
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
