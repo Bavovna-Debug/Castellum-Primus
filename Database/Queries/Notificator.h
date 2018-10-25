@@ -10,7 +10,7 @@ WHERE pending IS TRUE AND device_token IS NOT NULL"
 SELECT notification_id, device_token, payload \
 FROM journal.notifications \
 JOIN kernel.phoenixes USING (phoenix_id) \
-WHERE pending IS TRUE AND payload IS NOT NULL AND device_token IS NOT NULL \
+WHERE pending IS TRUE AND device_token IS NOT NULL \
 ORDER BY notification_id \
 LIMIT 10"
 
