@@ -139,7 +139,7 @@ Database::Servuses::ServusById(const unsigned long servusId)
 }
 
 unsigned long
-Database::Servuses::DefineServus(const std::string& description)
+Database::Servuses::DefineServus(const std::string& title)
 {
     unsigned long servusId;
 
@@ -154,7 +154,7 @@ Database::Servuses::DefineServus(const std::string& description)
         {
             PostgreSQL::Query query(*database.connection);
 
-            query.pushVARCHAR(&description);
+            query.pushVARCHAR(&title);
             query.execute(QueryInsertServus);
 
             query.assertNumberOfRows(1);

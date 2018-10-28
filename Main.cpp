@@ -17,7 +17,7 @@ main(void)
     {
         Workspace::Kernel& kernel = Workspace::Kernel::InitInstance();
 
-        kernel.activateSysLog(Workspace::Local0, Workspace::Debug, "primus");
+        kernel.activateSysLog(Workspace::Local0, Workspace::Debug);
 
         kernel.daemonize(Workspace::RootPath);
 

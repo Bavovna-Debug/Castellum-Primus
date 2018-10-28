@@ -11,10 +11,10 @@
 // Local definition files.
 //
 #include "Primus/Database/Database.hpp"
-#include "Primus/Database/Servus.hpp"
-#include "Primus/Database/Queries/Servus.h"
+#include "Primus/Database/DHTSensor.hpp"
+#include "Primus/Database/Queries/DHT.h"
 
-Database::Servus::Servus(const unsigned long servusId)
+Database::DHTSensor::DHTSensor(const unsigned long sensorId)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -22,30 +22,30 @@ Database::Servus::Servus(const unsigned long servusId)
     {
         PostgreSQL::Query query(*database.connection);
 
-        unsigned long servusIdQuery = htobe64(servusId);
+        unsigned long sensorIdQuery = htobe64(sensorId);
 
-        query.pushBIGINT(&servusIdQuery);
-        query.execute(QuerySearchForServusById);
+        query.pushBIGINT(&sensorIdQuery);
+        query.execute(QuerySearchForDHTSensorById);
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(8);
         query.assertColumnOfType(0, PostgreSQL::TIMESTAMPOID);
         query.assertColumnOfType(1, PostgreSQL::INT8OID);
         query.assertColumnOfType(2, PostgreSQL::UUIDOID);
-        query.assertColumnOfType(3, PostgreSQL::BOOLOID);
-        query.assertColumnOfType(4, PostgreSQL::BOOLOID);
-        query.assertColumnOfType(5, PostgreSQL::TIMESTAMPOID);
-        query.assertColumnOfType(6, PostgreSQL::UUIDOID);
+        query.assertColumnOfType(3, PostgreSQL::INT8OID);
+        query.assertColumnOfType(4, PostgreSQL::INT2OID);
+        query.assertColumnOfType(5, PostgreSQL::FLOAT4OID);
+        query.assertColumnOfType(6, PostgreSQL::FLOAT4OID);
         query.assertColumnOfType(7, PostgreSQL::VARCHAROID);
 
-        this->timestamp     = query.popTIMESTAMP();
-        this->servusId      = query.popBIGINT();
-        this->token         = query.popUUID();
-        this->enabled       = query.popBOOLEAN();
-        this->online        = query.popBOOLEAN();
-        this->runningSince  = query.popTIMESTAMP();
-        this->authenticator = query.popUUID();
-        this->title         = query.popVARCHAR();
+        this->timestamp         = query.popTIMESTAMP();
+        this->sensorId          = query.popBIGINT();
+        this->token             = query.popUUID();
+        this->servusId          = query.popBIGINT();
+        this->gpioPinNumber     = query.popSMALL();
+        this->humidityEdge      = query.popREAL();
+        this->temperatureEdge   = query.popREAL();
+        this->title             = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -55,14 +55,14 @@ Database::Servus::Servus(const unsigned long servusId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load servus: %s",
+        ReportError("[Database] Cannot load DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
     }
 }
 
-Database::Servus::~Servus()
+Database::DHTSensor::~DHTSensor()
 {
     if (this->timestamp != NULL)
     {
@@ -70,8 +70,8 @@ Database::Servus::~Servus()
     }
 }
 
-std::string
-Database::Servus::configurationAsJSON()
+float
+Database::DHTSensor::lastKnownHumidity()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -82,18 +82,16 @@ Database::Servus::configurationAsJSON()
         {
             PostgreSQL::Query query(*database.connection);
 
-            unsigned long servusIdQuery = htobe64(this->servusId);
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
 
-            query.pushBIGINT(&servusIdQuery);
-            query.execute(QueryServusConfiguration);
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLastKnownHumidity);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
-            query.assertColumnOfType(0, PostgreSQL::JSONBOID);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
 
-            const std::string configurationAsJSON = query.popJSONB();
-
-            return configurationAsJSON.substr(1);
+            return query.popREAL();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -104,15 +102,15 @@ Database::Servus::configurationAsJSON()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot generate servus configuration: %s",
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
     }
 }
 
-void
-Database::Servus::toggleEnabledFlag()
+float
+Database::DHTSensor::lowestKnownHumidity()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -123,16 +121,16 @@ Database::Servus::toggleEnabledFlag()
         {
             PostgreSQL::Query query(*database.connection);
 
-            unsigned long servusIdQuery = htobe64(this->servusId);
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
 
-            query.pushBIGINT(&servusIdQuery);
-            query.execute(QueryToggleServusEnabledFlag);
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLowestHumidity);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
-            query.assertColumnOfType(0, PostgreSQL::BOOLOID);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
 
-            this->enabled = query.popBOOLEAN();
+            return query.popREAL();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -143,15 +141,15 @@ Database::Servus::toggleEnabledFlag()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot toggle servus enabled flag: %s",
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
     }
 }
 
-void
-Database::Servus::setOnline()
+float
+Database::DHTSensor::highestKnownHumidity()
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -162,117 +160,16 @@ Database::Servus::setOnline()
         {
             PostgreSQL::Query query(*database.connection);
 
-            unsigned long servusIdQuery = htobe64(this->servusId);
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
 
-            query.pushBIGINT(&servusIdQuery);
-            query.execute(QueryServusSetOnline);
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Database] Cannot update servus online status: %s",
-                exception.what());
-
-        throw exception;
-    }
-}
-
-void
-Database::Servus::setOffline()
-{
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            unsigned long servusIdQuery = htobe64(this->servusId);
-
-            query.pushBIGINT(&servusIdQuery);
-            query.execute(QueryServusSetOffline);
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Database] Cannot update servus online status: %s",
-                exception.what());
-
-        throw exception;
-    }
-}
-
-void
-Database::Servus::setRunningSince(Toolkit::Timestamp& runningSince)
-{
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            unsigned long servusIdQuery = htobe64(this->servusId);
-
-            query.pushBIGINT(&servusIdQuery);
-            query.pushTIMESTAMP(runningSince);
-            query.execute(QueryServusSetRunningSince);
-        }
-    }
-    catch (PostgreSQL::OperatorIntervention& exception)
-    {
-        database.recover(exception);
-
-        throw exception;
-    }
-    catch (PostgreSQL::Exception& exception)
-    {
-        ReportError("[Database] Cannot update servus running-since timestamp: %s",
-                exception.what());
-
-        throw exception;
-    }
-}
-
-void
-Database::Servus::setTitle(const std::string& title)
-{
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
-
-    try
-    {
-        PostgreSQL::Transaction transaction(*database.connection);
-
-        {
-            PostgreSQL::Query query(*database.connection);
-
-            unsigned long servusIdQuery = htobe64(this->servusId);
-
-            query.pushBIGINT(&servusIdQuery);
-            query.pushVARCHAR(&title);
-            query.execute(QueryUpdateServusTitle);
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorHighestHumidity);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
-            query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
 
-            this->title = query.popVARCHAR();
+            return query.popREAL();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -283,7 +180,124 @@ Database::Servus::setTitle(const std::string& title)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot update servus: %s",
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::DHTSensor::lastKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
+
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLastKnownTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::DHTSensor::lowestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
+
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorLowestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+float
+Database::DHTSensor::highestKnownTemperature()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long sensorIdQuery = htobe64(this->sensorId);
+
+            query.pushBIGINT(&sensorIdQuery);
+            query.execute(QueryDHTSensorHighestTemperature);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::FLOAT4OID);
+
+            return query.popREAL();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot fetch data of DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;

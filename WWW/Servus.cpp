@@ -42,13 +42,13 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
                 {
                     instance.infoMessage("Servus <b>%s</b> wurde <u>aktiviert</u>. " \
                             "Logins von diesem Servus werden künftig akzeptiert.",
-                            servus.description.c_str());
+                            servus.title.c_str());
                 }
                 else
                 {
                     instance.infoMessage("Servus <b>%s</b> wurde <u>deaktiviert</u>. " \
                             "Logins von diesem Servus werden künftig abgelehnt.",
-                            servus.description.c_str());
+                            servus.title.c_str());
                 }
 
                 delete &servus;
@@ -78,13 +78,13 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
 
                     try
                     {
-                        const std::string servusDescription = connection[WWW::ServusDescription];
-                        if (servusDescription.empty() == true)
+                        const std::string servusTitle = connection[WWW::ServusTitle];
+                        if (servusTitle.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
                         Database::Servus& servus = Database::Servuses::ServusById(servusId);
 
-                        servus.setDescription(servusDescription);
+                        servus.setTitle(servusTitle);
 
                         delete &servus;
                     }
@@ -99,12 +99,12 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
                 {
                     try
                     {
-                        const std::string servusDescription = connection[WWW::ServusDescription];
-                        if (servusDescription.empty() == true)
+                        const std::string servusTitle = connection[WWW::ServusTitle];
+                        if (servusTitle.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
                         const unsigned long servusId =
-                                Database::Servuses::DefineServus(servusDescription);
+                                Database::Servuses::DefineServus(servusTitle);
 
                         if (servusId != 0)
                         {
@@ -145,7 +145,99 @@ WWW::Site::pageServus(HTTP::Connection& connection, HTML::Instance& instance)
  */
 void
 WWW::Site::pageServusInfo(HTTP::Connection& connection, HTML::Instance& instance)
-{ }
+{
+    try
+    {
+        // This may cause HTTP::ArgumentDoesNotExist, which is not critical.
+        //
+        unsigned long servusId = connection[WWW::ServusId];
+
+        Database::Servus& servus = Database::Servuses::ServusById(servusId);
+
+        HTML::Division division(instance, "full", "slice");
+
+        { // HTML.HeadingText
+            HTML::HeadingText headingText(instance, HTML::H2, HTML::Left);
+
+            headingText.plain("Servus <b>%s</b>", servus.title.c_str());
+        } // HTML.HeadingText
+
+        {
+            HTML::Table table(instance);
+
+            {
+                HTML::TableBody tableBody(instance);
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Anmeldestatus:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        if (servus.enabled == true)
+                        {
+                            tableDataCell.plain("Anmeldungen zugelassen");
+                        }
+                        else
+                        {
+                            tableDataCell.plain("Gesperrt");
+                        }
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Online-Status:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        if (servus.online == true)
+                        {
+                            tableDataCell.plain("Mit Primus verbunden (Servus läuft seit %s)",
+                                    servus.runningSince->YYYYMMDDHHMM().c_str());
+                        }
+                        else
+                        {
+                            tableDataCell.plain("Nicht verbunden");
+                        }
+                    }
+                }
+
+                {
+                    HTML::TableRow tableRow(instance);
+
+                    {
+                        HTML::TableHeadCell tableHeadCell(instance);
+
+                        tableHeadCell.plain("Authenticator:");
+                    }
+
+                    {
+                        HTML::TableDataCell tableDataCell(instance);
+
+                        tableDataCell.plain(servus.authenticator);
+                    }
+                }
+            }
+        }
+    }
+    catch (HTTP::ArgumentDoesNotExist&)
+    {
+        // Do nothing - no servus has been selected so no servus info needs to be shown.
+    }
+}
 
 /**
  * @brief   Show list of Servuses.
@@ -253,7 +345,7 @@ WWW::Site::pageServusList(HTTP::Connection& connection, HTML::Instance& instance
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(servus.description);
+                        tableDataCell.plain(servus.title);
                     }
 
                     if (servus.enabled == true)
@@ -420,13 +512,13 @@ WWW::Site::pageServusEditForm(HTTP::Connection& connection, HTML::Instance& inst
         form.hidden(WWW::ServusId, servusId);
     }
 
-    std::string servusDescription;
+    std::string servusTitle;
 
     if (servusId != 0)
     {
         Database::Servus& servus = Database::Servuses::ServusById(servusId);
 
-        servusDescription = servus.description;
+        servusTitle = servus.title;
 
         delete &servus;
     }
@@ -464,8 +556,8 @@ WWW::Site::pageServusEditForm(HTTP::Connection& connection, HTML::Instance& inst
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::ServusDescription,
-                        servusDescription.c_str(),
+                        WWW::ServusTitle,
+                        servusTitle.c_str(),
                         100, 40);
             }
         }

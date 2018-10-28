@@ -21,7 +21,7 @@ namespace Database
         bool                online;
         Toolkit::Timestamp* runningSince;
         std::string         authenticator;
-        std::string         description;
+        std::string         title;
 
     public:
         Servus(const unsigned long servusId);
@@ -29,7 +29,7 @@ namespace Database
         ~Servus();
 
         std::string
-        configurationJSON();
+        configurationAsJSON();
 
         void
         toggleEnabledFlag(),
@@ -38,6 +38,6 @@ namespace Database
         setRunningSince(Toolkit::Timestamp&);
 
         void
-        setDescription(const std::string&);
+        setTitle(const std::string&);
     };
 };

@@ -12,14 +12,14 @@
 // Local definition files.
 //
 #include "Primus/Database/Database.hpp"
-#include "Primus/Database/Therma.hpp"
-#include "Primus/Database/Thermas.hpp"
-#include "Primus/Database/Queries/Therma.h"
+#include "Primus/Database/DHTSensor.hpp"
+#include "Primus/Database/DHTSensorList.hpp"
+#include "Primus/Database/Queries/DHT.h"
 
 unsigned long
-Database::Thermas::TotalNumber()
+Database::DHTSensorList::TotalNumber()
 {
-    unsigned long numberOfThermas;
+    unsigned long numberOfSensors;
 
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -27,13 +27,13 @@ Database::Thermas::TotalNumber()
     {
         PostgreSQL::Query query(*database.connection);
 
-        query.execute(QueryTotalNumberOfDSSensors);
+        query.execute(QueryTotalNumberOfDHTSensors);
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(1);
         query.assertColumnOfType(0, PostgreSQL::INT8OID);
 
-        numberOfThermas = query.popBIGINT();
+        numberOfSensors = query.popBIGINT();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -43,19 +43,19 @@ Database::Thermas::TotalNumber()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot get number of DS18B20/DS18S20 sensors: %s",
+        ReportError("[Database] Cannot get number of DHT11/DHT22 sensors: %s",
                 exception.what());
 
         throw exception;
     }
 
-    return numberOfThermas;
+    return numberOfSensors;
 }
 
-Database::Therma&
-Database::Thermas::SensorByIndex(const unsigned long sensorId)
+Database::DHTSensor&
+Database::DHTSensorList::SensorByIndex(const unsigned long thermaIndex)
 {
-    unsigned long thermaId;
+    unsigned long sensorId;
 
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -63,16 +63,16 @@ Database::Thermas::SensorByIndex(const unsigned long sensorId)
     {
         PostgreSQL::Query query(*database.connection);
 
-        unsigned long sensorIdQuery = htobe64(sensorId);
+        unsigned long thermaIndexQuery = htobe64(thermaIndex);
 
-        query.pushBIGINT(&sensorIdQuery);
-        query.execute(QuerySearchForDSSensorByIndex);
+        query.pushBIGINT(&thermaIndexQuery);
+        query.execute(QuerySearchForDHTSensorByIndex);
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(1);
         query.assertColumnOfType(0, PostgreSQL::INT8OID);
 
-        thermaId = query.popBIGINT();
+        sensorId = query.popBIGINT();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -82,25 +82,81 @@ Database::Thermas::SensorByIndex(const unsigned long sensorId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot find DS18B20/DS18S20 sensor: %s",
+        ReportError("[Database] Cannot find DHT11/DHT22 sensor: %s",
                 exception.what());
 
         throw exception;
     }
 
-    return Database::Thermas::SensorById(thermaId);
+    return Database::DHTSensorList::SensorById(sensorId);
 }
 
-Database::Therma&
-Database::Thermas::SensorById(const unsigned long sensorId)
+Database::DHTSensor&
+Database::DHTSensorList::SensorById(const unsigned long sensorId)
 {
-    Database::Therma* therma = new Database::Therma(sensorId);
+    Database::DHTSensor* sensor = new Database::DHTSensor(sensorId);
 
-    return *therma;
+    return *sensor;
 }
 
 void
-Database::NoticeDSSensorTemperature(
+Database::NoticeDHTSensorHumidity(
+    Toolkit::Timestamp& originTimestamp,
+    const std::string&  sensorToken,
+    const double        stampAsReal,
+    const float         humidity)
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            union
+            {
+                unsigned long   stampInteger;
+                double          stampReal;
+            };
+
+            memcpy(&stampInteger, &stampAsReal, sizeof(stampAsReal));
+            stampInteger = htobe64(stampInteger);
+
+            union
+            {
+                unsigned int    humidityInteger;
+                float           humidityReal;
+            };
+
+            memcpy(&humidityInteger, &humidity, sizeof(humidity));
+            humidityInteger = htobe32(humidityInteger);
+
+            query.pushTIMESTAMP(originTimestamp);
+            query.pushUUID(&sensorToken);
+            query.pushDOUBLE(&stampReal);
+            query.pushREAL(&humidityReal);
+            query.execute(QueryInsertDHTSensorHumidity);
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot store DHT11/DHT22 sensor humidity: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+void
+Database::NoticeDHTSensorTemperature(
     Toolkit::Timestamp& originTimestamp,
     const std::string&  sensorToken,
     const double        stampAsReal,
@@ -137,7 +193,7 @@ Database::NoticeDSSensorTemperature(
             query.pushUUID(&sensorToken);
             query.pushDOUBLE(&stampReal);
             query.pushREAL(&temperatureReal);
-            query.execute(QueryInsertDSSensorTemperature);
+            query.execute(QueryInsertDHTSensorTemperature);
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -148,7 +204,7 @@ Database::NoticeDSSensorTemperature(
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot store DS18B20/DS18S20 sensor temperature: %s",
+        ReportError("[Database] Cannot store DHT11/DHT22 sensor temperature: %s",
                 exception.what());
 
         throw exception;
