@@ -44,7 +44,7 @@ Database::Relay::Relay(const unsigned long relayId)
         this->servusId          = query.popBIGINT();
         this->gpioPinNumber     = query.popINTEGER();
         this->state             = query.popBOOLEAN();
-        this->description       = query.popVARCHAR();
+        this->title             = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -70,7 +70,7 @@ Database::Relay::~Relay()
 }
 
 void
-Database::Relay::setDescription(const std::string& description)
+Database::Relay::setTitle(const std::string& title)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -84,14 +84,14 @@ Database::Relay::setDescription(const std::string& description)
             unsigned long relayIdQuery = htobe64(this->relayId);
 
             query.pushBIGINT(&relayIdQuery);
-            query.pushVARCHAR(&description);
-            query.execute(QueryUpdateRelayDescription);
+            query.pushVARCHAR(&title);
+            query.execute(QueryUpdateRelayTitle);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
 
-            this->description = query.popVARCHAR();
+            this->title = query.popVARCHAR();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)

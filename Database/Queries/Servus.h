@@ -16,7 +16,7 @@ ORDER BY list_order ASC \
 OFFSET $1 LIMIT 1"
 
 #define QuerySearchForServusById "\
-SELECT servus_stamp, servus_id, servus_token, enabled, online, running_since, authenticator, servus_description \
+SELECT servus_stamp, servus_id, servus_token, enabled, online, running_since, authenticator, title \
 FROM kernel.servuses \
 WHERE servus_id = $1"
 
@@ -24,15 +24,15 @@ WHERE servus_id = $1"
 SELECT kernel.servus_configuration($1)"
 
 #define QueryInsertServus "\
-INSERT INTO kernel.servuses (servus_description) \
+INSERT INTO kernel.servuses (title) \
 VALUES ($1) \
 RETURNING servus_id"
 
-#define QueryUpdateServusDescription "\
+#define QueryUpdateServusTitle "\
 UPDATE kernel.servuses \
-SET servus_description = $2 \
+SET title = $2 \
 WHERE servus_id = $1 \
-RETURNING servus_description"
+RETURNING title"
 
 #define QueryServusSetOnline "\
 UPDATE kernel.servuses \
@@ -58,3 +58,6 @@ WHERE servus_id = $1"
 #define QueryResetAllServuses "\
 UPDATE kernel.servuses \
 SET online = FALSE"
+
+#define QueryServusesAsXML "\
+SELECT kernel.servuses_for_walker()"

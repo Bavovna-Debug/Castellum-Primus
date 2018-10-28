@@ -18,7 +18,7 @@ namespace Database
         std::string         activatorToken;
         unsigned long       phoenixId;
         std::string         activationCode;
-        std::string         description;
+        std::string         title;
 
     public:
         Activator(const unsigned long activatorId);
@@ -29,11 +29,11 @@ namespace Database
         setActivationCode(const std::string&);
 
         void
-        setDescription(const std::string&);
+        setTitle(const std::string&);
 
         static unsigned long
         DefineActivator(
             const std::string&  activationCode,
-            const std::string&  description);
+            const std::string&  title);
     };
 };

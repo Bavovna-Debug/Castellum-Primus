@@ -20,3 +20,6 @@ WHERE fabula_id = $1"
 INSERT INTO journal.fabulas (origin_stamp, servus_id, originator_id, severity, message) \
 VALUES ($1, $2, journal.touch_originator($2, $3), $4, $5) \
 RETURNING fabula_token"
+
+#define QueryFabulasAsXML "\
+SELECT journal.fabulas_for_walker($1, $2)"

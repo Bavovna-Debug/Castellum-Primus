@@ -10,7 +10,7 @@
 
 namespace Dispatcher
 {
-    static const unsigned int BytesReceivePerStep = 2048;
+    static const unsigned int BytesReceivePerStep = 64 * 1024;
 
     class Listener : public TCP::Service
     {

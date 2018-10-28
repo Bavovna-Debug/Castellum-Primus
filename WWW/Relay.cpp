@@ -45,13 +45,13 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
 
                     try
                     {
-                        const std::string relayDescription = connection[WWW::RelayDescription];
-                        if (relayDescription.empty() == true)
+                        const std::string relayTitle = connection[WWW::RelayTitle];
+                        if (relayTitle.empty() == true)
                             throw HTTP::ArgumentDoesNotExist();
 
                         Database::Relay& relay = Database::Relays::RelayById(relayId);
 
-                        relay.setDescription(relayDescription);
+                        relay.setTitle(relayTitle);
 
                         delete &relay;
                     }
@@ -136,7 +136,7 @@ WWW::Site::pageRelay(HTTP::Connection& connection, HTML::Instance& instance)
                     {
                         HTML::TableDataCell tableDataCell(instance, HTML::Nothing, "label");
 
-                        tableDataCell.plain(relay.description);
+                        tableDataCell.plain(relay.title);
                     }
 
                     {
@@ -270,13 +270,13 @@ WWW::Site::pageRelayEditForm(HTTP::Connection& connection, HTML::Instance& insta
 
     form.hidden(WWW::RelayId, relayId);
 
-    std::string relayDescription;
+    std::string relayTitle;
 
     if (relayId != 0)
     {
         Database::Relay& relay = Database::Relays::RelayById(relayId);
 
-        relayDescription = relay.description;
+        relayTitle = relay.title;
 
         delete &relay;
     }
@@ -294,7 +294,7 @@ WWW::Site::pageRelayEditForm(HTTP::Connection& connection, HTML::Instance& insta
                 return;
             }
 
-            headingText.plain("Relay <b>%s</b> bearbeiten", relayDescription.c_str());
+            headingText.plain("Relay <b>%s</b> bearbeiten", relayTitle.c_str());
         } // HTML.HeadingText
 
         {
@@ -314,8 +314,8 @@ WWW::Site::pageRelayEditForm(HTTP::Connection& connection, HTML::Instance& insta
                 HTML::DefinitionDescription definitionDescription(instance);
 
                 form.textField("description", "inputbox",
-                        WWW::RelayDescription,
-                        relayDescription.c_str(),
+                        WWW::RelayTitle,
+                        relayTitle.c_str(),
                         100, 40);
             }
         }

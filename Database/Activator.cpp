@@ -52,7 +52,7 @@ Database::Activator::Activator(const unsigned long activatorId)
         }
 
         this->activationCode = query.popVARCHAR();
-        this->description = query.popVARCHAR();
+        this->title = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -112,7 +112,7 @@ Database::Activator::setActivationCode(const std::string& activationCode)
 }
 
 void
-Database::Activator::setDescription(const std::string& activatorDescription)
+Database::Activator::setTitle(const std::string& title)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -126,8 +126,8 @@ Database::Activator::setDescription(const std::string& activatorDescription)
             unsigned long activatorIdQuery = htobe64(this->activatorId);
 
             query.pushBIGINT(&activatorIdQuery);
-            query.pushVARCHAR(&activatorDescription);
-            query.execute(QueryUpdateActivatorDescription);
+            query.pushVARCHAR(&title);
+            query.execute(QueryUpdateActivatorTitle);
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -148,7 +148,7 @@ Database::Activator::setDescription(const std::string& activatorDescription)
 unsigned long
 Database::Activator::DefineActivator(
     const std::string&  activationCode,
-    const std::string&  description)
+    const std::string&  title)
 {
     unsigned long activatorId;
 
@@ -164,7 +164,7 @@ Database::Activator::DefineActivator(
             PostgreSQL::Query query(*database.connection);
 
             query.pushVARCHAR(&activationCode);
-            query.pushVARCHAR(&description);
+            query.pushVARCHAR(&title);
             query.execute(QueryInsertActivator);
 
             query.assertNumberOfRows(1);

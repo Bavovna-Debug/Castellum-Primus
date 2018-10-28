@@ -25,7 +25,7 @@ Database::Therma::Therma(const unsigned long thermaId)
         unsigned long thermaIdQuery = htobe64(thermaId);
 
         query.pushBIGINT(&thermaIdQuery);
-        query.execute(QuerySearchForThermaById);
+        query.execute(QuerySearchForDSSensorById);
 
         query.assertNumberOfRows(1);
         query.assertNumberOfColumns(7);
@@ -42,8 +42,8 @@ Database::Therma::Therma(const unsigned long thermaId)
         this->token             = query.popUUID();
         this->servusId          = query.popBIGINT();
         this->gpioDeviceNumber  = query.popCHAR();
-        this->edge              = query.popREAL();
-        this->description       = query.popVARCHAR();
+        this->temperatureEdge   = query.popREAL();
+        this->title             = query.popVARCHAR();
     }
     catch (PostgreSQL::OperatorIntervention& exception)
     {
@@ -53,7 +53,7 @@ Database::Therma::Therma(const unsigned long thermaId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot load therma: %s",
+        ReportError("[Database] Cannot load DS18B20/DS18S20 sensor: %s",
                 exception.what());
 
         throw exception;
@@ -69,7 +69,7 @@ Database::Therma::~Therma()
 }
 
 void
-Database::Therma::setDescription(const std::string& description)
+Database::Therma::setTitle(const std::string& title)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
 
@@ -83,14 +83,14 @@ Database::Therma::setDescription(const std::string& description)
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
             query.pushBIGINT(&thermaIdQuery);
-            query.pushVARCHAR(&description);
-            query.execute(QueryUpdateThermaDescription);
+            query.pushVARCHAR(&title);
+            query.execute(QueryUpdateDSSensorTitle);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
             query.assertColumnOfType(0, PostgreSQL::VARCHAROID);
 
-            this->description = query.popVARCHAR();
+            this->title = query.popVARCHAR();
         }
     }
     catch (PostgreSQL::OperatorIntervention& exception)
@@ -101,7 +101,7 @@ Database::Therma::setDescription(const std::string& description)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot update therma: %s",
+        ReportError("[Database] Cannot update DS18B20/DS18S20 sensor: %s",
                 exception.what());
 
         throw exception;
@@ -123,7 +123,7 @@ Database::Therma::lastKnownTemperature()
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
             query.pushBIGINT(&thermaIdQuery);
-            query.execute(QueryThermaLastKnownTemperature);
+            query.execute(QueryDSSensorLastKnownTemperature);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
@@ -140,7 +140,7 @@ Database::Therma::lastKnownTemperature()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot update therma: %s",
+        ReportError("[Database] Cannot fetch data of DS18B20/DS18S20 sensor: %s",
                 exception.what());
 
         throw exception;
@@ -162,7 +162,7 @@ Database::Therma::lowestKnownTemperature()
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
             query.pushBIGINT(&thermaIdQuery);
-            query.execute(QueryThermaLowestTemperature);
+            query.execute(QueryDSSensorLowestTemperature);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
@@ -179,7 +179,7 @@ Database::Therma::lowestKnownTemperature()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot update therma: %s",
+        ReportError("[Database] Cannot fetch data of DS18B20/DS18S20 sensor: %s",
                 exception.what());
 
         throw exception;
@@ -201,7 +201,7 @@ Database::Therma::highestKnownTemperature()
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
             query.pushBIGINT(&thermaIdQuery);
-            query.execute(QueryThermaHighestTemperature);
+            query.execute(QueryDSSensorHighestTemperature);
 
             query.assertNumberOfRows(1);
             query.assertNumberOfColumns(1);
@@ -218,7 +218,46 @@ Database::Therma::highestKnownTemperature()
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Database] Cannot update therma: %s",
+        ReportError("[Database] Cannot fetch data of DS18B20/DS18S20 sensor: %s",
+                exception.what());
+
+        throw exception;
+    }
+}
+
+std::string
+Database::Therma::diagramAsJava()
+{
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+
+    try
+    {
+        PostgreSQL::Transaction transaction(*database.connection);
+
+        {
+            PostgreSQL::Query query(*database.connection);
+
+            unsigned long thermaIdQuery = htobe64(this->thermaId);
+
+            query.pushBIGINT(&thermaIdQuery);
+            query.execute(QueryDSSensorDiagramAsJava);
+
+            query.assertNumberOfRows(1);
+            query.assertNumberOfColumns(1);
+            query.assertColumnOfType(0, PostgreSQL::TEXTOID);
+
+            return query.popVARCHAR();
+        }
+    }
+    catch (PostgreSQL::OperatorIntervention& exception)
+    {
+        database.recover(exception);
+
+        throw exception;
+    }
+    catch (PostgreSQL::Exception& exception)
+    {
+        ReportError("[Database] Cannot build diagram of DS18B20/DS18S20 sensor: %s",
                 exception.what());
 
         throw exception;

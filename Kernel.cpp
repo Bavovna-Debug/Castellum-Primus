@@ -54,7 +54,7 @@ Workspace::Kernel::SharedInstance()
 }
 
 Workspace::Kernel::Kernel() :
-Inherited()
+Inherited(Primus::InstanceName)
 {
     this->timestampOfStart = new Toolkit::Timestamp();
 }

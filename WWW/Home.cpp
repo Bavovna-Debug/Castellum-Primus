@@ -47,7 +47,11 @@ WWW::Site::generateDocument(HTTP::Connection& connection)
 
     this->processRelays(connection);
 
-    if (connection.pageName().find(WWW::Images) == 0)
+    if (connection.pageName().find(WWW::JavaScript) == 0)
+    {
+        connection.download(Workspace::RootPath + connection.pageName());
+    }
+    else if (connection.pageName().find(WWW::Images) == 0)
     {
         connection.download(Workspace::RootPath + connection.pageName());
     }

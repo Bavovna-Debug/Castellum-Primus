@@ -22,7 +22,7 @@ namespace Database
         std::string         deviceName;
         std::string         deviceModel;
         std::string         softwareVersion;
-        std::string         description;
+        std::string         title;
 
     public:
         Phoenix(const unsigned long phoenixId);
@@ -33,7 +33,7 @@ namespace Database
         saveDeviceToken();
 
         void
-        setDescription(const std::string&);
+        setTitle(const std::string&);
 
         void
         setSoftwareVersion(const std::string&);
@@ -48,6 +48,6 @@ namespace Database
             const std::string&  deviceName,
             const std::string&  deviceModel,
             const std::string&  softwareVersion,
-            const std::string&  description);
+            const std::string&  title);
     };
 };

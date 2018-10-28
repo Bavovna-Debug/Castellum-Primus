@@ -8,7 +8,9 @@
 
 namespace Primus
 {
-    static const std::string SoftwareVersion = "Primus 0.3 [180602]";
+    static const std::string InstanceName       = "primus";
+
+    static const std::string SoftwareVersion    = "Primus 0.5 [181009]";
 
     static const unsigned DefaultHTTPPortNumberIPv4                 = 15080;
     static const unsigned DefaultHTTPKeepAliveSession               = 300;      /**< Seconds. */
@@ -35,7 +37,9 @@ namespace Primus
     static const unsigned DefaultDelayAfterCompletion               = 500;      /**< Milliseconds. */
     static const unsigned DefaultPauseBeforeReconnect               = 10;
 
-    static const unsigned int ActivationCodeLength = 10;
+    static const unsigned int ActivationCodeLength                  = 10;
+
+    static const unsigned int MaximalNumberOfFabulasPerXML          = 20;
 
     class Configuration
     {

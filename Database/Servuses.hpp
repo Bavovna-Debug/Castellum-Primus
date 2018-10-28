@@ -30,10 +30,13 @@ namespace Database
         ServusById(const unsigned long);
 
         static unsigned long
-        DefineServus(const std::string& description);
+        DefineServus(const std::string& title);
 
         static void
         ResetAllServuses();
+
+        static const std::string
+        ServusesAsXML();
     };
 
     class ServusNotFound : public std::runtime_error

@@ -11,10 +11,10 @@
 // Local definition files.
 //
 #include "Primus/Database/Database.hpp"
+#include "Primus/Database/Fabula.hpp"
 #include "Primus/Database/Queries/Fabula.h"
-#include "Primus/Dispatcher/Fabula.hpp"
 
-Dispatcher::Fabula::Fabula(const unsigned long fabulaId)
+Database::Fabula::Fabula(const unsigned long fabulaId)
 {
     Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Fabulatorium);
 
@@ -53,20 +53,20 @@ Dispatcher::Fabula::Fabula(const unsigned long fabulaId)
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Fabula] Cannot load fabula: %s",
+        ReportError("[Database] Cannot load fabula: %s",
                 exception.what());
 
         throw exception;
     }
 }
 
-Dispatcher::Fabula::~Fabula()
+Database::Fabula::~Fabula()
 {
     if (this->originTimestamp != nullptr)
         delete this->originTimestamp;
 }
 std::string
-Dispatcher::Fabula::Enqueue(
+Database::Fabula::Enqueue(
     Toolkit::Timestamp&     originTimestamp,
     const unsigned long     servusId,
     const std::string&      originatorLabel,
@@ -109,7 +109,7 @@ Dispatcher::Fabula::Enqueue(
     }
     catch (PostgreSQL::Exception& exception)
     {
-        ReportError("[Fabula] Cannot create fabula: %s",
+        ReportError("[Database] Cannot create fabula: %s",
                 exception.what());
 
         throw exception;
