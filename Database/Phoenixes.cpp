@@ -24,7 +24,9 @@ Database::Phoenixes::TotalNumber()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryTotalNumberOfPhoenixes);
 
@@ -60,7 +62,9 @@ Database::Phoenixes::PhoenixByIndex(const unsigned long phoenixIndex)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long phoenixIndexQuery = htobe64(phoenixIndex);
 
@@ -99,7 +103,9 @@ Database::Phoenixes::PhoenixByToken(const std::string& phoenixToken)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.pushUUID(&phoenixToken);
         query.execute(QuerySearchForPhoenixByToken);
@@ -142,10 +148,12 @@ Database::Phoenixes::RemovePhoenixById(const unsigned long phoenixId)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long phoenixIdQuery = htobe64(phoenixId);
 

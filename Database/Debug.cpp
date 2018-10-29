@@ -54,7 +54,7 @@ Primus::Debug::connect()
 {
     Primus::Configuration& configuration = Primus::Configuration::SharedInstance();
 
-    this->connection = new PostgreSQL::Connection(
+    this->connectionInstance = new PostgreSQL::Connection(
             configuration.database.hostName.c_str(),
             configuration.database.portNumber,
             configuration.database.databaseName.c_str(),
@@ -65,7 +65,7 @@ Primus::Debug::connect()
 void
 Primus::Debug::disconnect()
 {
-    delete this->connection;
+    delete this->connectionInstance;
 }
 
 void
@@ -83,16 +83,16 @@ Primus::Debug::BeginServusSession(const std::string& servusIP)
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     unsigned long sessionId = 0;
 
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             query.pushINET(servusIP.c_str(), servusIP.length());
 
@@ -124,14 +124,14 @@ Primus::Debug::CloseServusSession(const unsigned long sessionId)
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             unsigned long sessionIdQuery = htobe64(sessionId);
 
@@ -159,14 +159,14 @@ Primus::Debug::CommentServusSession(
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             unsigned long sessionIdQuery = htobe64(sessionId);
 
@@ -196,14 +196,14 @@ Primus::Debug::ReportServusRTSP(
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             unsigned long sessionIdQuery = htobe64(sessionId);
 
@@ -242,16 +242,16 @@ Primus::Debug::BeginPhoenixSession(const std::string& phoenixIP)
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     unsigned long sessionId = 0;
 
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             query.pushINET(phoenixIP.c_str(), phoenixIP.length());
 
@@ -283,14 +283,14 @@ Primus::Debug::ClosePhoenixSession(const unsigned long sessionId)
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             unsigned long sessionIdQuery = htobe64(sessionId);
 
@@ -318,14 +318,14 @@ Primus::Debug::CommentPhoenixSession(
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             unsigned long sessionIdQuery = htobe64(sessionId);
 
@@ -355,14 +355,14 @@ Primus::Debug::ReportPhoenixRTSP(
 {
     Primus::Debug& debug = Primus::Debug::SharedInstance();
 
-    std::unique_lock<std::mutex> queueLock { debug.lock };
-
     try
     {
-        PostgreSQL::Transaction transaction(*debug.connection);
+        std::unique_lock<std::mutex> queueLock { debug.lock };
+
+        PostgreSQL::Transaction transaction(debug.connection());
 
         {
-            PostgreSQL::Query query(*debug.connection);
+            PostgreSQL::Query query(debug.connection());
 
             unsigned long sessionIdQuery = htobe64(sessionId);
             unsigned int responseStatus = htobe32(response.statusCode);

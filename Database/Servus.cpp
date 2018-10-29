@@ -20,7 +20,9 @@ Database::Servus::Servus(const unsigned long servusId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long servusIdQuery = htobe64(servusId);
 
@@ -77,10 +79,12 @@ Database::Servus::configurationAsJSON()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(this->servusId);
 
@@ -118,10 +122,12 @@ Database::Servus::toggleEnabledFlag()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(this->servusId);
 
@@ -157,10 +163,12 @@ Database::Servus::setOnline()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(this->servusId);
 
@@ -190,10 +198,12 @@ Database::Servus::setOffline()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(this->servusId);
 
@@ -223,10 +233,12 @@ Database::Servus::setRunningSince(Toolkit::Timestamp& runningSince)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(this->servusId);
 
@@ -257,10 +269,12 @@ Database::Servus::setTitle(const std::string& title)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(this->servusId);
 

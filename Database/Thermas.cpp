@@ -25,7 +25,9 @@ Database::Thermas::TotalNumber()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryTotalNumberOfDSSensors);
 
@@ -61,7 +63,9 @@ Database::Thermas::SensorByIndex(const unsigned long sensorId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long sensorIdQuery = htobe64(sensorId);
 
@@ -110,10 +114,12 @@ Database::NoticeDSSensorTemperature(
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             union
             {

@@ -25,7 +25,9 @@ Database::Relays::TotalNumber()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryTotalNumberOfRelays);
 
@@ -61,7 +63,9 @@ Database::Relays::RelayByIndex(const unsigned long relayIndex)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long relayIndexQuery = htobe64(relayIndex);
 

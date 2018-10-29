@@ -21,7 +21,9 @@ Database::Activator::Activator(const unsigned long activatorId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long activatorIdQuery = htobe64(activatorId);
 
@@ -84,10 +86,12 @@ Database::Activator::setActivationCode(const std::string& activationCode)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long activatorIdQuery = htobe64(this->activatorId);
 
@@ -118,10 +122,12 @@ Database::Activator::setTitle(const std::string& title)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long activatorIdQuery = htobe64(this->activatorId);
 
@@ -156,12 +162,14 @@ Database::Activator::DefineActivator(
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         // Create a new record for new activator.
         //
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             query.pushVARCHAR(&activationCode);
             query.pushVARCHAR(&title);

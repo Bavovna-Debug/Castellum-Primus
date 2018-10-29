@@ -21,7 +21,9 @@ Database::Phoenix::Phoenix(const unsigned long phoenixId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long phoenixIdQuery = htobe64(phoenixId);
 
@@ -76,10 +78,12 @@ Database::Phoenix::saveDeviceToken()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long phoenixIdQuery = htobe64(this->phoenixId);
 
@@ -110,10 +114,12 @@ Database::Phoenix::setTitle(const std::string& title)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long phoenixIdQuery = htobe64(this->phoenixId);
 
@@ -150,10 +156,12 @@ Database::Phoenix::setSoftwareVersion(const std::string& softwareVersion)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long phoenixIdQuery = htobe64(this->phoenixId);
 
@@ -190,7 +198,9 @@ Database::Phoenix::numberOfNotifications()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long phoenixIdQuery = htobe64(this->phoenixId);
 
@@ -233,7 +243,9 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         // Do all the following steps in one transaction to guarantee data integrity.
         //
@@ -245,7 +257,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
             // Throw exception if specified activation code does not exist.
             //
             {
-                PostgreSQL::Query query(*database.connection);
+                PostgreSQL::Query query(database.connection());
 
                 query.pushVARCHAR(&activationCode);
                 query.execute(QuerySearchForActivatorByCode);
@@ -260,7 +272,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
             // Create a new record for new phoenix.
             //
             {
-                PostgreSQL::Query query(*database.connection);
+                PostgreSQL::Query query(database.connection());
 
                 query.pushUUID(&vendorToken);
                 query.pushVARCHAR(&deviceName);
@@ -281,7 +293,7 @@ Database::Phoenix::RegisterPhoenixWithActivationCode(
             // that the same activator would not be used to activate more than one phoenix.
             //
             {
-                PostgreSQL::Query query(*database.connection);
+                PostgreSQL::Query query(database.connection());
 
                 unsigned long activatorIdQuery = htobe64(activatorId);
                 unsigned long phoenixIdQuery = htobe64(phoenixId);

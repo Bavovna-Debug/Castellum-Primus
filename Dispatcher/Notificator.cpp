@@ -91,7 +91,9 @@ Dispatcher::Notificator::numberOfPendingNotifications()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryNumberOfPendingNotifications);
 
@@ -134,7 +136,9 @@ Dispatcher::Notificator::processPendingNotifications()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryAllPendingNotifications);
 
@@ -162,7 +166,7 @@ Dispatcher::Notificator::processPendingNotifications()
                 }
                 catch (APNS::CommunicationError&)
                 {
-                    PostgreSQL::Query update(*database.connection);
+                    PostgreSQL::Query update(database.connection());
 
                     unsigned long notificationIdUpdate = htobe64(notificationId);
 
@@ -174,7 +178,7 @@ Dispatcher::Notificator::processPendingNotifications()
                 }
 
                 {
-                    PostgreSQL::Query update(*database.connection);
+                    PostgreSQL::Query update(database.connection());
 
                     unsigned long notificationIdUpdate = htobe64(notificationId);
 

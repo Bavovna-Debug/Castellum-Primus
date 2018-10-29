@@ -20,7 +20,9 @@ Database::Fabula::Fabula(const unsigned long fabulaId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long fabulaIdQuery = htobe64(fabulaId);
 
@@ -77,10 +79,12 @@ Database::Fabula::Enqueue(
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long servusIdQuery = htobe64(servusId);
             unsigned short severityLevelQuery = htobe16(severityLevel);

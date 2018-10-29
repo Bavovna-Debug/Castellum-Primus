@@ -20,7 +20,9 @@ Database::Therma::Therma(const unsigned long thermaId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long thermaIdQuery = htobe64(thermaId);
 
@@ -75,10 +77,12 @@ Database::Therma::setTitle(const std::string& title)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
@@ -115,10 +119,12 @@ Database::Therma::lastKnownTemperature()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
@@ -154,10 +160,12 @@ Database::Therma::lowestKnownTemperature()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
@@ -193,10 +201,12 @@ Database::Therma::highestKnownTemperature()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 
@@ -232,10 +242,12 @@ Database::Therma::diagramAsJava()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long thermaIdQuery = htobe64(this->thermaId);
 

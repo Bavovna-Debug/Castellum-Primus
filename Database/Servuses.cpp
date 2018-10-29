@@ -23,7 +23,9 @@ Database::Servuses::TotalNumber()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryTotalNumberOfServuses);
 
@@ -59,7 +61,9 @@ Database::Servuses::ServusByAuthenticator(const std::string& authenticator)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.pushUUID(&authenticator);
         query.execute(QuerySearchForServusByAuthenticator);
@@ -100,7 +104,9 @@ Database::Servuses::ServusByIndex(const unsigned long servusIndex)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long servusIndexQuery = htobe64(servusIndex);
 
@@ -147,12 +153,14 @@ Database::Servuses::DefineServus(const std::string& title)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         // Create a new record for new activator.
         //
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             query.pushVARCHAR(&title);
             query.execute(QueryInsertServus);
@@ -188,10 +196,12 @@ Database::Servuses::ResetAllServuses()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             query.execute(QueryResetAllServuses);
         }
@@ -218,7 +228,9 @@ Database::Servuses::ServusesAsXML()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryServusesAsXML);
 

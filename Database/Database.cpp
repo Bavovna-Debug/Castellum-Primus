@@ -1,5 +1,6 @@
 // System definition files.
 //
+#include <mutex>
 #include <stdexcept>
 #include <system_error>
 
@@ -48,7 +49,7 @@ Primus::Database::connect()
 {
     Primus::Configuration& configuration = Primus::Configuration::SharedInstance();
 
-    this->connection = new PostgreSQL::Connection(
+    this->connectionInstance = new PostgreSQL::Connection(
             configuration.database.hostName.c_str(),
             configuration.database.portNumber,
             configuration.database.databaseName.c_str(),
@@ -59,7 +60,7 @@ Primus::Database::connect()
 void
 Primus::Database::disconnect()
 {
-    delete this->connection;
+    delete this->connectionInstance;
 }
 
 void

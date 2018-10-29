@@ -25,7 +25,9 @@ Database::Fabulas::totalNumber()
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         query.execute(QueryTotalNumberOfFabulas);
 
@@ -61,7 +63,9 @@ Database::Fabulas::fabulaByIndex(const unsigned long fabulaIndex)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long fabulaIndexQuery = htobe64(fabulaIndex);
 
@@ -108,7 +112,9 @@ Database::Fabulas::FabulasAsXML(
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned int limitQuery = htobe32(maximalFabulasPerXML);
 

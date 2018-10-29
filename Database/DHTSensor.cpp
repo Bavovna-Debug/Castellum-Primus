@@ -20,7 +20,9 @@ Database::DHTSensor::DHTSensor(const unsigned long sensorId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long sensorIdQuery = htobe64(sensorId);
 
@@ -77,10 +79,12 @@ Database::DHTSensor::lastKnownHumidity()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long sensorIdQuery = htobe64(this->sensorId);
 
@@ -116,10 +120,12 @@ Database::DHTSensor::lowestKnownHumidity()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long sensorIdQuery = htobe64(this->sensorId);
 
@@ -155,10 +161,12 @@ Database::DHTSensor::highestKnownHumidity()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long sensorIdQuery = htobe64(this->sensorId);
 
@@ -194,10 +202,12 @@ Database::DHTSensor::lastKnownTemperature()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long sensorIdQuery = htobe64(this->sensorId);
 
@@ -233,10 +243,12 @@ Database::DHTSensor::lowestKnownTemperature()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long sensorIdQuery = htobe64(this->sensorId);
 
@@ -272,10 +284,12 @@ Database::DHTSensor::highestKnownTemperature()
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long sensorIdQuery = htobe64(this->sensorId);
 

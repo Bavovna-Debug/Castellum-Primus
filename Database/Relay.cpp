@@ -21,7 +21,9 @@ Database::Relay::Relay(const unsigned long relayId)
 
     try
     {
-        PostgreSQL::Query query(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Query query(database.connection());
 
         unsigned long relayIdQuery = htobe64(relayId);
 
@@ -76,10 +78,12 @@ Database::Relay::setTitle(const std::string& title)
 
     try
     {
-        PostgreSQL::Transaction transaction(*database.connection);
+        std::unique_lock<std::mutex> queueLock { database.lock };
+
+        PostgreSQL::Transaction transaction(database.connection());
 
         {
-            PostgreSQL::Query query(*database.connection);
+            PostgreSQL::Query query(database.connection());
 
             unsigned long relayIdQuery = htobe64(this->relayId);
 

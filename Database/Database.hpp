@@ -1,5 +1,9 @@
 #pragma once
 
+// System definition files.
+//
+#include <mutex>
+
 // Common definition files.
 //
 #include "PostgreSQL/Exception.hpp"
@@ -9,6 +13,12 @@ namespace Primus
 {
     class Database
     {
+    private:
+        PostgreSQL::Connection* connectionInstance;
+
+    public:
+        std::mutex lock;
+
     public:
         enum Instance
         {
@@ -18,9 +28,6 @@ namespace Primus
             WWW,
             NumberOfInstances
         };
-
-    public:
-        PostgreSQL::Connection* connection;
 
     public:
         static Primus::Database&
@@ -37,5 +44,9 @@ namespace Primus
         connect(),
         disconnect(),
         recover(PostgreSQL::OperatorIntervention&);
+
+        PostgreSQL::Connection&
+        connection()
+        { return *this->connectionInstance; }
     };
 };

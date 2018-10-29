@@ -15,10 +15,11 @@ namespace Primus
 {
     class Debug
     {
+    private:
+        PostgreSQL::Connection* connectionInstance;
+
     public:
         std::mutex lock;
-
-        PostgreSQL::Connection* connection;
 
     public:
         static Primus::Debug&
@@ -35,6 +36,10 @@ namespace Primus
         connect(),
         disconnect(),
         recover(PostgreSQL::OperatorIntervention&);
+
+        PostgreSQL::Connection&
+        connection()
+        { return *this->connectionInstance; }
 
         static unsigned long
         BeginServusSession(const std::string& servusIP);
