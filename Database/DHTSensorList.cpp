@@ -21,7 +21,7 @@ Database::DHTSensorList::TotalNumber()
 {
     unsigned long numberOfSensors;
 
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -59,7 +59,7 @@ Database::DHTSensorList::SensorByIndex(const unsigned long thermaIndex)
 {
     unsigned long sensorId;
 
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -110,7 +110,7 @@ Database::NoticeDHTSensorHumidity(
     const double        stampAsReal,
     const float         humidity)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -168,7 +168,7 @@ Database::NoticeDHTSensorTemperature(
     const double        stampAsReal,
     const float         temperature)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {

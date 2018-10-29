@@ -21,7 +21,7 @@ Database::Relays::TotalNumber()
 {
     unsigned long numberOfRelays;
 
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -59,7 +59,7 @@ Database::Relays::RelayByIndex(const unsigned long relayIndex)
 {
     unsigned long relayId;
 
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {

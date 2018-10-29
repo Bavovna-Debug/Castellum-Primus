@@ -21,7 +21,7 @@ Database::Thermas::TotalNumber()
 {
     unsigned long numberOfThermas;
 
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -59,7 +59,7 @@ Database::Thermas::SensorByIndex(const unsigned long sensorId)
 {
     unsigned long thermaId;
 
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -110,7 +110,7 @@ Database::NoticeDSSensorTemperature(
     const double        stampAsReal,
     const float         temperature)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {

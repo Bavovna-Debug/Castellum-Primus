@@ -16,7 +16,7 @@
 
 Database::DHTSensor::DHTSensor(const unsigned long sensorId)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -75,7 +75,7 @@ Database::DHTSensor::~DHTSensor()
 float
 Database::DHTSensor::lastKnownHumidity()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -116,7 +116,7 @@ Database::DHTSensor::lastKnownHumidity()
 float
 Database::DHTSensor::lowestKnownHumidity()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -157,7 +157,7 @@ Database::DHTSensor::lowestKnownHumidity()
 float
 Database::DHTSensor::highestKnownHumidity()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -198,7 +198,7 @@ Database::DHTSensor::highestKnownHumidity()
 float
 Database::DHTSensor::lastKnownTemperature()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -239,7 +239,7 @@ Database::DHTSensor::lastKnownTemperature()
 float
 Database::DHTSensor::lowestKnownTemperature()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -280,7 +280,7 @@ Database::DHTSensor::lowestKnownTemperature()
 float
 Database::DHTSensor::highestKnownTemperature()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {

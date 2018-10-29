@@ -25,6 +25,7 @@ namespace Primus
             Default,
             Fabulatorium,
             Notificator,
+            Sensors,
             WWW,
             NumberOfInstances
         };

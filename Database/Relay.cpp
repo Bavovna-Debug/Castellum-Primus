@@ -17,7 +17,7 @@
 
 Database::Relay::Relay(const unsigned long relayId)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -74,7 +74,7 @@ Database::Relay::~Relay()
 void
 Database::Relay::setTitle(const std::string& title)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {

@@ -16,7 +16,7 @@
 
 Database::Therma::Therma(const unsigned long thermaId)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -73,7 +73,7 @@ Database::Therma::~Therma()
 void
 Database::Therma::setTitle(const std::string& title)
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -115,7 +115,7 @@ Database::Therma::setTitle(const std::string& title)
 float
 Database::Therma::lastKnownTemperature()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -156,7 +156,7 @@ Database::Therma::lastKnownTemperature()
 float
 Database::Therma::lowestKnownTemperature()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -197,7 +197,7 @@ Database::Therma::lowestKnownTemperature()
 float
 Database::Therma::highestKnownTemperature()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
@@ -238,7 +238,7 @@ Database::Therma::highestKnownTemperature()
 std::string
 Database::Therma::diagramAsJava()
 {
-    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Default);
+    Primus::Database& database = Primus::Database::SharedInstance(Primus::Database::Sensors);
 
     try
     {
