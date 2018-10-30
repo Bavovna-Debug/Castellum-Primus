@@ -74,6 +74,7 @@ Workspace::Kernel::kernelInit()
         Primus::Database::InitInstance(Primus::Database::Default);
         Primus::Database::InitInstance(Primus::Database::Fabulatorium);
         Primus::Database::InitInstance(Primus::Database::Notificator);
+        Primus::Database::InitInstance(Primus::Database::Sensors);
         Primus::Database::InitInstance(Primus::Database::WWW);
         Primus::Debug::InitInstance();
         Dispatcher::Notificator::InitInstance();
